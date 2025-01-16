@@ -1,3 +1,4 @@
-**/.DS_Store
-**/package-lock.json
-
+.glitchdotcom.json
+.node-gyp
+.env
+node_modules

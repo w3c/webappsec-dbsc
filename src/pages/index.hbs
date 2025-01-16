@@ -1,0 +1,100 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="https://glitch.com/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DBSC prototype</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <div class="content" role="main">
+
+        <h1 class="title">DBSC prototype</h1>
+
+        <div class="session-form">
+          <p>Create a new session</p>
+          <form method="post" action="/internal/StartSessionForm">
+            <table>
+              {{!-- <tr>
+                <td align="right"><label for="id">id:</label></td>
+                <td><input id="id" name="id" required="required" type="text" value="0" style="text-align:right;"/></td>
+              </tr> --}}
+              <tr>
+                <td align="right"><label for="cexl">cookie scope include:</label></td>
+                <td><input id="cinclude" name="cinclude" required="required" type="text" value="trusted/" style="text-align:right;"/></td>
+              </tr>
+              <tr>
+                <td align="right"><label for="cexl">cookie scope exclude:</label></td>
+                <td><input id="cexl" name="cexl" required="required" type="text" value="untrusted/" style="text-align:right;"/></td>
+              </tr>
+              <tr>
+                <td align="right"><label for="authCode">Authorization Code:</label></td>
+                <td><input id="authCode" name="authCode" type="text" value="auth-code-123" style="text-align:right;"/></td>
+              </tr>
+              <tr>
+                <td align="right"><label for="cname">cookie name:</label></td>
+                <td><input id="cname" name="cname" required="required" type="text" value="cname" style="text-align:right;"/></td>
+              </tr>
+              <tr>
+                <td align="right"><label for="cvalue">cookie value:</label></td>
+                <td><input id="cvalue" name="cvalue" required="required" type="text" value="cvalue" style="text-align:right;"/></td>
+              </tr>
+              <tr>
+                <td align="right"><label for="cexpire">cookie expire(in sec):</label></td>
+                <td><input id="cexpire" name="cexpire" required="required" type="number" value=600 style="text-align:right;"/></td>
+              </tr>
+              <tr><td></td><td align="right"><button type="submit">Submit</button></td></tr>
+            </table>
+          </form>
+        </div>
+
+        <div id="session-list" class="session-form">
+          {{#if sessions}}
+            <form>
+              <p>Current sessions</p>
+              <table>
+                <tr>
+                  <th>SessionId</th>
+                  <th>CookieName</th>
+                  <th>CookieValue</th>
+                  <th>CookieExpireTime</th>
+                  <th>CookieExpired</th>
+                  <th>RefreshCookie</th>
+                  <th>DeleteSession</th>
+                </tr>
+                {{#each sessions as |session|}}
+                  <tr>
+                    <td>{{session.sessionId}}</td>
+                    <td>{{session.cookies.[0].name}}</td>
+                    <td>{{session.cookies.[0].value}}</td>
+                    <td>{{session.cookies.[0].expires}}</td>
+                    <td>{{isExpired session.cookies.[0].expires}}</td>
+                    <td><button
+                        type="submit"
+                        formmethod="post"
+                        formaction="/internal/RefreshSession"
+                        name="id"
+                        value="{{session.sessionId}}"
+                      >Refresh</button></td>
+                    <td><button
+                        type="submit"
+                        formmethod="post"
+                        formaction="/internal/DeleteSession"
+                        name="id"
+                        value="{{session.sessionId}}"
+                      >Delete</button></td>
+                  </tr>
+                {{/each}}
+              </table>
+            </form>
+          {{else}}
+            <p>No sessions</p>
+          {{/if}}
+        </div>
+
+      </div>
+    </div>
+  </body>
+</html>
