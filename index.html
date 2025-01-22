@@ -4,9 +4,9 @@
   <title>Device Bound Session Credentials</title>
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
-  <meta content="Bikeshed version ac5ea272d, updated Fri Dec 6 15:45:15 2024 -0800" name="generator">
+  <meta content="Bikeshed version c67c745b1, updated Fri Jan 17 14:27:28 2025 -0800" name="generator">
   <link href="https://wicg.github.io/dbsc/" rel="canonical">
-  <meta content="df189b753a5ef6c9759ddff08b472fd65b6d5366" name="revision">
+  <meta content="da4a69f5c5fe28f6b3e29c0f3e6159070b0c4d0f" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -732,7 +732,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2024-12-23">23 December 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2025-01-22">22 January 2025</time></p>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
@@ -745,7 +745,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
     </dl>
    </div>
    <div data-fill-with="warning"></div>
-   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/policies/#copyright">Copyright</a> © 2024 the Contributors to the Device Bound Session Credentials Specification, published by the <a href="https://www.w3.org/community/wicg/">Web Platform Incubator Community Group</a> under the <a href="https://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a>.
+   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/policies/#copyright">Copyright</a> © 2025 the Contributors to the Device Bound Session Credentials Specification, published by the <a href="https://www.w3.org/community/wicg/">Web Platform Incubator Community Group</a> under the <a href="https://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a>.
 A human-readable <a href="http://www.w3.org/community/about/agreements/cla-deed/">summary</a> is available. </p>
    <hr title="Separator for header">
   </div>
@@ -997,7 +997,7 @@ requests while refreshing a session</p>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②">string</a> that is to be used as the next challenge for this session</p>
     <dt data-md><a data-link-type="dfn" href="#session-scope" id="ref-for-session-scope">session scope</a>
     <dd data-md>
-     <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct" id="ref-for-struct①">struct</a> defining which <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url①">url</a>'s' are in scope for this session</p>
+     <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct" id="ref-for-struct①">struct</a> defining which <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url①">url</a>’s' are in scope for this session</p>
     <dt data-md><a data-link-type="dfn" href="#session-credential" id="ref-for-session-credential">session credential</a>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list">list</a> of <a data-link-type="dfn" href="#session-credential" id="ref-for-session-credential①">session credential</a> used by the session</p>
@@ -1095,7 +1095,8 @@ params["id"].</p>
    <h3 class="heading settled" data-level="6.4" id="algo-session-request"><span class="secno">6.4. </span><span class="content">Send request</span><a class="self-link" href="#algo-session-request"></a></h3>
    <h3 class="heading settled" data-level="6.5" id="algo-create-session"><span class="secno">6.5. </span><span class="content">Create session</span><a class="self-link" href="#algo-create-session"></a></h3>
     To <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="create-session">Create a new session</dfn>, start with
-parsing the registration structured header defined in <span>`<code><a data-link-type="http-header" href="#sec-session-registration-header" id="ref-for-sec-session-registration-header">Sec-Session-Registration</a></code>`</span>: 
+parsing the registration structured header defined in
+`<code><a data-link-type="http-header" href="#sec-session-registration-header" id="ref-for-sec-session-registration-header">Sec-Session-Registration</a></code>`: 
    <div class="algorithm" data-algorithm="process-registration">
     <ol>
      <li data-md>
@@ -1118,7 +1119,8 @@ field value</a> given <var>header name</var> and "list" from <var>response</var>
          <li data-md>
           <p>If <var>algorithm</var> is not a <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc8941#token" id="ref-for-token">sf-token</a>, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue⑤">continue</a>.</p>
          <li data-md>
-          <p>If <var>algorithm</var> represents a crypto algorithm supported in <span>`<code><a data-link-type="http-header" href="#sec-session-registration-header" id="ref-for-sec-session-registration-header①">Sec-Session-Registration</a></code>`</span>, and is supported on this client, add <var>algorithm</var> to <var>algorithm list</var></p>
+          <p>If <var>algorithm</var> represents a crypto algorithm supported in
+`<code><a data-link-type="http-header" href="#sec-session-registration-header" id="ref-for-sec-session-registration-header①">Sec-Session-Registration</a></code>`, and is supported on this client, add <var>algorithm</var> to <var>algorithm list</var></p>
         </ol>
        <li data-md>
         <p>If <var>algorithm list</var> is empty, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue⑥">continue</a>.</p>
@@ -1145,7 +1147,7 @@ field value</a> given <var>header name</var> and "list" from <var>response</var>
    <h3 class="heading settled" data-level="7.1" id="header-sec-session-registration"><span class="secno">7.1. </span><span class="content">`<code>Sec-Session-Registration</code>` HTTP header field</span><a class="self-link" href="#header-sec-session-registration"></a></h3>
     The `<dfn class="dfn-paneled" data-dfn-type="http-header" data-export data-lt="Sec-Session-Registration" id="sec-session-registration-header"> <code>Sec-Session-Registration</code></dfn>` header field can be used in a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-response" id="ref-for-concept-response-response①">response</a> by the server to start a new <a data-link-type="dfn" href="#device-bound-session" id="ref-for-device-bound-session④">device bound session</a> on the
 client. 
-   <p><span>`<code><a data-link-type="http-header" href="#sec-session-registration-header" id="ref-for-sec-session-registration-header②">Sec-Session-Registration</a></code>`</span> is a List Structured Header <a data-link-type="biblio" href="#biblio-rfc8941" title="Structured Field Values for HTTP">[RFC8941]</a>. Its ABNF
+   <p>`<code><a data-link-type="http-header" href="#sec-session-registration-header" id="ref-for-sec-session-registration-header②">Sec-Session-Registration</a></code>` is a List Structured Header <a data-link-type="biblio" href="#biblio-rfc8941" title="Structured Field Values for HTTP">[RFC8941]</a>. Its ABNF
 is:</p>
 <pre class="abnf">Sec-Session-Registration = <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc8941#list" id="ref-for-list③">sf-list</a></pre>
    <p>Each item in the list must be an inner list, and each item in the inner list
@@ -1167,7 +1169,7 @@ registration.</p>
 JWT.</p>
    </ul>
    <div class="example" id="sec-session-registration-example">
-    <a class="self-link" href="#sec-session-registration-example"></a> Some examples of <span>`<code><a data-link-type="http-header" href="#sec-session-registration-header" id="ref-for-sec-session-registration-header③">Sec-Session-Registration</a></code>`</span> from
+    <a class="self-link" href="#sec-session-registration-example"></a> Some examples of `<code><a data-link-type="http-header" href="#sec-session-registration-header" id="ref-for-sec-session-registration-header③">Sec-Session-Registration</a></code>` from
   https://example.com/login.html: 
 <pre class="language-html highlight">HTTP/1.1 200 OK
 Sec-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
@@ -1190,14 +1192,14 @@ request a newly signed <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-db
    <ol start="401">
     <li data-md>
    </ol>
-   <p><span>`<code><a data-link-type="http-header" href="#sec-session-challenge-header" id="ref-for-sec-session-challenge-header">Sec-Session-Challenge</a></code>`</span> is a structured header. Its value must be a string.
+   <p>`<code><a data-link-type="http-header" href="#sec-session-challenge-header" id="ref-for-sec-session-challenge-header">Sec-Session-Challenge</a></code>` is a structured header. Its value must be a string.
 Its ABNF is: </p>
 <pre class="abnf">SecSessionChallenge = <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc8941#string" id="ref-for-string①①">sf-string</a></pre>
     The semantics of the item are defined in <a href="#challenge-structured-header-serialization">§ 7.2.1 Sec-Session-Challenge structured header serialization</a>.
    <p></p>
    <p>The processing steps are defined in <a href="#algo-process-challenge">§ 6.2 Process challenge</a>.</p>
    <h4 class="heading settled" data-level="7.2.1" id="challenge-structured-header-serialization"><span class="secno">7.2.1. </span><span class="content">Sec-Session-Challenge structured header serialization</span><a class="self-link" href="#challenge-structured-header-serialization"></a></h4>
-    The <span>`<code><a data-link-type="http-header" href="#sec-session-challenge-header" id="ref-for-sec-session-challenge-header①">Sec-Session-Challenge</a></code>`</span> is represented as a Structured Field.<a data-link-type="biblio" href="#biblio-rfc8941" title="Structured Field Values for HTTP">[RFC8941]</a> 
+    The `<code><a data-link-type="http-header" href="#sec-session-challenge-header" id="ref-for-sec-session-challenge-header①">Sec-Session-Challenge</a></code>` is represented as a Structured Field.<a data-link-type="biblio" href="#biblio-rfc8941" title="Structured Field Values for HTTP">[RFC8941]</a> 
    <p>In this representation, a challenge is represented by a string.</p>
    <p>Challenges MAY have a Parameter named <code>"id"</code>, whose value MUST be a String
 representing a <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier③">session identifier</a>. Any other
@@ -1206,7 +1208,7 @@ parameters SHOULD be ignored.</p>
 be signed with a new challenge before a session id has been assigned. In this
 case the session ID is optional.</p>
    <div class="example" id="sec-session-challenge-example">
-    <a class="self-link" href="#sec-session-challenge-example"></a> Some examples of <span>`<code><a data-link-type="http-header" href="#sec-session-challenge-header" id="ref-for-sec-session-challenge-header②">Sec-Session-Challenge</a></code>`</span> from
+    <a class="self-link" href="#sec-session-challenge-example"></a> Some examples of `<code><a data-link-type="http-header" href="#sec-session-challenge-header" id="ref-for-sec-session-challenge-header②">Sec-Session-Challenge</a></code>` from
   https://example.com/login.html: 
 <pre class="language-html highlight">HTTP/1.1 401 OK
 Sec-Session-Challenge: "new challenge"
@@ -1286,7 +1288,8 @@ value will be true.</p>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean③">boolean</a> describing the wanted session behavior during a session
 refresh. If this value is true all requests related to this session will be
 deferred while the session is refreshed. If instead the value is false every
-request will instead be sent as normal, but with a <span>`<code><a data-link-type="http-header" href="#sec-session-response-header" id="ref-for-sec-session-response-header①">Sec-Session-Response</a></code>`</span> header containing the <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof⑧">DBSC proof</a>.
+request will instead be sent as normal, but with a `<code><a data-link-type="http-header" href="#sec-session-response-header" id="ref-for-sec-session-response-header①">Sec-Session-Response</a></code>`
+header containing the <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof⑧">DBSC proof</a>.
 This key is OPTIONAL, and if not present a value of true is default.</p>
    </dl>
    <div class="example" id="sec-session-instruction-example">
@@ -1356,11 +1359,13 @@ value MUST be a number containing a NumericDate value.</p>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②①">string</a> defining a JWK as specified in [rfc7517].</p>
    </dl>
-   <p>In addition the following claims MUST be present if present in <span>`<code><a data-link-type="http-header" href="#sec-session-registration-header" id="ref-for-sec-session-registration-header④">Sec-Session-Registration</a></code>`</span>:</p>
+   <p>In addition the following claims MUST be present if present in
+`<code><a data-link-type="http-header" href="#sec-session-registration-header" id="ref-for-sec-session-registration-header④">Sec-Session-Registration</a></code>`:</p>
    <dl>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="DBSC proof" data-dfn-type="dfn" data-noexport id="dbsc-proof-authorization">authorization</dfn>
     <dd data-md>
-     <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②②">string</a>, direct copy of the string from <span>`<code><a data-link-type="http-header" href="#sec-session-registration-header" id="ref-for-sec-session-registration-header⑤">Sec-Session-Registration</a></code>`</span>, if set there. Note that this string is
+     <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②②">string</a>, direct copy of the string from
+`<code><a data-link-type="http-header" href="#sec-session-registration-header" id="ref-for-sec-session-registration-header⑤">Sec-Session-Registration</a></code>`, if set there. Note that this string is
 OPTIONAL to include in the header, but if it is present it is
 MANDATORY for clients to add the claim in the <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof①①">DBSC proof</a>.</p>
    </dl>
