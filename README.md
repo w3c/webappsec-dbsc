@@ -42,7 +42,7 @@ This is the repository for Device Bound Session Credentials. You're welcome to
 ## Introduction
 Device Bound Session Credentials (DBSC) aims to reduce account hijacking caused by cookie theft. It does so by introducing a protocol and browser infrastructure to maintain and prove possession of a cryptographic key. The main challenge with cookies as an authentication mechanism is that they only lend themselves to bearer-token schemes. On desktop operating systems, application isolation is lacking and local malware can generally access anything that the browser itself can, and the browser must be able to access cookies. On the other hand, authentication with a private key allows for the use of system-level protection against key exfiltration.
 
-DBSC offers an API for websites to control the lifetime of such keys, behind the abstraction of a session, and a protocol for periodically and automatically proving possession of those keys to the website's servers.  There is a separate key for each session, and it should not be possible to detect two different session keys are from one device. One of the key goals is to enable drop-in integration with common types of current auth infrastructure. By device-binding the private key and with appropriate intervals of the proofs, the browser can limit malware's ability to offload its abuse off of the user's device, significantly increasing the chance that either the browser or server can detect and mitigate cookie theft.
+DBSC offers an API for websites to control the lifetime of such keys, behind the abstraction of a session, and a protocol for periodically and automatically proving possession of those keys to the website's servers.  There is a separate key for each session, and it should not be possible to detect if two different session keys are from one device. One of the key goals is to enable drop-in integration with common types of current auth infrastructure. By device-binding the private key and with appropriate intervals of the proofs, the browser can limit malware's ability to offload its abuse off of the user's device, significantly increasing the chance that either the browser or server can detect and mitigate cookie theft.
 
 DBSC is bound to a device with cryptographic keys that cannot be exported from the user’s device under normal circumstances, this is called device binding in the rest of this document. DBSC provides an API that servers can use to create a session bound to a device, and this session can periodically be refreshed with an optional cryptographic proof the session is still bound to the original device. At sign-in, the API informs the browser that a session starts, which triggers the key creation. It then instructs the browser that any time a request is made while that session is active, the browser should ensure the presence of certain cookies. If these cookies are not present, DBSC will hold network requests while querying the configured endpoint for updated cookies.
 
@@ -119,12 +119,12 @@ As long as that session is active, the browser performs the following refresh as
 1. If any requests were deferred in step 2, the browser now makes those requests including the updated set of cookies.
 1. The browser may choose to proactively refresh cookies that are about to expire, if it predicts the user may soon need them. This is purely a latency optimization, and not required.
 
-There is an option for the server to opt out of the browser defering requests. If so it will instead:
-1. Sign any requests that would be defered, use the most recent challange. If there is not one, use the current timestamp. The browser may cache these signatures.
+There is an option for the server to opt out of the browser deferring requests. If so it will instead:
+1. Sign any requests that would be deferred, use the most recent challenge. If there is not one, use the current timestamp. The browser may cache these signatures.
 1. The server can respond with 401 if it wants the request signed with a new challenge.
 1. The server can also serve challenges ahead of time on any response with the Sec-Session-Challenge header.
-1. Once the browser get an instruction to set the missing cookie it will stop signing requests.
-We do not reccomend this option for most deployments, but it is possibly for those that want to potentially save a network roundtrip in some circumstances.
+1. Once the browser gets an instruction to set the missing cookie it will stop signing requests.
+We do not recommend this option for most deployments, but it is possible for those that want to potentially save a network roundtrip in some circumstances.
 
 
 ### Start Session
@@ -138,7 +138,7 @@ The session start process is initiated by the server attaching a header with Sec
 HTTP/1.1 200 OK
 Sec-Session-Registration: (RS256 ES256);challenge="challenge_value";path="StartSession"
 ```
-This is a structured header with a list of token arguments representing the allowed algorithms (possibilities are ES256 and RS256). The list have multiple string attributes, "path" is required describing the endpoint to use, "challenge" is to provide a challenge value for the registration JWT. There is also an optional string attribute called authorization. There can be more than one registration on one response:
+This is a structured header with a list of token arguments representing the allowed algorithms (possibilities are ES256 and RS256). The list has multiple string attributes, "path" is required describing the endpoint to use, "challenge" is to provide a challenge value for the registration JWT. There is also an optional string attribute called authorization. There can be more than one registration on one response:
 ```http
 HTTP/1.1 200 OK
 Sec-Session-Registration: (ES256 RS256);path="path1";challenge="challenge_value";authorization="authcode"
@@ -342,7 +342,7 @@ When a session is ended for any reason, any inactive documents which had access 
 
 ## Future possibility: JavaScript API for StartSession
 
-The JavaScript API is not currently implemented, and not planned to be part of the iniital DBSC launch. The text below describes one possible future shape for that API.
+The JavaScript API is not currently implemented, and not planned to be part of the initial DBSC launch. The text below describes one possible future shape for that API.
 
 ![Start session diagram](dbsc_js_v2.svg)
 
