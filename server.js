@@ -128,7 +128,7 @@ class CookieInfo {
   }
 
   get attributes() {
-    let attributeStr = `'Domain=${this.domain}; Path=${this.path}; Max-Age=${this.maxAgeInSec}; SameSite=${this.sameSite};'`;
+    let attributeStr = `Domain=${this.domain}; Path=${this.path}; Max-Age=${this.maxAgeInSec}; SameSite=${this.sameSite};`;
     attributeStr += "Expires=" + this.expires.toUTCString() + ";";
     if (this.secure) {
       attributeStr += " Secure;";
