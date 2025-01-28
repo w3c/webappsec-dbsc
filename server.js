@@ -63,9 +63,6 @@ function getChallengeKey() {
   return Math.floor(Math.random() * g_challenges.length);
 }
 
-function onRefreshButtonClick(sessionId) {
-}
-
 class SessionInfo {
   constructor(scopeSpecification, cookies, authCode) {
     this.sessionId = getSessionId();
