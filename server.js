@@ -219,7 +219,6 @@ fastify.post("/internal/StartSessionForm", function (request, reply) {
 
 fastify.post("/internal/StartSession", function (request, reply) {
   console.log("/internal/StartSession");
-  console.log("Getting registration request");
   let sessionId = undefined;
   // TODO: need to check the session id is in request.body or header.
   const sessionIdCookie = request.cookies["dbsc-registration-sessions-id"];
@@ -299,26 +298,50 @@ fastify.post("/internal/StartSession", function (request, reply) {
 
 fastify.post("/internal/RefreshSession", function (request, reply) {
   console.log("/internal/RefreshSession");
-  console.log("Getting refresh request");
   let params = {};
   params.cookies = request.cookies;
 
   const session_id = request.headers['sec-session-id'];
-  if (session_id && g_sessions[session_id]) {
-    // Refresh all cookies for the session.
-    g_sessions[session_id].cookies.forEach(cookie => {
-      console.log("  name: " + cookie.name);
-      reply.setCookie(cookie.name, to_json(cookie.value), {
-        domain: cookie.domain,
-        path: cookie.path,
-        maxAge: cookie.maxAgeInSec,
-        expires: new Date(Date.now() + cookie.maxAgeInSec * 1000),
-        secure: cookie.secure,
-        sameSite: true,
-      });
-    });
+  if (!session_id || !g_sessions[session_id]) {
+    console.log("Invalid session");
+    return reply.code(401).send();
   }
+
   let sessionInfo = g_sessions[session_id];
+  let jwt = request.headers['sec-session-response'];
+  if (!jwt) {
+    sessionInfo.challengeKey = getChallengeKey();
+    console.log("Provided challenge");
+    return reply.code(401).header('Sec-Session-Challenge', `"${g_challenges[sessionInfo.challengeKey]}"`).send();
+  }
+
+  let decoded;
+  try {
+    let verifier = createVerifier({key: sessionInfo.pemKey});
+    decoded = verifier(jwt);
+  } catch (e) {
+    console.log("Failed to validate JWT");
+    console.log(e);
+    return reply.code(401).send();
+  }
+
+  if (g_challenges[sessionInfo.challengeKey] !== decoded.jti) {
+    console.log("Invalid challenge response");
+    return reply.code(401).send();
+  }
+
+  // Refresh all cookies for the session.
+  g_sessions[session_id].cookies.forEach(cookie => {
+    reply.setCookie(cookie.name, to_json(cookie.value), {
+      domain: cookie.domain,
+      path: cookie.path,
+      maxAge: cookie.maxAgeInSec,
+      expires: new Date(Date.now() + cookie.maxAgeInSec * 1000),
+      secure: cookie.secure,
+      sameSite: true,
+    });
+  });
+
   let responseStr = sessionInfo.getStartSessionResponseStr();
 
   // TODO: Check this is the correct response, and maybe an example where it is changing
