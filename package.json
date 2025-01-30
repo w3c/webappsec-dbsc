@@ -12,9 +12,10 @@
     "@fastify/static": "^6.10.2",
     "@fastify/view": "^8.0.0",
     "dotenv": "^16.4.5",
+    "fast-jwt": "^5.0.5",
     "fastify": "^4.21.0",
     "handlebars": "^4.7.8",
-    "jwt-decode": "^4.0.0"
+    "jwk-to-pem": "^2.0.7"
   },
   "engines": {
     "node": "16.x"

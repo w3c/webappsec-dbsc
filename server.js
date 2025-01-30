@@ -1,6 +1,7 @@
 const { get } = require("http");
 const { from_json, to_json } = require("./cookify");
-const { jwtDecode } = require("jwt-decode");
+const { createDecoder, createVerifier } = require("fast-jwt");
+const jwkToPem = require('jwk-to-pem');
 
 const path = require("path");
 const url = require("url");
@@ -227,26 +228,46 @@ fastify.post("/internal/StartSession", function (request, reply) {
   }
   if (!sessionId) {
     // Bad Request error.
+    console.log("No session id");
     return reply.code(400).send();
   }
   if (!g_pending_sessions[sessionId]) {
     // Unauthorized error.
+    console.log("Unregistered session");
     return reply.code(401).send();
   }
   let sessionInfo = g_pending_sessions[sessionId];
   let reg_response = request.headers["sec-session-response"];
   if (!reg_response) {
     // Bad Request error.
+    console.log("No sec-session-response");
     return reply.code(400).send();
   }
 
-  let decodedObj = jwtDecode(reg_response);
+  let decoded;
+  try {
+    const decoder = createDecoder();
+    const payload = decoder(reg_response);
+    if (!payload.key) {
+      return reply.code(401).send();
+    }
 
-  // need to check the AuthCode
-  if (decodedObj.authorization && sessionInfo.authCode !== decodedObj.authorization) {
-    // Unauthorized error.
+    sessionInfo.pemKey = jwkToPem(payload.key);
+    let verifier = createVerifier({key: sessionInfo.pemKey});
+    decoded = verifier(reg_response);
+  } catch (e) {
+    console.log("Failed to validate JWT");
+    console.log(e);
     return reply.code(401).send();
   }
+
+  // Check the AuthCode and challenge
+  if (sessionInfo.authCode !== decoded.authorization || g_challenges[sessionInfo.challengeKey] !== decoded.jti) {
+    // Unauthorized error.
+    console.log("Incorrect authorization or challenge");
+    return reply.code(401).send();
+  }
+
   // TODO: check challenge expiration
 
   g_sessions[sessionId] = sessionInfo;
