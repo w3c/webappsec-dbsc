@@ -1,6 +1,7 @@
 const { get } = require("http");
 const { from_json, to_json } = require("./cookify");
-const { jwtDecode } = require("jwt-decode");
+const { createDecoder, createVerifier } = require("fast-jwt");
+const jwkToPem = require('jwk-to-pem');
 
 const path = require("path");
 const url = require("url");
@@ -218,7 +219,6 @@ fastify.post("/internal/StartSessionForm", function (request, reply) {
 
 fastify.post("/internal/StartSession", function (request, reply) {
   console.log("/internal/StartSession");
-  console.log("Getting registration request");
   let sessionId = undefined;
   // TODO: need to check the session id is in request.body or header.
   const sessionIdCookie = request.cookies["dbsc-registration-sessions-id"];
@@ -227,26 +227,46 @@ fastify.post("/internal/StartSession", function (request, reply) {
   }
   if (!sessionId) {
     // Bad Request error.
+    console.log("No session id");
     return reply.code(400).send();
   }
   if (!g_pending_sessions[sessionId]) {
     // Unauthorized error.
+    console.log("Unregistered session");
     return reply.code(401).send();
   }
   let sessionInfo = g_pending_sessions[sessionId];
   let reg_response = request.headers["sec-session-response"];
   if (!reg_response) {
     // Bad Request error.
+    console.log("No sec-session-response");
     return reply.code(400).send();
   }
 
-  let decodedObj = jwtDecode(reg_response);
+  let decoded;
+  try {
+    const decoder = createDecoder();
+    const payload = decoder(reg_response);
+    if (!payload.key) {
+      return reply.code(401).send();
+    }
 
-  // need to check the AuthCode
-  if (decodedObj.authorization && sessionInfo.authCode !== decodedObj.authorization) {
-    // Unauthorized error.
+    sessionInfo.pemKey = jwkToPem(payload.key);
+    let verifier = createVerifier({key: sessionInfo.pemKey});
+    decoded = verifier(reg_response);
+  } catch (e) {
+    console.log("Failed to validate JWT");
+    console.log(e);
     return reply.code(401).send();
   }
+
+  // Check the AuthCode and challenge
+  if (sessionInfo.authCode !== decoded.authorization || g_challenges[sessionInfo.challengeKey] !== decoded.jti) {
+    // Unauthorized error.
+    console.log("Incorrect authorization or challenge");
+    return reply.code(401).send();
+  }
+
   // TODO: check challenge expiration
 
   g_sessions[sessionId] = sessionInfo;
@@ -278,26 +298,50 @@ fastify.post("/internal/StartSession", function (request, reply) {
 
 fastify.post("/internal/RefreshSession", function (request, reply) {
   console.log("/internal/RefreshSession");
-  console.log("Getting refresh request");
   let params = {};
   params.cookies = request.cookies;
 
   const session_id = request.headers['sec-session-id'];
-  if (session_id && g_sessions[session_id]) {
-    // Refresh all cookies for the session.
-    g_sessions[session_id].cookies.forEach(cookie => {
-      console.log("  name: " + cookie.name);
-      reply.setCookie(cookie.name, to_json(cookie.value), {
-        domain: cookie.domain,
-        path: cookie.path,
-        maxAge: cookie.maxAgeInSec,
-        expires: new Date(Date.now() + cookie.maxAgeInSec * 1000),
-        secure: cookie.secure,
-        sameSite: true,
-      });
-    });
+  if (!session_id || !g_sessions[session_id]) {
+    console.log("Invalid session");
+    return reply.code(401).send();
   }
+
   let sessionInfo = g_sessions[session_id];
+  let jwt = request.headers['sec-session-response'];
+  if (!jwt) {
+    sessionInfo.challengeKey = getChallengeKey();
+    console.log("Provided challenge");
+    return reply.code(401).header('Sec-Session-Challenge', `"${g_challenges[sessionInfo.challengeKey]}"`).send();
+  }
+
+  let decoded;
+  try {
+    let verifier = createVerifier({key: sessionInfo.pemKey});
+    decoded = verifier(jwt);
+  } catch (e) {
+    console.log("Failed to validate JWT");
+    console.log(e);
+    return reply.code(401).send();
+  }
+
+  if (g_challenges[sessionInfo.challengeKey] !== decoded.jti) {
+    console.log("Invalid challenge response");
+    return reply.code(401).send();
+  }
+
+  // Refresh all cookies for the session.
+  g_sessions[session_id].cookies.forEach(cookie => {
+    reply.setCookie(cookie.name, to_json(cookie.value), {
+      domain: cookie.domain,
+      path: cookie.path,
+      maxAge: cookie.maxAgeInSec,
+      expires: new Date(Date.now() + cookie.maxAgeInSec * 1000),
+      secure: cookie.secure,
+      sameSite: true,
+    });
+  });
+
   let responseStr = sessionInfo.getStartSessionResponseStr();
 
   // TODO: Check this is the correct response, and maybe an example where it is changing
