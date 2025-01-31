@@ -95,7 +95,7 @@ There are a few obvious considerations to ensure we achieve that goal:
 - Implementing this API should not meaningfully increase the entropy of heuristic device fingerprinting signals. (For example, it should not leak any stable TPM-based device identifier.)
 - This API—which allows background "pings" to the refresh endpoint when the user is not directly active—must not enable long-term tracking of a user when they have navigated away from the connected site.
 - Each session has a separate new key created, and it should not be possible to detect that different sessions are from the same device.
-- This API will only be applied in Secure contexts, mandating that the exchange of key material with remote servers occurs over HTTPS.
+- Registration and refresh will only be performed over a secure connection (or with localhost for testing).
 
 ### Enterprise support
 
