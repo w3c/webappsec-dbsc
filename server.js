@@ -274,11 +274,12 @@ fastify.post("/internal/StartSession", function (request, reply) {
 
   // Set all cookies for the session.
   sessionInfo.cookies.forEach(cookie => {
+    cookie.expires = new Date(Date.now() + cookie.maxAgeInSec * 1000);
     reply.setCookie(cookie.name, to_json(cookie.value), {
       domain: cookie.domain,
       path: cookie.path,
       maxAge: cookie.maxAgeInSec,
-      expires: new Date(Date.now() + cookie.maxAgeInSec * 1000),
+      expires: cookie.expires,
       secure: cookie.secure,
       sameSite: true,
     });
@@ -332,11 +333,12 @@ fastify.post("/internal/RefreshSession", function (request, reply) {
 
   // Refresh all cookies for the session.
   g_sessions[session_id].cookies.forEach(cookie => {
+    cookie.expires = new Date(Date.now() + cookie.maxAgeInSec * 1000);
     reply.setCookie(cookie.name, to_json(cookie.value), {
       domain: cookie.domain,
       path: cookie.path,
       maxAge: cookie.maxAgeInSec,
-      expires: new Date(Date.now() + cookie.maxAgeInSec * 1000),
+      expires: cookie.expires,
       secure: cookie.secure,
       sameSite: true,
     });
