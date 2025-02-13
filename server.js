@@ -29,7 +29,7 @@ const fastify = require("fastify")({
 require('dotenv').config();
 // Please set up server port and host, for example "127.0.0.1" for local testing.
 let g_listening_host = process.env.DBSC_HOST ? process.env.DBSC_HOST : "0.0.0.0";
-let g_listening_port = process.env.DBSC_PORT ? process.env.DBSC_PORT : 0;
+let g_listening_port = process.env.DBSC_PORT ? process.env.DBSC_PORT : 3000;
 
 let g_sessions = {};
 let g_default_cookie_age_sec = 10*60;
