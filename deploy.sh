@@ -9,9 +9,10 @@ set -e
 # One time setup:
 
 # This requires you to have setup an upstream which points to
-# the URL fetched from the Glitch UI. You can create one with:
+# the URL fetched from the Glitch UI (Tools -> Import / Export).
+# You can create the upstream with:
 #   git remote add <remote name> $GLITCH_URL
-#   git pull <remote name>
+#   git fetch <remote name>
 # It is recommended to have one upstream called "glitch" for the
 # prototype server, https://glitch.com/edit/#!/dbsc-prototype-server,
 # and one for a personal remix of that project you can use for staging.
