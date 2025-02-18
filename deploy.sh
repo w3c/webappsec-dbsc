@@ -24,7 +24,7 @@ set -e
 # Develop your code on that branch
 # Test with:
 #   ./deploy.sh <personal remix> <branch name>
-# Submit "refresh" into the personal reminx Glitch UI Terminal after
+# Submit "refresh" into your personal remix Glitch UI Terminal after
 # each deploy to restart the server.
 # When satisfied, push this branch and create a pull request:
 #   git push -u origin <branch name>
