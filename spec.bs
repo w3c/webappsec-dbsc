@@ -3,13 +3,13 @@ Title: Device Bound Session Credentials
 Shortname: dbsc
 Level: 1
 Indent: 2
-Status: CG-DRAFT
-Group: WICG
-URL: https://w3c.github.io/webappsec-dbsc/
+Status: ED
+Group: webappsec
+ED: https://w3c.github.io/webappsec-dbsc/
 Editor: Kristian Monsen 76841, Google, kristianm@google.com
 Editor: Daniel Rubery, Google, drubery@google.com
 Abstract: The Device Bound Sessions Credentials (DBSC) aims to prevent hijacking via cookie theft by building a protocol and infrastructure that allows a user agent to assert possession of a securely-stored private key. DBSC is a Web API and a protocol between user agents and servers to achieve this binding.
-Repository: https://github.com/WICG/dbsc/
+Repository: https://github.com/w3c/webappsec-dbsc/
 Markup Shorthands: css no, markdown yes
 Mailing List:
 </pre>
