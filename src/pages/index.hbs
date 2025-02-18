@@ -60,7 +60,7 @@
                   <th>CookieName</th>
                   <th>CookieValue</th>
                   <th>CookieExpireTime</th>
-                  <th>CookieExpired</th>
+                  <th>CookieEverRefreshed</th>
                   <th>DeleteSession</th>
                 </tr>
                 {{#each sessions as |session|}}
@@ -69,7 +69,7 @@
                     <td>{{session.cookies.[0].name}}</td>
                     <td>{{session.cookies.[0].value}}</td>
                     <td>{{session.cookies.[0].expires}}</td>
-                    <td>{{isExpired session.cookies.[0].expires}}</td>
+                    <td>{{hasCookieEverRefreshed session.cookies.[0].expires session.cookies.[0].expiresAtStartSession}}</td>
                     <td><button
                         type="submit"
                         formmethod="post"

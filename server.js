@@ -45,8 +45,8 @@ let g_session_registration_timeout_sec = 60;
 let g_pending_sessions = {};
 let g_session_id = 1;
 
-handlebars.registerHelper('isExpired', function (expires) {
-  return expires < Date.now();
+handlebars.registerHelper('hasCookieEverRefreshed', function (expires, expiresAtStartSession) {
+  return expires > expiresAtStartSession;
 })
 
 setInterval(() => {
@@ -125,7 +125,7 @@ class CookieInfo {
     this.path = "/";
     this.secure = true;
     this.sameSite = "Strict";
-    this.expires = new Date(Date.now() + this.maxAgeInSec * 1000);
+    // expires and expiresAtStartSession are unset until StartSession.
   }
 
   get attributes() {
@@ -274,11 +274,13 @@ fastify.post("/internal/StartSession", function (request, reply) {
 
   // Set all cookies for the session.
   sessionInfo.cookies.forEach(cookie => {
+    cookie.expires = new Date(Date.now() + cookie.maxAgeInSec * 1000);
+    cookie.expiresAtStartSession = cookie.expires;
     reply.setCookie(cookie.name, to_json(cookie.value), {
       domain: cookie.domain,
       path: cookie.path,
       maxAge: cookie.maxAgeInSec,
-      expires: new Date(Date.now() + cookie.maxAgeInSec * 1000),
+      expires: cookie.expires,
       secure: cookie.secure,
       sameSite: true,
     });
@@ -332,11 +334,12 @@ fastify.post("/internal/RefreshSession", function (request, reply) {
 
   // Refresh all cookies for the session.
   g_sessions[session_id].cookies.forEach(cookie => {
+    cookie.expires = new Date(Date.now() + cookie.maxAgeInSec * 1000);
     reply.setCookie(cookie.name, to_json(cookie.value), {
       domain: cookie.domain,
       path: cookie.path,
       maxAge: cookie.maxAgeInSec,
-      expires: new Date(Date.now() + cookie.maxAgeInSec * 1000),
+      expires: cookie.expires,
       secure: cookie.secure,
       sameSite: true,
     });
