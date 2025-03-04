@@ -97,6 +97,12 @@ There are a few obvious considerations to ensure we achieve that goal:
 - Each session has a separate new key created, and it should not be possible to detect that different sessions are from the same device.
 - Registration and refresh will only be performed over a secure connection (or with localhost for testing).
 
+To achieve these goals, we add the following constraints to DBSC requests:
+- Registration and refresh are made in the context of the request that triggered them. For registration, this is the request serving the Sec-Session-Registration header. For refresh, this is the request deferred due to missing cookies.
+- Cookie refresh only occurs if the cookie is accessible. DBSC will not attempt to refresh a third-party cookie if third-party cookies are blocked.
+- Refresh from cross-site contexts will only occur if the Storage Access API has granted permission to access first-party state. This mitigates a timing side-channel on recent interactions with a site and is consistent with unpartitioned DBSC sessions being a kind of first-party state.
+- Proactive refreshes must only occur if any tab has a page from the site loaded.
+
 ### Enterprise support
 
 While DBSC addresses a general problem of session hijacking, and can be applicable to any _browser_ consumer, it is possible to expand this protocol to better support enterprise use cases. By adding specifics to key generation, we can provide a more secure environment for enterprise users. This is the goal of DBSC(E), which is an extension to DBSC. The high-level design of DBSC(E) is described in the [DBSC(E) Overview](./DBSCE/Overview.md).
