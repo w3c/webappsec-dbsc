@@ -202,9 +202,9 @@ Set-Cookie: auth_cookie=abcdef0123; Domain=example.com; Max-Age=600; Secure; Htt
 
   "scope": {
     // Origin-scoped by default (i.e. https://example.com)
+    "origin": "https://example.com",
     // Specifies to include https://*.example.com except excluded subdomains.
     // This can only be true if the origin's host is the root eTLD+1.
-    "origin": "example.com",
     "include_site": true,
     "defer_requests": true, // optional and true by default
 
