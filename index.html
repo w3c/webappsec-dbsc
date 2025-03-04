@@ -5,9 +5,9 @@
   <title>Device Bound Session Credentials</title>
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version f5998b114, updated Tue Feb 18 08:22:15 2025 -0800" name="generator">
+  <meta content="Bikeshed version 60c422380, updated Thu Feb 20 19:11:22 2025 -0800" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="0edf8f74d287c1b02b895b5b426381a826f2b711" name="revision">
+  <meta content="66d811b6783b629bdfd8c228cd2b7e811408b9e1" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -733,7 +733,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2025-02-18">18 February 2025</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2025-03-04">4 March 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2393,7 +2393,12 @@ function hideRefHint(refHint) {
 function showRefHint(link) {
     if(link.classList.contains("dfn-link")) return;
     const url = link.getAttribute("href");
-    const ref = refsData[url];
+    const refHintKey = link.getAttribute("data-refhint-key");
+    let key = url;
+    if(refHintKey) {
+        key = refHintKey + "_" + url;
+    }
+    const ref = refsData[key];
     if(!ref) return;
 
     hideAllRefHints(); // Only display one at this time.
