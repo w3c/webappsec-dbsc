@@ -90,7 +90,7 @@ different situations. Some of the use cases of DBSC are:
   transaction is legitimate.
 </div>
 
-# Security Considerations # {#privacy}
+# Security Considerations # {#security-considerations}
 The goal of DBSC is to reduce session theft by offering an alternative to
 long-lived cookie bearer tokens, that allows session authentication that is
 bound to the user's device. This makes the internet safer for users in that it
@@ -102,6 +102,9 @@ term.
 As long as the session is valid a host can know with cryptographic certainty
 that it is on the same device as the session was originally bound to if the
 session was registered to a secure device.
+
+In order to ensure this, session private keys should be stored in a way
+that cannot be exfiltrated by locally running malware, whenever possible.
 
 ## Non-goals ## {#non-goals}
 DBSC will not prevent temporary access to the browser session while the attacker
@@ -154,17 +157,9 @@ If third party cookies are enabled it is possible for an attacker to leak
 whether or not a user is authenticated by measuring how long the request takes
 as the refresh is quite slow, partially due to the latency of TPM operations. 
 
-This only applies if the site to be leaked about has enabled third party
-cookies, if an attacker does have third-party cookie access there are often
-attackes and leaks.
-
-This is not a very reliable leak as the user needs to have a session on the site
-that is currently out of date and would need to be refreshed. The leak cannot be
-trivially repeated as the first request will renew the session that would likely
-not expire again for some time.
-
-It is important websites think about this privacy leak before adopting DBSC,
-even more so if the plan is to use sessions with third party cookies.
+This is mitigated by requiring user opt-in through the Storage Access
+API. The victim site must request access to its first-party state in
+order for DBSC to apply within the cross-site context.
 
 # Alternatives considered # {#alternatives}
 ## WebAuthn and silent mediation ## {#alternatives-webauthn}
@@ -206,19 +201,25 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
   :: a [=string=] that is to be used as the next challenge for this session
   : [=session scope=]
   :: a [=struct=] defining which [=url=]'s' are in scope for this session
-  : [=session credential=]
-  :: a [=list=] of [=session credential=] used by the session
+  : [=session credentials=]
+  :: a [=list=] of [=session credential=]s used by the session
+  : <dfn>expiration timestamp</dfn>
+  :: a [=moment=] when this session should be removed.
+  : <dfn>session key</dfn>
+  :: a key pair used by the session. The private key
+    should be stored in a secure manner, see {#security-considerations}.
 </dl>
 
 ## Session scope ## {#framework-scope}
 The <dfn>session scope</dfn> is a [=struct=] with the following
 [=struct/items=]:
 <dl dfn-for="session scope">
+  : <dfn>origin</dfn>
+  :: The [=origin=] this session was registered for.
   : <dfn>include site</dfn>
-  :: a [=boolean=] that indicates if all subdomains of are included by
-    default.
-  : [=scope specification=]
-  :: a [=list=] of [=scope specification=] used by the session
+  :: a [=boolean=] indicating if the session applies to an entire site or just an origin.
+  : [=scope specifications=]
+  :: a [=list=] of [=scope specification=]s used by the session
 </dl>
 
 ## Scope specification ## {#framework-scope-specification}
@@ -228,8 +229,10 @@ The <dfn>scope specification</dfn> is a [=struct=] with the following
   : <dfn>type</dfn>
   :: a [=string=] to be either "include" or "exclude", defining if the item
     defined in this struct should be added or removed from the scope
+  : <dfn>host</dfn>
+  :: a [=string=] defining the domain or domain pattern that must match for this scope specification to apply.
   : <dfn>path</dfn>
-  :: a [=string=] that defines the path part of this scope item
+  :: a [=string=] that defines the path part of this scope specification
 </dl>
 
 ## Session credential ## {#framework-session-credential}
@@ -261,7 +264,51 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. Return |domain sessions|[|session identifier|]
 </div>
 
-## Process challenge ## {#algo-process-challenge}
+## Identify if a URL is in scope of a session ## {#algo-url-in-scope}
+<div class="algorithm" data-algorithm="url-in-scope">
+  This algorithm describes how to determine if a URL is in scope of a
+  device bound session. Given a [=url=] and [=session scope=], returns
+  true if the [=url=] is in scope, and false otherwise.
+
+  1. If [=url=] is not same origin with the [=session scope=] origin and
+     the origin is not the eTLD+1, return false.
+  1. If the [=session scope=] origin is the eTLD+1 and the [=url=] is
+     not same-site with the eTLD+1, return false.
+  1. [=list/for each=] |scope specification| in the |session scope|
+    1. If the host and path of [=url=] match the |scope specification|,
+       return the |scope specification|'s type.
+  1. If the [=url=] matches the |session|'s refresh URL, return false.
+  
+  1. If [=session scope=] sets |include site|, return whether [=url=] is
+     same-site with the scope origin.
+  1. Return whether [=url=] is same origin with the scope origin.
+</div>
+
+## Identify session needing refresh ## {#algo-identify-session-needing-refresh}
+<div class="algorithm" data-algorithm="identify-session-needing-refresh">
+  Given a [=request=] (|request|) and [=sessions by registrable
+  domain=], this algorithm describes how to identify which session, if
+  any, should block |request| from proceeding.
+
+  1. Let |site| be the [=host/registrable domain=] of the request's URL.
+  1. Let |domain sessions| be [=sessions by registrable domain=][site] as [=/session by id=]
+  1. [=list/For each=] |session| of |domain sessions|
+    1. The browser MAY skip |session| in order to prevent denial of
+       service for the user or site. For example if |session| is
+       requesting excessive TPM operations (harming the user) or the
+       refresh endpoint has recently been unreachable (denial of service
+       risk for the site).
+    1. Run the steps in [[#algo-url-in-scope]] on the |request|'s URL
+       and |session|'s scope.
+    1. If the result does not indicate the request is in scope, skip |session|
+       and continue the loop.
+    1. If any of |session|'s credentials would be included on |request|,
+       with the exception of Max-Age and Expires attributes, but are not
+       present on |request|, return |session|.     
+  1. If no session has been identified, return null.
+</div>
+
+## Cache challenge ## {#algo-process-challenge}
 <div class="algorithm" data-algorithm="process-challenge">
   This algorithm describes how to
   <dfn export dfn-for="algorithms">process a challenge</dfn> received in an HTTP
@@ -269,8 +316,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
 
   Given a [=response=] (|response|) and a [=sessions by registrable domain=], this
   algorithm updates the [=device bound session/cached challenge=] for a
-  [=device bound session=], or immediately resends the [=DBSC proof=] signed with
-  the new challenge if the [=response/status=] is 401.
+  [=device bound session=].
 
   1. Let |header name| be "<code>Sec-Session-Challenge</code>".
   1. Let |challenge list| be the result of executing <a>get a structured
@@ -284,8 +330,6 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. Let |session id| be null.
     1. If params["id"] exists and is a <a>sf-string</a>, Set |session id| to
       params["id"].
-    1. If [=response/status=] is 401, resend this request as is with updated
-      |challenge| in [=DBSC proof=] and [=iteration/continue=].
     1. If |session id| is null, [=iteration/continue=].
     1. Identify session as described in [=identify a session=] given
       |response| and |session id| and store as |session object|.
@@ -294,10 +338,51 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
       [=DBSC proof=] is to be sent from this [=device bound session=].
 </div>
 
-## Session refresh ## {#algo-session-refresh}
-To <dfn export id="refresh-session">Refreshing an existing session</dfn>
-
 ## Send request ## {#algo-session-request}
+<div class="algorithm" data-algorithm="session-request">
+  This algorithm describes how to <dfn export dfn-for="algorithms">send
+  a request</dfn> for a device bound session registration or refresh. It
+  takes as input an |originating request|, |key pair|, |destination|, and
+  optional |session id|, |challenge|, and |authorization|.
+
+  1. Let |signed challenge| be null. If |challenge| is non-null, sign it
+     with |key pair| and store the result in |signed challenge|.
+  1. Create a |request| for use in the HTTP-network-or-cache fetch algorithm
+     from the Fetch specification.
+  1. Set |request|'s method to "POST".
+  1. Set |request|'s URL to |destination|.
+  1. If |signed challenge| is non-null, add header "Sec-Session-Response" with
+     value |signed challenge| to |request|.
+  1. Set |request|'s initiator to |originating request|'s initiator.
+  1. Run HTTP-network-or-Dcache fetch on |request|.
+  1. If the result is a 401 and has a "Sec-Session-Challenge" header, start
+     this algorithm over with a new challenge value.
+  1. If the result is a redirect, and the destination does not have the
+     HTTPS scheme and is not localhost, cancel the request.
+  1. Parse the response body according to {#format-session-instructions}.
+  1. If the response contains the key "continue", with value "false":
+    1. Delete the session with |destination|'s site and identifier the value of "session_identifier".
+    1. Return from this algorithm.
+  1. Otherwise, perform the following validations, returning if any fail:
+    1. "session_identifier" must be non-empty.
+    1. "refresh_url" must be non-empty.
+    1. Let |origin| be "scope.origin", if present, or the origin of |destination| if not.
+    1. |origin| must be a valid non-opaque origin.
+    1. |origin| must be same-site with |destination|.
+    1. Let |refresh url| be the result of resolving |destination| with the value of "refresh_url".
+    1. |refresh url| must have scheme HTTPS or be localhost.
+    1. |refresh url| must be same-site with |destination|.
+  1. If the input |session id| is present, delete the session with site
+     |destination|'s site and identifier |session id|.
+  1. Create a new session with:
+    1. [=session identifier=] the value of "session_identifier".
+    1. [=refresh url=] set to |refresh url|.
+    1. [=defer requests=] set to true.
+    1. [=session scope=] a new scope with [=origin=] |origin|, [=include
+       site=] the value of "scope.include_site", and [=scope
+       specifications=] the value of "scope.scope_specification".
+    1. [=session credentials=] the value of "credentials".
+    1. [=session key=] a newly-generated key pair.
 
 ## Create session ## {#algo-create-session}
 To <dfn export id="create-session">Create a new session</dfn>, start with
@@ -327,15 +412,12 @@ parsing the registration structured header defined in
       Set |challenge| to |params|["challenge"].
     1. If |params|["authorization"] exists and is a string Set |authorization|
       to |params|["authorization"].
-    1. Call [[#algo-session-request]] with |algorithm list|, |path|,
-      |challenge| and |authorization| parameters.
+    1. Create a |key pair| for |algorithm list|.
+    1. Let |endpoint| be the result of resolving |path| relative to the
+       |response|'s URL.
+    1. Call [[#algo-session-request]] with |key pair|, |endpoint|, null
+       |session id|, |challenge| and |authorization|.
 </div>
-
-## Closing session ## {#algo-close-session}
-To <dfn export id="close-session">close a session</dfn>
-
-## Fetch Integration ## {#algo-fetch-integration}
-To <dfn export id="fetch-integration">fetch Integration</dfn>
 
 # DBSC Formats # {#format}
 ## \``Sec-Session-Registration`\` HTTP header field ## {#header-sec-session-registration}
@@ -627,11 +709,22 @@ In addition the following claims MUST be present if present in
 </div>
 
 # Changes to other specifications # {#changes-to-other-specifications}
+
 ## Changes to the Fetch specification ## {#changes-to-fetch}
---> Check if session should be refreshed before sending request
-  - Alternatively add proof with Sec-Session-Response
-## Changes to the HTML specification ## {#changes-to-html}
---> Clear Site Data: Clear the session if this is received
+
+This specification requires an update the HTTP-network-or-cache fetch
+algorithm. Between steps 10.1 and 10.2 run
+[[#algo-identify-session-needing-refresh]]. If the result is non-null,
+run [[#algo-session-request]] with the returned |session|'s key pair,
+refresh URL, id, cached challenge, and an empty authorization.
+
+## Changes to the Clear Site Data specification ## {#changes-to-clear-site-data}
+
+This specification requires that the Clear Site Data specification
+sections 4.2.5 "Clear DOM-accessible storage for origin" clear all
+device bound sessions whose scope matches origin. It also requires an
+update to 4.2.4 to clear device bound sessions for the site matching the
+registered domain.
 
 # IANA Considerations # {#iana-considerations}
 
