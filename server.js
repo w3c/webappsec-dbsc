@@ -93,7 +93,7 @@ class SessionInfo {
       "session_identifier": _obj.sessionId.toString(),
       "refresh_url": _obj.refreshUrl,
       "scope": {
-        "origin": g_listening_host,
+        "origin": "https://" + g_listening_host,
         "include_site": true,
         "defer_requests": true,
         "scope_specification" : this.scopeSpecification
