@@ -191,6 +191,11 @@ The JWT proof is signed with the newly created private key, and needs to contain
 }
 ```
 
+Note that the certificate chain for the TPM is never sent to the
+server. This would allow very precise device fingerprinting, contrary to
+our privacy goals. Servers will only be able to confirm that the browser
+still has access to the corresponding private key.
+
 #### Session Registration instructions JSON
 If the request is properly authorized, the server establishes whatever state represents the session server-side, and returns the following response.
 
