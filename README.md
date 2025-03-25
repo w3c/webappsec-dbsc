@@ -115,7 +115,7 @@ DBSC(E) removes the vulnerability DBSC has, where a malware, if already present 
 The general flow of a secure session is as follows:
 1. The website requests that the browser start a new session, providing an HTTP endpoint to negotiate registration parameters.
 1. The browser creates a device-bound key pair, and calls the registration HTTP endpoint to set up the session and register the public key.
-1. The server responds with a session identifier, and instructions on how to maintain the session. This is a (possibly empty) list of cookie names that the browser is expected to ensure exist, and their associated scope (origins+path).
+1. The server responds with a session identifier, and instructions on how to maintain the session. This is a list of cookie names that the browser is expected to ensure exist, and their associated scope (origins+path).
 1. At a later time the session is closed by either the server requesting to close the session or the user clears the keys by clearing site data.
 
 As long as that session is active, the browser performs the following refresh as needed:
