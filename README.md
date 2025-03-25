@@ -342,7 +342,7 @@ In this case the browser should stop triggering any refreshes for this request, 
 #### Ending a session
 The session can end in several ways:
 - The server can end the session during a refresh by answering with {“continue”: false} during a refresh
-- The server can at any time send a header with Clear-Site-Data: "storage"
+- The server can at any time send a header with Clear-Site-Data: "storage" or Clear-Site-Data: "cookies"
 - The user can clear site data, which will locally clear cookies and any registered session keys for the site
 
 It is important that the user is always in control and can delete the session keys if wanted.
