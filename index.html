@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="e3547f4c47ba12f12a34f98b9d6892551227af40" name="revision">
+  <meta content="e8622bee444162f28e537ff64f4407244c337497" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -733,7 +733,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2025-03-24">24 March 2025</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2025-03-25">25 March 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1235,7 +1235,7 @@ params["id"].</p>
       <p>Create a new session with:</p>
       <ol>
        <li data-md>
-        <p><a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier③">session identifier</a> the value of "session_identifier".</p>
+        <p><a data-link-type="dfn" href="#session-instructions-session-identifier" id="ref-for-session-instructions-session-identifier">session identifier</a> the value of "session_identifier".</p>
        <li data-md>
         <p><a data-link-type="dfn" href="#device-bound-session-refresh-url" id="ref-for-device-bound-session-refresh-url">refresh url</a> set to <var>refresh url</var>.</p>
        <li data-md>
@@ -1357,7 +1357,7 @@ Its ABNF is: </p>
      The `<code><a data-link-type="http-header" href="#sec-session-challenge-header" id="ref-for-sec-session-challenge-header①">Sec-Session-Challenge</a></code>` is represented as a Structured Field.<a data-link-type="biblio" href="#biblio-rfc8941" title="Structured Field Values for HTTP">[RFC8941]</a> 
     <p>In this representation, a challenge is represented by a string.</p>
     <p>Challenges MAY have a Parameter named <code>"id"</code>, whose value MUST be a String
-representing a <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier④">session identifier</a>. Any other
+representing a <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier③">session identifier</a>. Any other
 parameters SHOULD be ignored.</p>
     <p class="note" role="note"><span class="marker">Note:</span> The server might need to use this header to request the <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof③">DBSC proof</a> to
 be signed with a new challenge before a session id has been assigned. In this
@@ -1418,9 +1418,9 @@ it MUST be in JSON format.
     <dl>
      <dt data-md><dfn class="dfn-paneled" data-dfn-for="session instructions" data-dfn-type="dfn" data-noexport id="session-instructions-session-identifier">session identifier</dfn>
      <dd data-md>
-      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①⑤">string</a> representing a <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier⑤">session identifier</a>.
+      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①⑤">string</a> representing a <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier④">session identifier</a>.
 If this <a data-link-type="dfn" href="#session-instructions" id="ref-for-session-instructions">session instructions</a> is sent during a refresh request this MUST be
-the <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier⑥">session identifier</a> for the current session. If
+the <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier⑤">session identifier</a> for the current session. If
 not these instructions SHOULD be ignored.
 If this <a data-link-type="dfn" href="#session-instructions" id="ref-for-session-instructions①">session instructions</a> is sent during a registration it MUST either
 be a unique iditifier for this <a data-link-type="dfn" href="https://url.spec.whatwg.org/#host-registrable-domain" id="ref-for-host-registrable-domain⑥">registrable domain</a>, or it will
@@ -2017,7 +2017,7 @@ let dfnPanelData = {
 "device-bound-session-defer-requests": {"dfnID":"device-bound-session-defer-requests","dfnText":"defer requests","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-defer-requests"}],"title":"6.5. Send request"}],"url":"#device-bound-session-defer-requests"},
 "device-bound-session-expiration-timestamp": {"dfnID":"device-bound-session-expiration-timestamp","dfnText":"expiration timestamp","external":false,"refSections":[],"url":"#device-bound-session-expiration-timestamp"},
 "device-bound-session-refresh-url": {"dfnID":"device-bound-session-refresh-url","dfnText":"refresh url","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-refresh-url"}],"title":"6.5. Send request"}],"url":"#device-bound-session-refresh-url"},
-"device-bound-session-session-identifier": {"dfnID":"device-bound-session-session-identifier","dfnText":"session identifier","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-session-identifier"}],"title":"5.2. Sessions by id"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2460"},{"id":"ref-for-device-bound-session-session-identifier\u2461"}],"title":"6.1. Identify session"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2462"}],"title":"6.5. Send request"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2463"}],"title":"7.2.1. Sec-Session-Challenge structured header serialization"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2464"},{"id":"ref-for-device-bound-session-session-identifier\u2465"}],"title":"7.5. DBSC Session Instruction Format"}],"url":"#device-bound-session-session-identifier"},
+"device-bound-session-session-identifier": {"dfnID":"device-bound-session-session-identifier","dfnText":"session identifier","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-session-identifier"}],"title":"5.2. Sessions by id"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2460"},{"id":"ref-for-device-bound-session-session-identifier\u2461"}],"title":"6.1. Identify session"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2462"}],"title":"7.2.1. Sec-Session-Challenge structured header serialization"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2463"},{"id":"ref-for-device-bound-session-session-identifier\u2464"}],"title":"7.5. DBSC Session Instruction Format"}],"url":"#device-bound-session-session-identifier"},
 "device-bound-session-session-key": {"dfnID":"device-bound-session-session-key","dfnText":"session key","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-session-key"}],"title":"6.5. Send request"}],"url":"#device-bound-session-session-key"},
 "e3201629": {"dfnID":"e3201629","dfnText":"response","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-response-response"}],"title":"6.4. Cache challenge"},{"refs":[{"id":"ref-for-concept-response-response\u2460"}],"title":"7.1. `Sec-Session-Registration` HTTP header field"},{"refs":[{"id":"ref-for-concept-response-response\u2461"}],"title":"7.2. `Sec-Session-Challenge` HTTP Header Field"}],"url":"https://fetch.spec.whatwg.org/#concept-response-response"},
 "e7aabcb5": {"dfnID":"e7aabcb5","dfnText":"sf-string","external":true,"refSections":[{"refs":[{"id":"ref-for-string\u2467"},{"id":"ref-for-string\u2468"}],"title":"6.4. Cache challenge"},{"refs":[{"id":"ref-for-string\u2460\u24ea"},{"id":"ref-for-string\u2460\u2460"}],"title":"6.6. Create session"},{"refs":[{"id":"ref-for-string\u2460\u2461"}],"title":"7.2. `Sec-Session-Challenge` HTTP Header Field"},{"refs":[{"id":"ref-for-string\u2460\u2462"}],"title":"7.3. Sec-Session-Response HTTP Header Field"},{"refs":[{"id":"ref-for-string\u2460\u2463"}],"title":"7.4. Sec-Session-Id HTTP Header Field"}],"url":"https://datatracker.ietf.org/doc/html/rfc8941#string"},
@@ -2039,7 +2039,7 @@ let dfnPanelData = {
 "session-instructions-continue": {"dfnID":"session-instructions-continue","dfnText":"continue","external":false,"refSections":[],"url":"#session-instructions-continue"},
 "session-instructions-defer_requests": {"dfnID":"session-instructions-defer_requests","dfnText":"defer_requests","external":false,"refSections":[],"url":"#session-instructions-defer_requests"},
 "session-instructions-refresh_url": {"dfnID":"session-instructions-refresh_url","dfnText":"refresh_url","external":false,"refSections":[],"url":"#session-instructions-refresh_url"},
-"session-instructions-session-identifier": {"dfnID":"session-instructions-session-identifier","dfnText":"session identifier","external":false,"refSections":[],"url":"#session-instructions-session-identifier"},
+"session-instructions-session-identifier": {"dfnID":"session-instructions-session-identifier","dfnText":"session identifier","external":false,"refSections":[{"refs":[{"id":"ref-for-session-instructions-session-identifier"}],"title":"6.5. Send request"}],"url":"#session-instructions-session-identifier"},
 "session-scope": {"dfnID":"session-scope","dfnText":"session scope","external":false,"refSections":[{"refs":[{"id":"ref-for-session-scope"}],"title":"5.3. Device bound session"},{"refs":[{"id":"ref-for-session-scope\u2460"},{"id":"ref-for-session-scope\u2461"},{"id":"ref-for-session-scope\u2462"},{"id":"ref-for-session-scope\u2463"}],"title":"6.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-session-scope\u2464"}],"title":"6.5. Send request"}],"url":"#session-scope"},
 "session-scope-include-site": {"dfnID":"session-scope-include-site","dfnText":"include site","external":false,"refSections":[{"refs":[{"id":"ref-for-session-scope-include-site"}],"title":"6.5. Send request"}],"url":"#session-scope-include-site"},
 "session-scope-origin": {"dfnID":"session-scope-origin","dfnText":"origin","external":false,"refSections":[],"url":"#session-scope-origin"},
@@ -2449,6 +2449,7 @@ let refsData = {
 "#session-by-id": {"displayText":"session by id","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"session by id","type":"dfn","url":"#session-by-id"},
 "#session-credential": {"displayText":"session credential","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"session credential","type":"dfn","url":"#session-credential"},
 "#session-instructions": {"displayText":"session instructions","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"session instructions","type":"dfn","url":"#session-instructions"},
+"#session-instructions-session-identifier": {"displayText":"session identifier","export":true,"for_":["session instructions"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"session identifier","type":"dfn","url":"#session-instructions-session-identifier"},
 "#session-scope": {"displayText":"session scope","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"session scope","type":"dfn","url":"#session-scope"},
 "#session-scope-include-site": {"displayText":"include site","export":true,"for_":["session scope"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"include site","type":"dfn","url":"#session-scope-include-site"},
 "#sessions-by-registrable-domain": {"displayText":"sessions by registrable domain","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"sessions by registrable domain","type":"dfn","url":"#sessions-by-registrable-domain"},
