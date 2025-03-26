@@ -217,7 +217,6 @@ Set-Cookie: auth_cookie=abcdef0123; Domain=example.com; Max-Age=600; Secure; Htt
     // Specifies to include https://*.example.com except excluded subdomains.
     // This can only be true if the origin's host is the root eTLD+1.
     "include_site": true,
-    "defer_requests": true, // optional and true by default
 
     "scope_specification" : [
       { "type": "include", "domain": "trusted.example.com", "path": "/only_trusted_path" },
