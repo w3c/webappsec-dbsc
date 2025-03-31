@@ -103,8 +103,9 @@ As long as the session is valid a host can know with cryptographic certainty
 that it is on the same device as the session was originally bound to if the
 session was registered to a secure device.
 
-In order to ensure this, session private keys should be stored in a way
-that cannot be exfiltrated by locally running malware, whenever possible.
+In order to ensure this, session private keys should be stored in a way that
+cannot be exfiltrated by locally running malware, whenever possible. If this is
+not possible, the browser should not create a device bound session.
 
 ## Non-goals ## {#non-goals}
 DBSC will not prevent temporary access to the browser session while the attacker
@@ -444,7 +445,9 @@ parsing the registration structured header defined in
       Set |challenge| to |params|["challenge"].
     1. If |params|["authorization"] exists and is a string Set |authorization|
       to |params|["authorization"].
-    1. Create a |key pair| for |algorithm list|.
+    1. Attempt to create a |key pair| for |algorithm list|. If this is not
+       possible, the user agent MAY simply ignore the request to create a
+       session.
     1. Let |endpoint| be the result of resolving |path| relative to the
        |response|'s URL.
     1. Call [[#algo-session-request]] with |key pair|, |endpoint|, null
