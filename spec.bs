@@ -29,7 +29,7 @@ spec:permissions; type:dfn; text:feature
 </pre>
 
 <pre class="anchors">
-spec: RFC8941;urlPrefix:https://datatracker.ietf.org/doc/html/rfc8941#;type:dfn
+spec: RFC9651;urlPrefix:https://datatracker.ietf.org/doc/html/rfc9651#;type:dfn
   text: sf-dictionary; url: dictionary
   text: sf-inner-list; url: inner-list
   text: sf-item; url: item
@@ -44,7 +44,7 @@ spec: RFC8941;urlPrefix:https://datatracker.ietf.org/doc/html/rfc8941#;type:dfn
 <em>This section is not normative.</em><br/>
 <em>Note this is a very early drafting for writing collaboration only</em>
 
-The web is built on a stateless protocol. To provide required functionality, Web
+The web is built on a stateless protocol. To provide required functionality, web
 applications store data locally on a user's computer. This is used for logged in
 user sessions that can last for a long time.
 
@@ -70,7 +70,7 @@ different situations. Some of the use cases of DBSC are:
 ### Signed in session ### {#example-signin}
 <div class="example" id="signin-example">
   A user logs in to his social account. To protect the user's private data the
-  site protects his logged in session wwith a DBSC session. If the user tries to
+  site protects his logged in session with a DBSC session. If the user tries to
   log in with the same cookie file on a different device, the site can detect and
   refuse this as an unauthorized user.
 </div>
@@ -161,9 +161,6 @@ This is mitigated by requiring user opt-in through the Storage Access
 API. The victim site must request access to its first-party state in
 order for DBSC to apply within the cross-site context.
 
-# Alternatives considered # {#alternatives}
-## WebAuthn and silent mediation ## {#alternatives-webauthn}
-
 # Framework # {#framework}
 This document uses ABNF grammar to specify syntax, as defined in [[!RFC5234]]
 and updated in [[!RFC7405]], along with the `#rule` extension defined in
@@ -191,8 +188,8 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
   : <dfn>session identifier</dfn>
   :: a [=string=] that is a unique identifier of a session on an
     [=host/registrable domain=]
-  : <dfn>refresh url</dfn>
-  :: a [=string=] that is representing the [=url=] to be used to refresh the
+  : <dfn>refresh URL</dfn>
+  :: a [=string=] that is representing the [=URL=] to be used to refresh the
     session
   : <dfn>defer requests</dfn>
   :: an OPTIONAL [=boolean=] defining if the browser should defer other
@@ -200,14 +197,14 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
   : <dfn>cached challenge</dfn>
   :: a [=string=] that is to be used as the next challenge for this session
   : [=session scope=]
-  :: a [=struct=] defining which [=url=]'s' are in scope for this session
+  :: a [=struct=] defining which [=URL=]'s are in scope for this session
   : [=session credentials=]
   :: a [=list=] of [=session credential=]s used by the session
   : <dfn>expiration timestamp</dfn>
   :: a [=moment=] when this session should be removed.
   : <dfn>session key</dfn>
   :: a key pair used by the session. The private key
-    should be stored in a secure manner, see {#security-considerations}.
+    should be stored in a secure manner, see [[#security-considerations]].
 </dl>
 
 ## Session scope ## {#framework-scope}
@@ -215,10 +212,10 @@ The <dfn>session scope</dfn> is a [=struct=] with the following
 [=struct/items=]:
 <dl dfn-for="session scope">
   : <dfn>origin</dfn>
-  :: The [=origin=] this session was registered for.
+  :: The [=/origin=] this session was registered for.
   : <dfn>include site</dfn>
   :: a [=boolean=] indicating if the session applies to an entire site or just an origin.
-  : [=scope specifications=]
+  : <dfn>scope specifications</dfn>
   :: a [=list=] of [=scope specification=]s used by the session
 </dl>
 
@@ -254,11 +251,11 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   [=device bound session/session identifier=] is unique within a
   [=host/registrable domain=].
 
-  Given a [=url=] and [=device bound session/session identifier=]
+  Given a [=URL=] (|url|) and [=device bound session/session identifier=]
   (|session identifier|), this algorithm returns a [=device bound session=] or
   null if no such session exists.
 
-  1. Let |site| be the [=host/registrable domain=] of the [=url=]
+  1. Let |site| be the [=host/registrable domain=] of |url|.
   1. Let |domain sessions| be [=sessions by registrable domain=][|site|] as a
     [=/session by id=]
   1. Return |domain sessions|[|session identifier|]
@@ -267,21 +264,23 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
 ## Identify if a URL is in scope of a session ## {#algo-url-in-scope}
 <div class="algorithm" data-algorithm="url-in-scope">
   This algorithm describes how to determine if a URL is in scope of a
-  device bound session. Given a [=url=] and [=session scope=], returns
-  true if the [=url=] is in scope, and false otherwise.
+  device bound session. Given a [=URL=] (|URL|) and [=session=] (|session|), returns
+  "include" if |URL| is in scope, and "exclude" otherwise.
 
-  1. If [=url=] is not same origin with the [=session scope=] origin and
-     the origin is not the eTLD+1, return false.
-  1. If the [=session scope=] origin is the eTLD+1 and the [=url=] is
-     not same-site with the eTLD+1, return false.
-  1. [=list/for each=] |scope specification| in the |session scope|
-    1. If the host and path of [=url=] match the |scope specification|,
-       return the |scope specification|'s type.
-  1. If the [=url=] matches the |session|'s refresh URL, return false.
-  
-  1. If [=session scope=] sets |include site|, return whether [=url=] is
-     same-site with the scope origin.
-  1. Return whether [=url=] is same origin with the scope origin.
+  1. Let |scope| be |session|'s [=scope specification=].
+  1. If |scope| [=include site=] is true, return "exclude" if any of the
+     following hold:
+     1. |URL| is not [=/same site=] with |scope| [=session scope/origin=].
+     1. |scope| [=session scope/origin=] is not the eTLD+1 and |URL| is not
+        [=same origin=] with |scope| [=session scope/origin=].
+  1. If |scope| [=include site=] is false, return "exclude" if |URL| is not
+     [=same origin=] with |scope| [=session scope/origin=].
+  1. [=list/for each=] |scope specification| in |scope|
+    1. If the [=scope specification/host=] and [=path=] of |URL| match the
+       |scope specification|, return the |scope specification|'s [=scope
+       specification/type=].
+  1. If the |URL| matches the |session|'s [=refresh URL=], return "exclude".
+  1. Return "include".
 </div>
 
 ## Identify session needing refresh ## {#algo-identify-session-needing-refresh}
@@ -290,22 +289,45 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   domain=], this algorithm describes how to identify which session, if
   any, should block |request| from proceeding.
 
-  1. Let |site| be the [=host/registrable domain=] of the request's URL.
-  1. Let |domain sessions| be [=sessions by registrable domain=][site] as [=/session by id=]
+  1. Let |site| be the [=host/registrable domain=] of the |request| [=URL=].
+  1. Let |domain sessions| be [=sessions by registrable domain=][|site|] as [=/session by id=]
   1. [=list/For each=] |session| of |domain sessions|
     1. The browser MAY skip |session| in order to prevent denial of
        service for the user or site. For example if |session| is
        requesting excessive TPM operations (harming the user) or the
        refresh endpoint has recently been unreachable (denial of service
        risk for the site).
+    1. If |session|'s [=expiration timestamp=] is before the present, [=iteration/continue=].
     1. Run the steps in [[#algo-url-in-scope]] on the |request|'s URL
        and |session|'s scope.
     1. If the result does not indicate the request is in scope, skip |session|
-       and continue the loop.
-    1. If any of |session|'s credentials would be included on |request|,
-       with the exception of Max-Age and Expires attributes, but are not
-       present on |request|, return |session|.     
+       and [=iteration/continue=].
+    1. Run the steps of [[#algo-identify-misssing-session-credential]] on
+       |request| and |session|'s [=session credentials=]. If the result is
+       true, return |session|.
   1. If no session has been identified, return null.
+</div>
+
+## Identify missing session credential ## {#algo-identify-misssing-session-credential}
+<div class="algorithm" data-algorithm="identify-missing-session-credential">
+  Given a [=request=] (|request|) and a [=/list=] of [=session credentials=]
+  (|credentials|), returns a [=boolean=] indicating whether any |credential| in
+  |credentials| is missing on |request|.
+  
+  1. [=list/for each=] |credential| in |credentials|
+    1. If a cookie with |credential|'s [=session credential/attributes=] would
+       not be attached to |request| (see <a
+       href=https://httpwg.org/specs/rfc6265.html#cookie>section 5.4</a> of
+       [[!COOKIES]]), [=iteration/continue=].
+    1. If |request|'s [=request/header list=] contains a |cookie| that
+       satisfies all of the following conditions, [=iteration/continue=]:
+      1. |cookie|'s name matches |credential|'s [=session credential/name=]
+      1. All of the following attributes of |cookie| match those in
+         |credential|'s [=session credential/attributes=]: Domain, Path,
+         Secure, HttpOnly, SameSite.
+      1. |cookie|'s partition key matches that of |credential|.
+    1. Return true.
+  1. Return false.
 </div>
 
 ## Cache challenge ## {#algo-process-challenge}
@@ -347,41 +369,54 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
 
   1. Let |signed challenge| be null. If |challenge| is non-null, sign it
      with |key pair| and store the result in |signed challenge|.
-  1. Create a |request| for use in the HTTP-network-or-cache fetch algorithm
-     from the Fetch specification.
-  1. Set |request|'s method to "POST".
-  1. Set |request|'s URL to |destination|.
-  1. If |signed challenge| is non-null, add header "Sec-Session-Response" with
-     value |signed challenge| to |request|.
-  1. Set |request|'s initiator to |originating request|'s initiator.
-  1. Run HTTP-network-or-Dcache fetch on |request|.
-  1. If the result is a 401 and has a "Sec-Session-Challenge" header, start
+  1. Create a |request| for use in <a
+     href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
+     fetch</a>.
+  1. Set |request|'s [=request/method=] to "POST".
+  1. Set |request|'s [=request/URL=] to |destination|.
+  1. If |signed challenge| is non-null, [=header list/append=] the header
+     ("Sec-Session-Response", |signed challenge|) to |request|'s
+     [=request/header list=].
+  1. If |authorization| is non-null, [=header list/append=] the header
+     ("Authorization", |authorization|) to |request|'s [=request/header list=].
+  1. Set |request|'s [=request/initiator=] to |originating request|'s
+     [=request/initiator=].
+  1. Let |response| be the result of running <a
+     href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
+     fetch</a> for |request|.
+  1. If |response|'s [=response/status=] is 401 and |response|'s
+     [=response/header list=] contains "Sec-Session-Challenge", start
      this algorithm over with a new challenge value.
   1. If the result is a redirect, and the destination does not have the
      HTTPS scheme and is not localhost, cancel the request.
-  1. Parse the response body according to {#format-session-instructions}.
+  1. Parse the response body according to [[#format-session-instructions]].
+  1. Let |session identifier| be the value of key "session_identifier".
   1. If the response contains the key "continue", with value "false":
-    1. Delete the session with |destination|'s site and identifier the value of "session_identifier".
+    1. Run the steps of [[#algo-identify-session]] on |destination| and |session
+       identifier|.
+    1. If the result is non-null, delete the returned session.
     1. Return from this algorithm.
   1. Otherwise, perform the following validations, returning if any fail:
-    1. "session_identifier" must be non-empty.
-    1. "refresh_url" must be non-empty.
-    1. Let |origin| be "scope.origin", if present, or the origin of |destination| if not.
+    1. |session identifier| must be nonempty.
+    1. The value of the key "refresh_url" must be non-empty.
+    1. Let |origin| be the value of the key "scope.origin", if present, or the
+       origin of |destination| if not.
     1. |origin| must be a valid non-opaque origin.
     1. |origin| must be same-site with |destination|.
-    1. Let |refresh url| be the result of resolving |destination| with the value of "refresh_url".
-    1. |refresh url| must have scheme HTTPS or be localhost.
-    1. |refresh url| must be same-site with |destination|.
+    1. Let |refresh URL| be the result of resolving |destination| with the value
+       of the key "refresh_url".
+    1. |refresh URL| must have scheme HTTPS or be localhost.
+    1. |refresh URL| must be same-site with |destination|.
   1. If the input |session id| is present, delete the session with site
      |destination|'s site and identifier |session id|.
   1. Create a new session with:
-    1. [=session identifier=] the value of "session_identifier".
-    1. [=refresh url=] set to |refresh url|.
+    1. [=device bound session/session identifier=] set to |session identifier|.
+    1. [=refresh URL=] set to |refresh URL|.
     1. [=defer requests=] set to true.
-    1. [=session scope=] a new scope with [=origin=] |origin|, [=include
-       site=] the value of "scope.include_site", and [=scope
-       specifications=] the value of "scope.scope_specification".
-    1. [=session credentials=] the value of "credentials".
+    1. [=session scope=] a new scope with [=session scope/origin=] |origin|, [=include
+       site=] the value of the key "scope.include_site", and [=scope
+       specifications=] the value of the key "scope.scope_specification".
+    1. [=session credentials=] the value of the key "credentials".
     1. [=session key=] a newly-generated key pair.
 
 ## Create session ## {#algo-create-session}
@@ -416,7 +451,7 @@ parsing the registration structured header defined in
     1. Let |endpoint| be the result of resolving |path| relative to the
        |response|'s URL.
     1. Call [[#algo-session-request]] with |key pair|, |endpoint|, null
-       |session id|, |challenge| and |authorization|.
+       session identifier, |challenge| and |authorization|.
 </div>
 
 # DBSC Formats # {#format}
@@ -426,7 +461,7 @@ The \`<dfn export http-header id="sec-session-registration-header">
 [=response=] by the server to start a new [=/device bound session=] on the
 client.
 
-[:Sec-Session-Registration:] is a List Structured Header [[RFC8941]]. Its ABNF
+[:Sec-Session-Registration:] is a List Structured Header [[RFC9651]]. Its ABNF
 is:
 
 <pre class="abnf">Sec-Session-Registration = <a>sf-list</a></pre>
@@ -437,14 +472,14 @@ Only these two values are currently supported.
 
 The following parameters are defined:
 - A parameter whose key is "path", and whose value is a String (Section 3.3.3 of
-  [[RFC8941]]), conveying the path to the registration endpoint. This may be
-  relative to the current [=url=], or a full [=url=]. Entries without this
+  [[RFC9651]]), conveying the path to the registration endpoint. This may be
+  relative to the current [=URL=], or a full [=URL=]. Entries without this
   parameter will be ignored in [=Create a new session=].
 - A parameter whose key is "challenge", and whose value is a String (Section 
-  3.3.3 of [[RFC8941]]), conveying the challenge to be used in the session
+  3.3.3 of [[RFC9651]]), conveying the challenge to be used in the session
   registration.
 - A parameter whose key is "authorization", and whose value is a String (Section
-  3.3.3 of [[RFC8941]]), this parameter will be copied into the registration
+  3.3.3 of [[RFC9651]]), this parameter will be copied into the registration
   JWT.
 
 <div class="example" id="sec-session-registration-example">
@@ -486,7 +521,7 @@ The semantics of the item are defined in
 The processing steps are defined in [[#algo-process-challenge]].
 
 ### Sec-Session-Challenge structured header serialization ### {#challenge-structured-header-serialization}
-The [:Sec-Session-Challenge:] is represented as a Structured Field.[[!RFC8941]]
+The [:Sec-Session-Challenge:] is represented as a Structured Field.[[!RFC9651]]
 
 In this representation, a challenge is represented by a string.
 
@@ -582,9 +617,9 @@ At the root of the JSON object the following keys can exist:
     This key MUST be present.
 
   : <dfn>refresh_url</dfn>
-  :: a [=string=] representing the [=url=] used for future refresh requests.
-    This can be a full url, or relative to the current [=request=].
-    This key is OPTIONAL, if not present the registration url will be used for
+  :: a [=string=] representing the [=URL=] used for future refresh requests.
+    This can be a full [=URL=], or relative to the current [=request=].
+    This key is OPTIONAL; if not present the registration URL will be used for
     future refresh requests.
 
   : <dfn>continue</dfn>
@@ -653,7 +688,7 @@ MUST contain at least the following parameters:
 The payload of [=DBSC proof=] MUST contain at least the following claims:
 <dl dfn-for="DBSC proof">
   : <dfn>aud</dfn>
-  :: a [=string=], MUST be the [=url=] this JWT was originally sent to.
+  :: a [=string=], MUST be the [=URL=] this JWT was originally sent to.
     Example: "https://example.com/refresh.html"
   : <dfn>jti</dfn>
   :: a [=string=], a copy of the challenge value sent in the registration
@@ -712,11 +747,13 @@ In addition the following claims MUST be present if present in
 
 ## Changes to the Fetch specification ## {#changes-to-fetch}
 
-This specification requires an update the HTTP-network-or-cache fetch
-algorithm. Between steps 10.1 and 10.2 run
-[[#algo-identify-session-needing-refresh]]. If the result is non-null,
-run [[#algo-session-request]] with the returned |session|'s key pair,
-refresh URL, id, cached challenge, and an empty authorization.
+This specification requires an update the <a
+href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
+fetch</a> algorithm. Between steps 10.1 and 10.2 run
+[[#algo-identify-session-needing-refresh]]. If the resulting |session| is
+non-null, run [[#algo-session-request]] with the returned |session|'s [=session
+key=], [=refresh URL=], [=device bound session/session identifier=], [=cached
+challenge=], and an empty authorization.
 
 ## Changes to the Clear Site Data specification ## {#changes-to-clear-site-data}
 
