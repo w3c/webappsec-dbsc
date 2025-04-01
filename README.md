@@ -183,10 +183,7 @@ The JWT proof is signed with the newly created private key, and needs to contain
   "aud": "URL of this request",
   "jti": "challenge_value",
   "iat": "timestamp", // Number, represent number of seconds since Jan 1, 1970
-  "key": {
-    "kty": "key type",
-    "<kty-specific parameters>": "<value>",
-  },
+  "key": "public key JWK",
   "authorization": "<authorization_value>", // optional, only if set in registration header
 }
 ```
@@ -307,8 +304,10 @@ Sec-Session-Response: JWT proof
 The JWT proof contains:
 ```json
 {
-  "jti": "challenge_value",
   "aud": "the URL to which the Sec-Session-Response will be sent",
+  "jti": "challenge_value",
+  "iat": "timestamp",
+  "key": "jwk of session public key",
   "sub": "the session ID corresponding to the binding key",
 }
 ```
