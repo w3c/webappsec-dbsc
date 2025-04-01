@@ -70,7 +70,7 @@ different situations. Some of the use cases of DBSC are:
 ### Signed in session ### {#example-signin}
 <div class="example" id="signin-example">
   A user logs in to his social account. To protect the user's private data the
-  site protects his logged in session wwith a DBSC session. If the user tries to
+  site protects his logged in session with a DBSC session. If the user tries to
   log in with the same cookie file on a different device, the site can detect and
   refuse this as an unauthorized user.
 </div>
