@@ -176,7 +176,7 @@ The JWT proof is signed with the newly created private key, and needs to contain
 // Header
 {
   "alg": "Signature Algorithm",
-  "typ": "JWT",
+  "typ": "dbsc+jwt",
 }
 // Payload
 {
