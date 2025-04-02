@@ -354,11 +354,20 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. If |signed challenge| is non-null, add header "Sec-Session-Response" with
      value |signed challenge| to |request|.
   1. Set |request|'s initiator to |originating request|'s initiator.
-  1. Run HTTP-network-or-Dcache fetch on |request|.
-  1. If the result is a 401 and has a "Sec-Session-Challenge" header, start
-     this algorithm over with a new challenge value.
-  1. If the result is a redirect, and the destination does not have the
-     HTTPS scheme and is not localhost, cancel the request.
+  1. Run HTTP-network-or-cache fetch on |request|, storing the result in |response|.
+  1. If the |response| is a [=network error=], or |response|'s status is 407,
+     return.
+  1. If the |response|'s [=response/status=] is a redirect status, and the
+     destination does not have the HTTPS scheme and is not localhost, cancel the
+     request.
+  1. If the |response|'s [=response/status=] is 401 and has a
+     "Sec-Session-Challenge" header, start this algorithm over with a new
+     challenge value.
+  1. If the |response|'s [=response/status=] is below 500, then terminate the
+     session.
+  1. If the |response|'s [=response/status=] is at least 500, then
+     return. Browsers may choose to trigger a backoff mechanism here, to limit
+     the harm of a temporary outage on the refresh endpoint.
   1. Parse the response body according to {#format-session-instructions}.
   1. If the response contains the key "continue", with value "false":
     1. Delete the session with |destination|'s site and identifier the value of "session_identifier".
