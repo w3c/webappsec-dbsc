@@ -384,14 +384,26 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. Let |response| be the result of running <a
      href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
      fetch</a> for |request|.
-  1. If |response|'s [=response/status=] is 401 and |response|'s
-     [=response/header list=] contains "Sec-Session-Challenge", start
-     this algorithm over with a new challenge value.
   1. If the result is a redirect, and the destination does not have the
      HTTPS scheme and is not localhost, cancel the request.
-  1. Parse the response body according to [[#format-session-instructions]].
+  1. If |response| is a [=network error=], or |response|'s
+     [=response/status=] is 407, return.
+  1. If |response|'s [=response/status=] is a redirect status, and the
+     destination does not have the HTTPS scheme and is not localhost, cancel the
+     request.
+  1. If |response|'s [=response/status=] is 401 and has a
+     "Sec-Session-Challenge" header, start this algorithm over with a new
+     challenge value.
+  1. If response|'s [=response/status=] is below 500, then terminate the
+     session and return.
+  1. If |response|'s [=response/status=] is at least 500, then
+     return. Browsers may choose to trigger a backoff mechanism on
+     subsequent refresh requests on this session, to limit the harm of a
+     temporary outage on the refresh endpoint.
+  1. Parse |response|'s [=response/body=] according to
+     [[#format-session-instructions]].
   1. Let |session identifier| be the value of key "session_identifier".
-  1. If the response contains the key "continue", with value "false":
+  1. If the |response| JSON contains the key "continue", with value "false":
     1. Run the steps of [[#algo-identify-session]] on |destination| and |session
        identifier|.
     1. If the result is non-null, delete the returned session.
