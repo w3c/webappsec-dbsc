@@ -397,6 +397,8 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   takes as input an |originating request|, |key pair|, |destination|, and
   optional |session id|, |challenge|, and |authorization|.
 
+  1. If |originating request|'s [=request/URL=] is not [=/same site=] with
+     |destination|, return.
   1. Let |signed challenge| be null. If |challenge| is non-null, sign it
      with |key pair| and store the result in |signed challenge|.
   1. Create a |request| for use in <a
@@ -449,6 +451,17 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
        of the key "refresh_url".
     1. |refresh URL| must have scheme HTTPS or be localhost.
     1. |refresh URL| must be same-site with |destination|.
+  1. If the value of the key "scope.include_site" in |response| is true:
+    1. Let |destination site| be the [=host/registrable domain=] of |destination|.
+    1. If |destination site| is equal to the [=url/host=] of |destination|, continue.
+    1. Otherwise, let |well known URL| be a copy of |destination|, with the
+       [=url/host=] replaced with |destination site|, and the [=url/path=]
+       replaced with "/.well-known/device-bound-sessions".
+    1. Let |well known response| be the result of fetching |well known URL|.
+    1. If |well known response|'s [=response/status=] is not 200, return.
+    1. If |well known response|'s [=response/body=] is not a JSON-encoded list of strings, return.
+    1. If |well known response|'s [=response/body=] does not include the origin of
+       |destination|, return.
   1. If the input |session id| is present, delete the session with site
      |destination|'s site and identifier |session id|.
   1. Create a new session with:
@@ -888,6 +901,30 @@ registrations: [[!RFC3864]]
   <dt>Specification document</dt>
   <dd>This specification (See [[#header-sec-session-response]])</dd>
 </dl>
+
+## device-bound-sessions Well Known ## {#well-known}
+
+The Well-Known URI registry should be updated to include
+/.well-known/device-bound-sessions.
+
+This endpoint must serve a JSON-encoded list of strings for each origin allowed
+to register a session for the entire site.
+
+<div class="example">
+  If `https://example.com/.well-known/device-bound-sessions` serves
+  ```json
+  [
+    "https://subdomain.example.com",
+    "https://subdomain.example.com:8000",
+  ]
+  ```
+  Then registration requests can define a site-scoped session only if
+  one of the following is true:
+  - The registration endpoint has host `example.com`
+  - The registration endpoint has origin `https://subdomain.example.com`
+  - The registration endpoint has origin `https://subdomain.example.com:8000`
+</div>
+
 
 # Changelog # {#changelog}
 This is an early draft of the spec.
