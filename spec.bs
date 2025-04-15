@@ -653,9 +653,9 @@ ignored.
 </div>
 
 ## DBSC Session Instruction Format ## {#format-session-instructions}
-The server sends <dfn>session instructions</dfn> during session registration and
-optionally during session refresh. If the response contains session instructions
-it MUST be in JSON format.
+The server sends <dfn>session instructions</dfn> during session
+registration and optionally during session refresh. If the response
+contains session instructions it MUST be in JSON format.
 
 At the root of the JSON object the following keys can exist:
 <dl dfn-for="session instructions">
@@ -665,7 +665,7 @@ At the root of the JSON object the following keys can exist:
     the [=device bound session/session identifier=] for the current session. If
     not these instructions SHOULD be ignored.
     If this [=session instructions=] is sent during a registration it MUST either
-    be a unique iditifier for this [=host/registrable domain=], or it will
+    be a unique identifier for this [=host/registrable domain=], or it will
     overwrite the current [=device bound session=] with this identifier for the
     current [=host/registrable domain=].
     This key MUST be present.
@@ -676,11 +676,6 @@ At the root of the JSON object the following keys can exist:
     This key is OPTIONAL; if not present the registration URL will be used for
     future refresh requests.
 
-  : <dfn>continue</dfn>
-  :: a [=boolean=] representing if the current session should continue, or be
-    closed on the client. This key is OPTIONAL, and if not present the default
-    value will be true.
-
   : <dfn>defer_requests</dfn>
   :: a [=boolean=] describing the wanted session behavior during a session
     refresh. If this value is true all requests related to this session will be
@@ -688,6 +683,15 @@ At the root of the JSON object the following keys can exist:
     request will instead be sent as normal, but with a [:Sec-Session-Response:]
     header containing the [=DBSC proof=].
     This key is OPTIONAL, and if not present a value of true is default.
+
+  : <dfn>continue</dfn>
+  :: a [=boolean=] indicating if the session should continue to apply.
+    Registration and refresh endpoints can set this to false to terminate a session.
+    This key is OPTIONAL, and if not present the default value will be true.
+    
+  : <dfn>scope</dfn>
+  :: a [=dictionary=] of [=session scope instructions=] describing the request
+    destinations covered by the session. This field MUST be present.
 </dl>
 
 <div class="example" id="sec-session-instruction-example">
@@ -696,14 +700,15 @@ At the root of the JSON object the following keys can exist:
     "session_identifier": "session_id",
     "refresh_url": "/RefreshEndpoint",
 
+    "continue": false,
+    "defer_requests": true, // optional and true by default
+
     "scope": {
       // Origin-scoped by default (i.e. https://example.com)
       // Specifies to include https://*.example.com except excluded subdomains.
       // This can only be true if the origin's host is the root eTLD+1.
       "origin": "example.com",
       "include_site": true,
-      "continue": false,
-      "defer_requests": true, // optional and true by default
 
       "scope_specification" : [
         { "type": "include", "domain": "trusted.example.com", "path": "/only_trusted_path" },
@@ -726,6 +731,46 @@ At the root of the JSON object the following keys can exist:
   }
   ```
 </div>
+
+## DBSC Session Scope Instruction Format ## {#format-session-scope-instructions}
+The server sends <dfn>session scope instructions</dfn> in the [=session
+instructions=] during registration and optionally during session refresh.
+
+At the root of the JSON object the following keys can exist:
+<dl dfn-for="session scope instructions">
+  : <dfn>origin</dfn>
+  :: a [=string=] indicating the origin or site that the session applies to.
+    This key is OPTIONAL; if not present the origin of the registraton URL will
+    be used.
+    
+  : <dfn>include_site</dfn>
+  :: a [=boolean=] indicating if the session is origin-scoped or site-scoped.
+    This key is OPTIONAL; if not present it will be false (origin-scoped).
+    
+  : <dfn>scope_specification</dfn>
+  :: a [=list=] of [=session scope rules=] describing modifications to the
+    default scope (the entire origin or site). This key is OPTIONAL; if not
+    present an empty list will be used.
+</dl>
+
+## DBSC Session Scope Rule Format ## {#format-session-scope-rule}
+The server sends <dfn>session scope rules</dfn> in the [=session scope
+instructions=] during registration and optionally during session refresh.
+
+At the root of the JSON object the following keys can exist:
+<dl dfn-for="session scope rule">
+  : <dfn>type</dfn>
+  :: a [=string=] indicating whether the rule includes or excludes destinations.
+    This key MUST be present, and the value MUST be "include" or "exclude".
+    
+  : <dfn>domain</dfn>
+  :: a [=string=] indicating the domains that should match the rule. This key
+    MUST be present.
+    
+  : <dfn>path</dfn>
+  :: a [=string=] indicating the paths that should match the rule. This key
+    MUST be present.
+</dl>
 
 ## DBSC Proof JWT Syntax ## {#format-jwt}
 A <dfn>DBSC proof</dfn> proof is a JWT that is signed (using JSON Web Signature
