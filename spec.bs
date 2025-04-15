@@ -697,7 +697,7 @@ The payload of [=DBSC proof=] MUST contain at least the following claims:
   :: a [=string=], this claim identifies the time at which the JWT was
     issued.  This claim can be used to determine the age of the JWT.  Its
     value MUST be a number containing a NumericDate value.
-  : <dfn>jwk</dfn>
+  : <dfn>key</dfn>
   :: a [=string=] defining a JWK as specified in [rfc7517].
 </dl>
 
@@ -709,6 +709,13 @@ In addition the following claims MUST be present if present in
     [:Sec-Session-Registration:], if set there. Note that this string is
     OPTIONAL to include in the header, but if it is present it is
     MANDATORY for clients to add the claim in the [=DBSC proof=].
+</dl>
+
+If the DBSC proof is for a refresh request, the following claim MUST be
+present:
+<dl dfn-for="DBSC proof">
+  : <dfn>sub</dfn>
+  :: the [=device bound session/session identifier=], a [=string=].
 </dl>
 
 <div class="example" id="dbsc-proof-example">
@@ -725,7 +732,7 @@ In addition the following claims MUST be present if present in
     "aud": "https://example.com/reg",
     "jti": "cv",
     "iat": "1725579055",
-    "jwk": {
+    "key": {
       "kty": "EC",
       "crv": "P-256",
       "x": "6_GB2voQ0qroMh6OlDFCFS_SJriQi1PTvvBOhGZ3bHI",
