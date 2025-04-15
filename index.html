@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="06834a2705185577970f9753b91709f5f47fb921" name="revision">
+  <meta content="536d539f2181006cc9780d6d4c9e07b2bf382d9a" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -1549,7 +1549,7 @@ header.</p>
       <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②①">string</a>, this claim identifies the time at which the JWT was
 issued.  This claim can be used to determine the age of the JWT.  Its
 value MUST be a number containing a NumericDate value.</p>
-     <dt data-md><dfn class="dfn-paneled" data-dfn-for="DBSC proof" data-dfn-type="dfn" data-noexport id="dbsc-proof-jwk">jwk</dfn>
+     <dt data-md><dfn class="dfn-paneled" data-dfn-for="DBSC proof" data-dfn-type="dfn" data-noexport id="dbsc-proof-key">key</dfn>
      <dd data-md>
       <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②②">string</a> defining a JWK as specified in [rfc7517].</p>
     </dl>
@@ -1563,6 +1563,13 @@ value MUST be a number containing a NumericDate value.</p>
 OPTIONAL to include in the header, but if it is present it is
 MANDATORY for clients to add the claim in the <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof⑨">DBSC proof</a>.</p>
     </dl>
+    <p>If the DBSC proof is for a refresh request, the following claim MUST be
+present:</p>
+    <dl>
+     <dt data-md><dfn class="dfn-paneled" data-dfn-for="DBSC proof" data-dfn-type="dfn" data-noexport id="dbsc-proof-sub">sub</dfn>
+     <dd data-md>
+      <p>the <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier⑦">session identifier</a>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②④">string</a>.</p>
+    </dl>
     <div class="example" id="dbsc-proof-example">
      <a class="self-link" href="#dbsc-proof-example"></a> An example <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof①⓪">DBSC proof</a> sent to https://example.com/reg: 
 <pre class="language-json highlight"><c- c1>// Header</c->
@@ -1575,7 +1582,7 @@ MANDATORY for clients to add the claim in the <a data-link-type="dfn" href="#dbs
   <c- f>"aud"</c-><c- p>:</c-> <c- u>"https://example.com/reg"</c-><c- p>,</c->
   <c- f>"jti"</c-><c- p>:</c-> <c- u>"cv"</c-><c- p>,</c->
   <c- f>"iat"</c-><c- p>:</c-> <c- u>"1725579055"</c-><c- p>,</c->
-  <c- f>"jwk"</c-><c- p>:</c-> <c- p>{</c->
+  <c- f>"key"</c-><c- p>:</c-> <c- p>{</c->
     <c- f>"kty"</c-><c- p>:</c-> <c- u>"EC"</c-><c- p>,</c->
     <c- f>"crv"</c-><c- p>:</c-> <c- u>"P-256"</c-><c- p>,</c->
     <c- f>"x"</c-><c- p>:</c-> <c- u>"6_GB2voQ0qroMh6OlDFCFS_SJriQi1PTvvBOhGZ3bHI"</c-><c- p>,</c->
@@ -1594,7 +1601,7 @@ Sec-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
     <h3 class="heading settled" data-level="7.1" id="changes-to-fetch"><span class="secno">7.1. </span><span class="content">Changes to the Fetch specification</span><a class="self-link" href="#changes-to-fetch"></a></h3>
     <p>This specification requires an update the <a href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
 fetch</a> algorithm. Between steps 10.1 and 10.2 run <a href="#algo-identify-session-needing-refresh">§ 5.3 Identify session needing refresh</a>. If the resulting <var>session</var> is
-non-null, run <a href="#algo-session-request">§ 5.6 Send request</a> with the returned <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key" id="ref-for-device-bound-session-session-key①">session key</a>, <a data-link-type="dfn" href="#device-bound-session-refresh-url" id="ref-for-device-bound-session-refresh-url②">refresh URL</a>, <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier⑦">session identifier</a>, <a data-link-type="dfn" href="#device-bound-session-cached-challenge" id="ref-for-device-bound-session-cached-challenge①">cached challenge</a>, and an empty authorization.</p>
+non-null, run <a href="#algo-session-request">§ 5.6 Send request</a> with the returned <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key" id="ref-for-device-bound-session-session-key①">session key</a>, <a data-link-type="dfn" href="#device-bound-session-refresh-url" id="ref-for-device-bound-session-refresh-url②">refresh URL</a>, <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier⑧">session identifier</a>, <a data-link-type="dfn" href="#device-bound-session-cached-challenge" id="ref-for-device-bound-session-cached-challenge①">cached challenge</a>, and an empty authorization.</p>
     <h3 class="heading settled" data-level="7.2" id="changes-to-clear-site-data"><span class="secno">7.2. </span><span class="content">Changes to the Clear Site Data specification</span><a class="self-link" href="#changes-to-clear-site-data"></a></h3>
     <p>This specification requires that the Clear Site Data specification
 sections 4.2.5 "Clear DOM-accessible storage for origin" clear all
@@ -1725,7 +1732,7 @@ registrations: <a data-link-type="biblio" href="#biblio-rfc3864" title="Registra
    <li><a href="#algorithms-identify-a-session">identify a session</a><span>, in § 5.1</span>
    <li><a href="#session-scope-include-site">include site</a><span>, in § 4.4</span>
    <li><a href="#dbsc-proof-jti">jti</a><span>, in § 6.6</span>
-   <li><a href="#dbsc-proof-jwk">jwk</a><span>, in § 6.6</span>
+   <li><a href="#dbsc-proof-key">key</a><span>, in § 6.6</span>
    <li><a href="#session-credential-name">name</a><span>, in § 4.6</span>
    <li><a href="#session-scope-origin">origin</a><span>, in § 4.4</span>
    <li><a href="#scope-specification-path">path</a><span>, in § 4.5</span>
@@ -1751,6 +1758,7 @@ registrations: <a data-link-type="biblio" href="#biblio-rfc3864" title="Registra
    <li><a href="#device-bound-session-session-key">session key</a><span>, in § 4.3</span>
    <li><a href="#sessions-by-registrable-domain">sessions by registrable domain</a><span>, in § 4.1</span>
    <li><a href="#session-scope">session scope</a><span>, in § 4.4</span>
+   <li><a href="#dbsc-proof-sub">sub</a><span>, in § 6.6</span>
    <li><a href="#dbsc-proof-typ">typ</a><span>, in § 6.6</span>
    <li><a href="#scope-specification-type">type</a><span>, in § 4.5</span>
   </ul>
@@ -2045,7 +2053,7 @@ function parseHTML(markup) {
 "use strict";
 {
 let dfnPanelData = {
-"0698d556": {"dfnID":"0698d556","dfnText":"string","external":true,"refSections":[{"refs":[{"id":"ref-for-string"},{"id":"ref-for-string\u2460"},{"id":"ref-for-string\u2461"}],"title":"4.3. Device bound session"},{"refs":[{"id":"ref-for-string\u2462"},{"id":"ref-for-string\u2463"},{"id":"ref-for-string\u2464"}],"title":"4.5. Scope specification"},{"refs":[{"id":"ref-for-string\u2465"},{"id":"ref-for-string\u2466"}],"title":"4.6. Session credential"},{"refs":[{"id":"ref-for-string\u2460\u2464"},{"id":"ref-for-string\u2460\u2465"}],"title":"6.5. DBSC Session Instruction Format"},{"refs":[{"id":"ref-for-string\u2460\u2466"},{"id":"ref-for-string\u2460\u2467"},{"id":"ref-for-string\u2460\u2468"},{"id":"ref-for-string\u2461\u24ea"},{"id":"ref-for-string\u2461\u2460"},{"id":"ref-for-string\u2461\u2461"},{"id":"ref-for-string\u2461\u2462"}],"title":"6.6. DBSC Proof JWT Syntax"}],"url":"https://infra.spec.whatwg.org/#string"},
+"0698d556": {"dfnID":"0698d556","dfnText":"string","external":true,"refSections":[{"refs":[{"id":"ref-for-string"},{"id":"ref-for-string\u2460"},{"id":"ref-for-string\u2461"}],"title":"4.3. Device bound session"},{"refs":[{"id":"ref-for-string\u2462"},{"id":"ref-for-string\u2463"},{"id":"ref-for-string\u2464"}],"title":"4.5. Scope specification"},{"refs":[{"id":"ref-for-string\u2465"},{"id":"ref-for-string\u2466"}],"title":"4.6. Session credential"},{"refs":[{"id":"ref-for-string\u2460\u2464"},{"id":"ref-for-string\u2460\u2465"}],"title":"6.5. DBSC Session Instruction Format"},{"refs":[{"id":"ref-for-string\u2460\u2466"},{"id":"ref-for-string\u2460\u2467"},{"id":"ref-for-string\u2460\u2468"},{"id":"ref-for-string\u2461\u24ea"},{"id":"ref-for-string\u2461\u2460"},{"id":"ref-for-string\u2461\u2461"},{"id":"ref-for-string\u2461\u2462"},{"id":"ref-for-string\u2461\u2463"}],"title":"6.6. DBSC Proof JWT Syntax"}],"url":"https://infra.spec.whatwg.org/#string"},
 "086e3aff": {"dfnID":"086e3aff","dfnText":"origin","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-origin"}],"title":"4.4. Session scope"}],"url":"https://html.spec.whatwg.org/multipage/browsers.html#concept-origin"},
 "162d2b51": {"dfnID":"162d2b51","dfnText":"request","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-request-request"}],"title":"5.3. Identify session needing refresh"},{"refs":[{"id":"ref-for-concept-request-request\u2460"}],"title":"5.4. Identify missing session credential"},{"refs":[{"id":"ref-for-concept-request-request\u2461"}],"title":"6.3. Sec-Session-Response HTTP Header Field"},{"refs":[{"id":"ref-for-concept-request-request\u2462"}],"title":"6.4. Sec-Session-Id HTTP Header Field"},{"refs":[{"id":"ref-for-concept-request-request\u2463"}],"title":"6.5. DBSC Session Instruction Format"}],"url":"https://fetch.spec.whatwg.org/#concept-request-request"},
 "16d07e10": {"dfnID":"16d07e10","dfnText":"for each","external":true,"refSections":[{"refs":[{"id":"ref-for-list-iterate"}],"title":"5.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-list-iterate\u2460"}],"title":"5.3. Identify session needing refresh"},{"refs":[{"id":"ref-for-list-iterate\u2461"}],"title":"5.4. Identify missing session credential"},{"refs":[{"id":"ref-for-list-iterate\u2462"}],"title":"5.5. Cache challenge"},{"refs":[{"id":"ref-for-list-iterate\u2463"},{"id":"ref-for-list-iterate\u2464"}],"title":"5.7. Create session"}],"url":"https://infra.spec.whatwg.org/#list-iterate"},
@@ -2078,7 +2086,8 @@ let dfnPanelData = {
 "dbsc-proof-authorization": {"dfnID":"dbsc-proof-authorization","dfnText":"authorization","external":false,"refSections":[],"url":"#dbsc-proof-authorization"},
 "dbsc-proof-iat": {"dfnID":"dbsc-proof-iat","dfnText":"iat","external":false,"refSections":[],"url":"#dbsc-proof-iat"},
 "dbsc-proof-jti": {"dfnID":"dbsc-proof-jti","dfnText":"jti","external":false,"refSections":[],"url":"#dbsc-proof-jti"},
-"dbsc-proof-jwk": {"dfnID":"dbsc-proof-jwk","dfnText":"jwk","external":false,"refSections":[],"url":"#dbsc-proof-jwk"},
+"dbsc-proof-key": {"dfnID":"dbsc-proof-key","dfnText":"key","external":false,"refSections":[],"url":"#dbsc-proof-key"},
+"dbsc-proof-sub": {"dfnID":"dbsc-proof-sub","dfnText":"sub","external":false,"refSections":[],"url":"#dbsc-proof-sub"},
 "dbsc-proof-typ": {"dfnID":"dbsc-proof-typ","dfnText":"typ","external":false,"refSections":[],"url":"#dbsc-proof-typ"},
 "dc1cd39b": {"dfnID":"dc1cd39b","dfnText":"URL","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-request-url"}],"title":"5.6. Send request"}],"url":"https://fetch.spec.whatwg.org/#concept-request-url"},
 "dcffbccd": {"dfnID":"dcffbccd","dfnText":"URL","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-url"},{"id":"ref-for-concept-url\u2460"}],"title":"4.3. Device bound session"},{"refs":[{"id":"ref-for-concept-url\u2461"}],"title":"5.1. Identify session"},{"refs":[{"id":"ref-for-concept-url\u2462"}],"title":"5.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-concept-url\u2463"}],"title":"5.3. Identify session needing refresh"},{"refs":[{"id":"ref-for-concept-url\u2464"},{"id":"ref-for-concept-url\u2465"}],"title":"6.1. `Sec-Session-Registration` HTTP header field"},{"refs":[{"id":"ref-for-concept-url\u2466"},{"id":"ref-for-concept-url\u2467"}],"title":"6.5. DBSC Session Instruction Format"},{"refs":[{"id":"ref-for-concept-url\u2468"}],"title":"6.6. DBSC Proof JWT Syntax"}],"url":"https://url.spec.whatwg.org/#concept-url"},
@@ -2087,7 +2096,7 @@ let dfnPanelData = {
 "device-bound-session-defer-requests": {"dfnID":"device-bound-session-defer-requests","dfnText":"defer requests","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-defer-requests"}],"title":"5.6. Send request"}],"url":"#device-bound-session-defer-requests"},
 "device-bound-session-expiration-timestamp": {"dfnID":"device-bound-session-expiration-timestamp","dfnText":"expiration timestamp","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-expiration-timestamp"}],"title":"5.3. Identify session needing refresh"}],"url":"#device-bound-session-expiration-timestamp"},
 "device-bound-session-refresh-url": {"dfnID":"device-bound-session-refresh-url","dfnText":"refresh URL","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-refresh-url"}],"title":"5.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-device-bound-session-refresh-url\u2460"}],"title":"5.6. Send request"},{"refs":[{"id":"ref-for-device-bound-session-refresh-url\u2461"}],"title":"7.1. Changes to the Fetch specification"}],"url":"#device-bound-session-refresh-url"},
-"device-bound-session-session-identifier": {"dfnID":"device-bound-session-session-identifier","dfnText":"session identifier","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-session-identifier"}],"title":"4.2. Sessions by id"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2460"},{"id":"ref-for-device-bound-session-session-identifier\u2461"}],"title":"5.1. Identify session"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2462"}],"title":"5.6. Send request"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2463"}],"title":"6.2.1. Sec-Session-Challenge structured header serialization"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2464"},{"id":"ref-for-device-bound-session-session-identifier\u2465"}],"title":"6.5. DBSC Session Instruction Format"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2466"}],"title":"7.1. Changes to the Fetch specification"}],"url":"#device-bound-session-session-identifier"},
+"device-bound-session-session-identifier": {"dfnID":"device-bound-session-session-identifier","dfnText":"session identifier","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-session-identifier"}],"title":"4.2. Sessions by id"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2460"},{"id":"ref-for-device-bound-session-session-identifier\u2461"}],"title":"5.1. Identify session"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2462"}],"title":"5.6. Send request"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2463"}],"title":"6.2.1. Sec-Session-Challenge structured header serialization"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2464"},{"id":"ref-for-device-bound-session-session-identifier\u2465"}],"title":"6.5. DBSC Session Instruction Format"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2466"}],"title":"6.6. DBSC Proof JWT Syntax"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2467"}],"title":"7.1. Changes to the Fetch specification"}],"url":"#device-bound-session-session-identifier"},
 "device-bound-session-session-key": {"dfnID":"device-bound-session-session-key","dfnText":"session key","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-session-key"}],"title":"5.6. Send request"},{"refs":[{"id":"ref-for-device-bound-session-session-key\u2460"}],"title":"7.1. Changes to the Fetch specification"}],"url":"#device-bound-session-session-key"},
 "e3201629": {"dfnID":"e3201629","dfnText":"response","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-response-response"}],"title":"5.5. Cache challenge"},{"refs":[{"id":"ref-for-concept-response-response\u2460"}],"title":"6.1. `Sec-Session-Registration` HTTP header field"},{"refs":[{"id":"ref-for-concept-response-response\u2461"}],"title":"6.2. `Sec-Session-Challenge` HTTP Header Field"}],"url":"https://fetch.spec.whatwg.org/#concept-response-response"},
 "f7b00a8b": {"dfnID":"f7b00a8b","dfnText":"header list (for response)","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-response-header-list"}],"title":"5.5. Cache challenge"},{"refs":[{"id":"ref-for-concept-response-header-list\u2460"}],"title":"5.6. Send request"},{"refs":[{"id":"ref-for-concept-response-header-list\u2461"}],"title":"5.7. Create session"}],"url":"https://fetch.spec.whatwg.org/#concept-response-header-list"},
