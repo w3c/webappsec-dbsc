@@ -349,7 +349,7 @@ It is important that the user is always in control and can delete the session ke
 ## Interactions with other APIs
 ### Login Status API
 ### Interaction with Inactive Documents (BFCache, Prerendering)
-When a session is ended for any reason, any inactive documents which had access to that session's credentials should be destroyed. This ensures that pages in BFCache or that are pre-rendering that contain information guarded by those credentials are not presented after the session has ended.
+When a session is ended for any reason, any inactive documents which had access to that session's credentials should be destroyed. This ensures that pages in BFCache or that are pre-rendering that contain information guarded by those credentials are not presented after the session has ended. This is not technically required, since the session status itself is never the primary authentication (endpoints are still validating based on cookies, which are not cleared on session termination). But session termination very likely represents a change in the user's authentication, so we take a conservative position here that DBSC session termination should evict all documents in the BFCache.
 
 ## Future possibility: JavaScript API for StartSession
 
