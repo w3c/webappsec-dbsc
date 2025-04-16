@@ -326,7 +326,10 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
        service for the user or site. For example if |session| is
        requesting excessive TPM operations (harming the user) or the
        refresh endpoint has recently been unreachable (denial of service
-       risk for the site).
+       risk for the site). If the browser chooses to do this, it should
+       perform the steps of [[#algo-add-debug-header]] with an
+       appropriate token and |sessions|'s [=device bound session/session
+       identifier=] to indicate this to the site.
     1. If |session|'s [=expiration timestamp=] is before the present, [=iteration/continue=].
     1. Run the steps in [[#algo-url-in-scope]] on the |request|'s URL
        and |session|'s scope.
@@ -509,6 +512,26 @@ parsing the registration structured header defined in
        session identifier, |challenge| and |authorization|.
 </div>
 
+## Add debug header ## {#algo-add-debug-header}
+In order for sites to understand when the user agent chooses not to
+apply a session, user agents should <dfn export
+id="add-debug-header">add the debug header</dfn> to a [=request=]
+(|request|) with a [=token=] (|token|) and [=string=] (|session id|).
+<div class="algorithm" data-algorithm="add-debug-header">
+  1. Let |value| be a [=token=] with value |token|.
+  1. Set the parameter "session_identifier" on |value| to |session id|.
+  1. Let |skipped header value| be the result of running the steps of [=get a
+     structured field value=] with [=header name=]
+     "Secure-Session-Skipped", type "list", and |request|'s
+     [=request/header list=].
+  1. If |skipped header value| is null, set it to a [=Structured Field=]
+     value whose value is an empty [=structured field/list=].
+  1. Append |value| to |skipped header value|.
+  1. Run the steps of [=set a structured field header=] given
+    ("Secure-Session-Skipped", |list value|) on |request|'s
+    [=request/header list=].
+</div>
+
 # DBSC Formats # {#format}
 ## \``Sec-Session-Registration`\` HTTP header field ## {#header-sec-session-registration}
 The \`<dfn export http-header id="sec-session-registration-header">
@@ -652,6 +675,24 @@ ignored.
   Sec-Session-Id: "session-id"
   ```
 </div>
+
+## \``Secure-Session-Skipped`\` HTTP header field ## {#header-secure-session-skipped}
+The \`<dfn export http-header id="secure-session-skipped-header">
+<code>Secure-Session-Skipped</code></dfn>\` header field can be used in a
+[=request=] to indicate that the request is intentionally missing bound
+credentials due to user agent policy.
+
+[:Secure-Session-Skipped:] is a List Structured Header [[RFC9651]]. Its ABNF
+is:
+
+<pre class="abnf">Secure-Session-Skipped = <a>sf-list</a></pre>
+
+Each item in the list must be MUST be a <a>sf-token</a> representing the reason
+a coarse-grained reason for skipping cookie refresh. The only supported values are: "unreachable", "server_error", and "quota_exceeded".
+
+One parameter is defined:
+- A parameter whose key is "session_identifier", and whose value is a String
+  (Section 3.3.3 of [[RFC9651]]), conveying the identifier of the skipped session.
 
 ## DBSC Session Instruction Format ## {#format-session-instructions}
 The server sends <dfn>session instructions</dfn> during session registration and
