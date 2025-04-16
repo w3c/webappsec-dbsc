@@ -36,6 +36,7 @@ spec: RFC9651;urlPrefix:https://datatracker.ietf.org/doc/html/rfc9651#;type:dfn
   text: sf-list; url: list
   text: sf-string; url: string
   text: sf-token; url: token
+  text: sf-parameter; url: name-parameters
   url:text-parse;text:parsing structured fields
 </pre>
 
@@ -322,11 +323,14 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. Let |site| be the [=host/registrable domain=] of the |request| [=URL=].
   1. Let |domain sessions| be [=sessions by registrable domain=][|site|] as [=/session by id=]
   1. [=list/For each=] |session| of |domain sessions|
-    1. The browser MAY skip |session| in order to prevent denial of
-       service for the user or site. For example if |session| is
-       requesting excessive TPM operations (harming the user) or the
-       refresh endpoint has recently been unreachable (denial of service
-       risk for the site).
+    1. The browser MAY skip |session| in order to prevent denial of service for
+       the user or site. For example, this might happen if |session| is
+       requesting excessive TPM operations (harming the user) or the refresh
+       endpoint has recently been unreachable (denial of service risk for the
+       site). If the browser chooses to do this, it should perform the steps of
+       [[#algo-add-debug-header]] with |request|, an appropriate token (see
+       options in [[#header-secure-session-skipped]]), and |session|'s [=device
+       bound session/session identifier=] to indicate this to the site.
     1. If |session|'s [=expiration timestamp=] is before the present, [=iteration/continue=].
     1. Run the steps in [[#algo-url-in-scope]] on the |request|'s URL
        and |session|'s scope.
@@ -380,7 +384,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
       [=iteration/continue=].
     1. Let |challenge| be the parsed item.
     1. Let |session id| be null.
-    1. If params["id"] exists and is a <a>sf-string</a>, Set |session id| to
+    1. If params["id"] exists and is an <a>sf-string</a>, Set |session id| to
       params["id"].
     1. If |session id| is null, [=iteration/continue=].
     1. Identify session as described in [=identify a session=] given
@@ -491,7 +495,7 @@ To <dfn export id="create-session">Create a new session</dfn> due to the
       [=iteration/continue=].
     1. Let |algorithm list| be an empty [=list=].
     1. [=list/For each=] |algorithm| → |registration entry|
-      1. If |algorithm| is not a <a>sf-token</a>, [=iteration/continue=].
+      1. If |algorithm| is not an <a>sf-token</a>, [=iteration/continue=].
       1. If |algorithm| represents a crypto algorithm supported in
         [:Sec-Session-Registration:], and is supported on this client, add
         |algorithm| to |algorithm list|
@@ -511,6 +515,25 @@ To <dfn export id="create-session">Create a new session</dfn> due to the
        session identifier, |challenge| and |authorization|.
 </div>
 
+## Add debug header ## {#algo-add-debug-header}
+In order for sites to understand when the user agent chooses not to
+apply a session, user agents should <dfn export
+id="add-debug-header">add the debug header</dfn> to a [=request=]
+(|request|) with an <a>sf-token</a> (|token|) and [=string=] (|session id|).
+<div class="algorithm" data-algorithm="add-debug-header">
+  1. Let |value| be an <a>sf-token</a> with value |token|.
+  1. Set the <a>sf-parameter</a> "session_identifier" on |value| to |session id|.
+  1. Let |skipped header value| be the result of running the steps of [=get a
+     structured field value=] with [=header name=]
+     "Secure-Session-Skipped", type "list", and |request|'s
+     [=request/header list=].
+  1. If |skipped header value| is null, set it to an empty <a>sf-list</a>.
+  1. Append |value| to |skipped header value|.
+  1. Run the steps of [=set a structured field value=] given
+    ("Secure-Session-Skipped", |skipped header value|) on |request|'s
+    [=request/header list=].
+</div>
+
 # DBSC Formats # {#format}
 ## \``Sec-Session-Registration`\` HTTP header field ## {#header-sec-session-registration}
 The \`<dfn export http-header id="sec-session-registration-header">
@@ -524,20 +547,20 @@ is:
 <pre class="abnf">Sec-Session-Registration = <a>sf-list</a></pre>
 
 Each item in the list must be an inner list, and each item in the inner list
-MUST be a <a>sf-token</a> representing a supported algorithm (ES256, RS256).
+MUST be an <a>sf-token</a> representing a supported algorithm (ES256, RS256).
 Only these two values are currently supported.
 
-The following parameters are defined:
-- A parameter whose key is "path", and whose value is a String (Section 3.3.3 of
-  [[RFC9651]]), conveying the path to the registration endpoint. This may be
+The following <a>sf-parameter</a>s are defined:
+- An <a>sf-parameter</a> whose key is "path", and whose value is an
+  <a>sf-string</a>, conveying the path to the registration endpoint. This may be
   relative to the current [=URL=], or a full [=URL=]. Entries without this
   parameter will be ignored in [[#algo-create-session]].
-- A parameter whose key is "challenge", and whose value is a String (Section 
-  3.3.3 of [[RFC9651]]), conveying the challenge to be used in the session
+- An <a>sf-parameter</a> whose key is "challenge", and whose value is an
+  <a>sf-string</a>, conveying the challenge to be used in the session
   registration.
-- A parameter whose key is "authorization", and whose value is a String (Section
-  3.3.3 of [[RFC9651]]), this parameter will be copied into the registration
-  JWT.
+- An <a>sf-parameter</a> whose key is "authorization", and whose value is an
+  <a>sf-string</a>. This <a>sf-parameter</a> will be copied into the
+  registration JWT.
 
 <div class="example" id="sec-session-registration-example">
   Some examples of [:Sec-Session-Registration:] from
@@ -582,9 +605,9 @@ The [:Sec-Session-Challenge:] is represented as a Structured Field.[[!RFC9651]]
 
 In this representation, a challenge is represented by a string.
 
-Challenges MAY have a Parameter named `"id"`, whose value MUST be a String
+Challenges MAY have an <a>sf-parameter</a> named `"id"`, whose value MUST be a String
 representing a [=device bound session/session identifier=]. Any other
-parameters SHOULD be ignored.
+<a>sf-parameter</a>s SHOULD be ignored.
 
 Note: The server might need to use this header to request the [=DBSC proof=] to
 be signed with a new challenge before a session id has been assigned. In this
@@ -626,7 +649,7 @@ that the client is still in possesion of the private key of the session key.
 \`<a http-header><code>Sec-Session-Response</code></a>\` is a structured
 header. Its value must be a string. It's ABNF is:
 <pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
-This string MUST only contain the [=DBSC proof=] JWT. Any parameters SHOULD be
+This string MUST only contain the [=DBSC proof=] JWT. Any <a>sf-parameter</a>s SHOULD be
 ignored.
 
 <div class="example" id="sec-session-response-example">
@@ -654,6 +677,33 @@ ignored.
   Sec-Session-Id: "session-id"
   ```
 </div>
+
+## \``Secure-Session-Skipped`\` HTTP header field ## {#header-secure-session-skipped}
+The \`<dfn export http-header id="secure-session-skipped-header">
+<code>Secure-Session-Skipped</code></dfn>\` header field can be used in a
+[=request=] to indicate that the request is intentionally missing bound
+credentials due to user agent policy.
+
+[:Secure-Session-Skipped:] is a List Structured Header [[RFC9651]]. Its ABNF
+is:
+
+<pre class="abnf">Secure-Session-Skipped = <a>sf-list</a></pre>
+
+Each item in the list must be MUST be an <a>sf-token</a> representing reason a
+coarse-grained reason for skipping cookie refresh. The only supported values
+are: "unreachable", "server_error", and "quota_exceeded".
+
+One <a>parameter</a> is defined:
+- An <a>sf-parameter</a> whose key is "session_identifier", and whose value is an
+  <a>sf-string</a>, conveying the identifier of the skipped session.
+  
+<div class="example" id="sec-session-id-example">
+  ```html
+  GET example.com/requires_bound_cookie
+  Sec-Session-Skipped: unreachable;session_identifier=123
+  ```
+</div>
+
 
 ## DBSC Session Instruction Format ## {#format-session-instructions}
 The server sends <dfn>session instructions</dfn> during session
@@ -782,7 +832,7 @@ At the root of each [=session scope rule=], the following keys can exist:
 ## DBSC Proof JWT Syntax ## {#format-jwt}
 A <dfn>DBSC proof</dfn> proof is a JWT that is signed (using JSON Web Signature
 (JWS)), with a private key chosen by the client. The header of a [=DBSC proof=]
-MUST contain at least the following parameters:
+MUST contain at least the following <a>sf-parameter</a>s:
 <dl dfn-for="DBSC proof">
   : <dfn>typ</dfn>
   :: a [=string=] MUST be "dbsc+jwt"
@@ -937,7 +987,7 @@ registrations: [[!RFC3864]]
   <dd>This specification (See [[#header-sec-session-registration]])</dd>
 </dl>
 
-## Sec-Session-Response ## {#iana-ses-session-response}
+## Sec-Session-Response ## {#iana-sec-session-response}
 <dl>
   <dt>Header field name</dt>
   <dd>Sec-Session-Response</dd>
@@ -953,6 +1003,24 @@ registrations: [[!RFC3864]]
 
   <dt>Specification document</dt>
   <dd>This specification (See [[#header-sec-session-response]])</dd>
+</dl>
+
+## Secure-Session-Skipped ## {#iana-secure-session-skipped}
+<dl>
+  <dt>Header field name</dt>
+  <dd>Secure-Session-Skipped</dd>
+
+  <dt>Applicable protocol</dt>
+  <dd>http</dd>
+
+  <dt>Status</dt>
+  <dd>draft</dd>
+
+  <dt>Author/Change controller</dt>
+  <dd>W3C</dd>
+
+  <dt>Specification document</dt>
+  <dd>This specification (See [[#header-secure-session-skipped]])</dd>
 </dl>
 
 ## device-bound-sessions Well Known ## {#well-known}
@@ -977,7 +1045,6 @@ to register a session for the entire site.
   - The registration endpoint has origin `https://subdomain.example.com`
   - The registration endpoint has origin `https://subdomain.example.com:8000`
 </div>
-
 
 # Changelog # {#changelog}
 This is an early draft of the spec.
