@@ -462,9 +462,8 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. [=session key=] a newly-generated key pair.
 
 ## Create session ## {#algo-create-session}
-To <dfn export id="create-session">Create a new session</dfn>, start with
-parsing the registration structured header defined in
-[:Sec-Session-Registration:]:
+To <dfn export id="create-session">Create a new session</dfn> due to the
+[=response=] (|response|) to a [=request=] (|request|), do the following steps:
 <div class="algorithm" data-algorithm="process-registration">
   1. Let |header name| be "<code>Sec-Session-Registration</code>".
   1. Let |registration list| be the result of executing <a>get a structured
@@ -492,7 +491,7 @@ parsing the registration structured header defined in
     1. Create a |key pair| for |algorithm list|.
     1. Let |endpoint| be the result of resolving |path| relative to the
        |response|'s URL.
-    1. Call [[#algo-session-request]] with |key pair|, |endpoint|, null
+    1. Call [[#algo-session-request]] with |request|, |key pair|, |endpoint|, null
        session identifier, |challenge| and |authorization|.
 </div>
 
@@ -516,7 +515,7 @@ The following parameters are defined:
 - A parameter whose key is "path", and whose value is a String (Section 3.3.3 of
   [[RFC9651]]), conveying the path to the registration endpoint. This may be
   relative to the current [=URL=], or a full [=URL=]. Entries without this
-  parameter will be ignored in [=Create a new session=].
+  parameter will be ignored in [[#algo-create-session]].
 - A parameter whose key is "challenge", and whose value is a String (Section 
   3.3.3 of [[RFC9651]]), conveying the challenge to be used in the session
   registration.
