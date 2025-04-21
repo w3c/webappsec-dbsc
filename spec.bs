@@ -808,7 +808,7 @@ present:
 
 ## Changes to the Fetch specification ## {#changes-to-fetch}
 
-This specification requires an update the <a
+This specification requires an update to the <a
 href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
 fetch</a> algorithm. Between steps 10.1 and 10.2 run
 [[#algo-identify-session-needing-refresh]]. If the resulting |session| is
@@ -816,7 +816,7 @@ non-null, run [[#algo-session-request]] with the returned |session|'s [=session
 key=], [=refresh URL=], [=device bound session/session identifier=], [=cached
 challenge=], and an empty authorization. Then restart <a
 href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
-fetch</a> with the same inputs.
+fetch</a> with the original inputs.
 
 ## Changes to the Clear Site Data specification ## {#changes-to-clear-site-data}
 
