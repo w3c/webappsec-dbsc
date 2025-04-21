@@ -319,6 +319,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   domain=], this algorithm describes how to identify which session, if
   any, should block |request| from proceeding.
 
+  1. If |request|'s [=request/credentials mode=] is "omit", return null.
   1. Let |site| be the [=host/registrable domain=] of the |request| [=URL=].
   1. Let |domain sessions| be [=sessions by registrable domain=][|site|] as [=/session by id=]
   1. [=list/For each=] |session| of |domain sessions|
