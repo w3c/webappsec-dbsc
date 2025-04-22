@@ -319,7 +319,6 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   domain=], this algorithm describes how to identify which session, if
   any, should block |request| from proceeding.
 
-  1. If |request|'s [=request/credentials mode=] is "omit", return null.
   1. Let |site| be the [=host/registrable domain=] of the |request| [=URL=].
   1. Let |domain sessions| be [=sessions by registrable domain=][|site|] as [=/session by id=]
   1. [=list/For each=] |session| of |domain sessions|
@@ -811,7 +810,7 @@ present:
 
 This specification requires an update the <a
 href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
-fetch</a> algorithm. Between steps 10.1 and 10.2 run
+fetch</a> algorithm. At the end of step 8.21, run
 [[#algo-identify-session-needing-refresh]]. If the resulting |session| is
 non-null, run [[#algo-session-request]] with the returned |session|'s [=session
 key=], [=refresh URL=], [=device bound session/session identifier=], [=cached
