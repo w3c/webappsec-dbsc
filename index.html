@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="4aaf15c46f743da552c00081dbd501173fb5a111" name="revision">
+  <meta content="65ec61d32529824ed77d2a89d3284c1631192ce9" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -1137,7 +1137,7 @@ defined in this struct should be added or removed from the scope</p>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate">for each</a> <var>scope specification</var> in <var>scope</var></p>
       <ol>
        <li data-md>
-        <p>If the <a data-link-type="dfn" href="#scope-specification-host" id="ref-for-scope-specification-host">host</a> and <a data-link-type="dfn" href="#scope-specification-path" id="ref-for-scope-specification-path">path</a> of <var>URL</var> match the <var>scope specification</var>, return the <var>scope specification</var>’s <a data-link-type="dfn" href="#scope-specification-type" id="ref-for-scope-specification-type">type</a>.</p>
+        <p>If the <a data-link-type="dfn" href="#scope-specification-host" id="ref-for-scope-specification-host">host</a> and <a data-link-type="dfn" href="#session-scope-rule-path" id="ref-for-session-scope-rule-path">path</a> of <var>URL</var> match the <var>scope specification</var>, return the <var>scope specification</var>’s <a data-link-type="dfn" href="#scope-specification-type" id="ref-for-scope-specification-type">type</a>.</p>
       </ol>
      <li data-md>
       <p>If the <var>URL</var> matches the <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-refresh-url" id="ref-for-device-bound-session-refresh-url">refresh URL</a>, return "exclude".</p>
@@ -1248,11 +1248,13 @@ params["id"].</p>
    <div class="algorithm" data-algorithm="session-request">
      This algorithm describes how to <dfn class="dfn-paneled" data-dfn-for="algorithms" data-dfn-type="dfn" data-export data-lt="send a request" id="algorithms-send-a-request">send
   a request</dfn> for a device bound session registration or refresh. It
-  takes as input an <var>originating request</var>, <var>key pair</var>, <var>destination</var>, and
-  optional <var>session id</var>, <var>challenge</var>, and <var>authorization</var>. 
+  takes as input an <var>originating request</var>, <var>key pair</var>, <var>destination</var>,
+  and optional <var>session id</var>, <var>challenge</var>, and <var>authorization</var>. It
+  returns one of "continue" or "restart", indicating if <var>originating
+  request</var> should be restarted or continued. 
     <ol>
      <li data-md>
-      <p>If <var>originating request</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url">URL</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#same-site" id="ref-for-same-site①">same site</a> with <var>destination</var>, return.</p>
+      <p>If <var>originating request</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url">URL</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#same-site" id="ref-for-same-site①">same site</a> with <var>destination</var>, return "continue".</p>
      <li data-md>
       <p>Let <var>signed challenge</var> be null. If <var>challenge</var> is non-null, sign it
  with <var>key pair</var> and store the result in <var>signed challenge</var>.</p>
@@ -1276,9 +1278,9 @@ params["id"].</p>
  fetch</a> for <var>request</var>.</p>
      <li data-md>
       <p>If the result is a redirect, and the destination does not have the
- HTTPS scheme and is not localhost, cancel the request.</p>
+ HTTPS scheme and is not localhost, cancel the request and return "continue".</p>
      <li data-md>
-      <p>If <var>response</var> is a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-network-error" id="ref-for-concept-network-error">network error</a>, or <var>response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status">status</a> is 407, return.</p>
+      <p>If <var>response</var> is a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-network-error" id="ref-for-concept-network-error">network error</a>, or <var>response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status">status</a> is 407, return "continue".</p>
      <li data-md>
       <p>If <var>response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status①">status</a> is a redirect status, and the
  destination does not have the HTTPS scheme and is not localhost, cancel the
@@ -1288,11 +1290,11 @@ params["id"].</p>
  "Sec-Session-Challenge" header, start this algorithm over with a new
  challenge value.</p>
      <li data-md>
-      <p>If response|'s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status③">status</a> is below 500, then terminate the
- session and return.</p>
+      <p>If <var>response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status③">status</a> is below 500, then terminate the
+ session and return "continue".</p>
      <li data-md>
       <p>If <var>response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status④">status</a> is at least 500, then
- return. Browsers may choose to trigger a backoff mechanism on
+ return "continue". Browsers may choose to trigger a backoff mechanism on
  subsequent refresh requests on this session, to limit the harm of a
  temporary outage on the refresh endpoint.</p>
      <li data-md>
@@ -1308,10 +1310,10 @@ params["id"].</p>
        <li data-md>
         <p>If the result is non-null, delete the returned session.</p>
        <li data-md>
-        <p>Return from this algorithm.</p>
+        <p>Return "continue" from this algorithm.</p>
       </ol>
      <li data-md>
-      <p>Otherwise, perform the following validations, returning if any fail:</p>
+      <p>Otherwise, perform the following validations, returning "continue" if any fail:</p>
       <ol>
        <li data-md>
         <p><var>session identifier</var> must be nonempty.</p>
@@ -1338,17 +1340,17 @@ params["id"].</p>
        <li data-md>
         <p>Let <var>destination site</var> be the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#host-registrable-domain" id="ref-for-host-registrable-domain⑥">registrable domain</a> of <var>destination</var>.</p>
        <li data-md>
-        <p>If <var>destination site</var> is equal to the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host">host</a> of <var>destination</var>, continue.</p>
+        <p>If <var>destination site</var> is equal to the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host">host</a> of <var>destination</var>, continue to the next step.</p>
        <li data-md>
         <p>Otherwise, let <var>well known URL</var> be a copy of <var>destination</var>, with the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host①">host</a> replaced with <var>destination site</var>, and the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-path" id="ref-for-concept-url-path">path</a> replaced with "/.well-known/device-bound-sessions".</p>
        <li data-md>
         <p>Let <var>well known response</var> be the result of fetching <var>well known URL</var>.</p>
        <li data-md>
-        <p>If <var>well known response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status⑤">status</a> is not 200, return.</p>
+        <p>If <var>well known response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status⑤">status</a> is not 200, return "continue".</p>
        <li data-md>
-        <p>If <var>well known response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-body" id="ref-for-concept-response-body①">body</a> is not a JSON-encoded list of strings, return.</p>
+        <p>If <var>well known response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-body" id="ref-for-concept-response-body①">body</a> is not a JSON-encoded list of strings, return "continue".</p>
        <li data-md>
-        <p>If <var>well known response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-body" id="ref-for-concept-response-body②">body</a> does not include the origin of <var>destination</var>, return.</p>
+        <p>If <var>well known response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-body" id="ref-for-concept-response-body②">body</a> does not include the origin of <var>destination</var>, return "continue".</p>
       </ol>
      <li data-md>
       <p>If the input <var>session id</var> is present, delete the session with site <var>destination</var>’s site and identifier <var>session id</var>.</p>
@@ -1368,6 +1370,8 @@ params["id"].</p>
        <li data-md>
         <p><a data-link-type="dfn" href="#device-bound-session-session-key" id="ref-for-device-bound-session-session-key">session key</a> a newly-generated key pair.</p>
       </ol>
+     <li data-md>
+      <p>Return "restart".</p>
     </ol>
     <h3 class="heading settled" data-level="8.7" id="algo-create-session"><span class="secno">8.7. </span><span class="content">Create session</span><a class="self-link" href="#algo-create-session"></a></h3>
      To <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="create-session">Create a new session</dfn> due to the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-response" id="ref-for-concept-response-response①">response</a> (<var>response</var>) to a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-request" id="ref-for-concept-request-request②">request</a> (<var>request</var>), do the following steps: 
@@ -1723,9 +1727,10 @@ Sec-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
     </div>
     <h2 class="heading settled" data-level="10" id="changes-to-other-specifications"><span class="secno">10. </span><span class="content">Changes to other specifications</span><a class="self-link" href="#changes-to-other-specifications"></a></h2>
     <h3 class="heading settled" data-level="10.1" id="changes-to-fetch"><span class="secno">10.1. </span><span class="content">Changes to the Fetch specification</span><a class="self-link" href="#changes-to-fetch"></a></h3>
-    <p>This specification requires an update the <a href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
+    <p>This specification requires an update to the <a href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
 fetch</a> algorithm. Between steps 10.1 and 10.2 run <a href="#algo-identify-session-needing-refresh">§ 8.3 Identify session needing refresh</a>. If the resulting <var>session</var> is
-non-null, run <a href="#algo-session-request">§ 8.6 Send request</a> with the returned <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key" id="ref-for-device-bound-session-session-key①">session key</a>, <a data-link-type="dfn" href="#device-bound-session-refresh-url" id="ref-for-device-bound-session-refresh-url②">refresh URL</a>, <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier⑧">session identifier</a>, <a data-link-type="dfn" href="#device-bound-session-cached-challenge" id="ref-for-device-bound-session-cached-challenge①">cached challenge</a>, and an empty authorization.</p>
+non-null, run <a href="#algo-session-request">§ 8.6 Send request</a> with the returned <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key" id="ref-for-device-bound-session-session-key①">session key</a>, <a data-link-type="dfn" href="#device-bound-session-refresh-url" id="ref-for-device-bound-session-refresh-url②">refresh URL</a>, <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier⑧">session identifier</a>, <a data-link-type="dfn" href="#device-bound-session-cached-challenge" id="ref-for-device-bound-session-cached-challenge①">cached challenge</a>, and an empty authorization. If the result is "restart", restart <a href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
+fetch</a> with the original inputs. Otherwise continue.</p>
     <h3 class="heading settled" data-level="10.2" id="changes-to-clear-site-data"><span class="secno">10.2. </span><span class="content">Changes to the Clear Site Data specification</span><a class="self-link" href="#changes-to-clear-site-data"></a></h3>
     <p>This specification requires that the Clear Site Data specification
 sections 4.2.5 "Clear DOM-accessible storage for origin" clear all
@@ -2289,7 +2294,7 @@ let dfnPanelData = {
 "feac4ab3": {"dfnID":"feac4ab3","dfnText":"same site","external":true,"refSections":[{"refs":[{"id":"ref-for-same-site"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-same-site\u2460"}],"title":"8.6. Send request"}],"url":"https://html.spec.whatwg.org/multipage/browsers.html#same-site"},
 "scope-specification": {"dfnID":"scope-specification","dfnText":"scope specification","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification"}],"title":"7.4. Session scope"},{"refs":[{"id":"ref-for-scope-specification\u2460"}],"title":"8.2. Identify if a URL is in scope of a session"}],"url":"#scope-specification"},
 "scope-specification-host": {"dfnID":"scope-specification-host","dfnText":"host","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification-host"}],"title":"8.2. Identify if a URL is in scope of a session"}],"url":"#scope-specification-host"},
-"scope-specification-path": {"dfnID":"scope-specification-path","dfnText":"path","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification-path"}],"title":"8.2. Identify if a URL is in scope of a session"}],"url":"#scope-specification-path"},
+"scope-specification-path": {"dfnID":"scope-specification-path","dfnText":"path","external":false,"refSections":[],"url":"#scope-specification-path"},
 "scope-specification-type": {"dfnID":"scope-specification-type","dfnText":"type","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification-type"}],"title":"8.2. Identify if a URL is in scope of a session"}],"url":"#scope-specification-type"},
 "sec-session-challenge-header": {"dfnID":"sec-session-challenge-header","dfnText":"\nSec-Session-Challenge","external":false,"refSections":[{"refs":[{"id":"ref-for-sec-session-challenge-header"}],"title":"9.2. `Sec-Session-Challenge` HTTP Header Field"},{"refs":[{"id":"ref-for-sec-session-challenge-header\u2460"},{"id":"ref-for-sec-session-challenge-header\u2461"}],"title":"9.2.1. Sec-Session-Challenge structured header serialization"}],"url":"#sec-session-challenge-header"},
 "sec-session-id-header": {"dfnID":"sec-session-id-header","dfnText":"\nSec-Session-Id","external":false,"refSections":[{"refs":[{"id":"ref-for-sec-session-id-header"}],"title":"9.4. Sec-Session-Id HTTP Header Field"}],"url":"#sec-session-id-header"},
@@ -2314,7 +2319,7 @@ let dfnPanelData = {
 "session-scope-origin": {"dfnID":"session-scope-origin","dfnText":"origin","external":false,"refSections":[{"refs":[{"id":"ref-for-session-scope-origin"},{"id":"ref-for-session-scope-origin\u2460"},{"id":"ref-for-session-scope-origin\u2461"},{"id":"ref-for-session-scope-origin\u2462"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-session-scope-origin\u2463"}],"title":"8.6. Send request"}],"url":"#session-scope-origin"},
 "session-scope-rule": {"dfnID":"session-scope-rule","dfnText":"session scope rule","external":false,"refSections":[{"refs":[{"id":"ref-for-session-scope-rule"},{"id":"ref-for-session-scope-rule\u2460"}],"title":"9.6. DBSC Session Scope Instruction Format"},{"refs":[{"id":"ref-for-session-scope-rule\u2461"}],"title":"9.7. DBSC Session Scope Rule Format"}],"url":"#session-scope-rule"},
 "session-scope-rule-domain": {"dfnID":"session-scope-rule-domain","dfnText":"domain","external":false,"refSections":[],"url":"#session-scope-rule-domain"},
-"session-scope-rule-path": {"dfnID":"session-scope-rule-path","dfnText":"path","external":false,"refSections":[],"url":"#session-scope-rule-path"},
+"session-scope-rule-path": {"dfnID":"session-scope-rule-path","dfnText":"path","external":false,"refSections":[{"refs":[{"id":"ref-for-session-scope-rule-path"}],"title":"8.2. Identify if a URL is in scope of a session"}],"url":"#session-scope-rule-path"},
 "session-scope-rule-type": {"dfnID":"session-scope-rule-type","dfnText":"type","external":false,"refSections":[],"url":"#session-scope-rule-type"},
 "session-scope-scope-specifications": {"dfnID":"session-scope-scope-specifications","dfnText":"scope specifications","external":false,"refSections":[{"refs":[{"id":"ref-for-session-scope-scope-specifications"}],"title":"8.6. Send request"}],"url":"#session-scope-scope-specifications"},
 "sessions-by-registrable-domain": {"dfnID":"sessions-by-registrable-domain","dfnText":"sessions by registrable domain","external":false,"refSections":[{"refs":[{"id":"ref-for-sessions-by-registrable-domain"}],"title":"8.1. Identify session"},{"refs":[{"id":"ref-for-sessions-by-registrable-domain\u2460"},{"id":"ref-for-sessions-by-registrable-domain\u2461"}],"title":"8.3. Identify session needing refresh"},{"refs":[{"id":"ref-for-sessions-by-registrable-domain\u2462"}],"title":"8.5. Cache challenge"}],"url":"#sessions-by-registrable-domain"},
@@ -2717,7 +2722,6 @@ let refsData = {
 "#device-bound-session-session-key": {"displayText":"session key","export":true,"for_":["device bound session"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"session key","type":"dfn","url":"#device-bound-session-session-key"},
 "#scope-specification": {"displayText":"scope specification","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"scope specification","type":"dfn","url":"#scope-specification"},
 "#scope-specification-host": {"displayText":"host","export":true,"for_":["scope specification"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"host","type":"dfn","url":"#scope-specification-host"},
-"#scope-specification-path": {"displayText":"path","export":true,"for_":["scope specification"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"path","type":"dfn","url":"#scope-specification-path"},
 "#scope-specification-type": {"displayText":"type","export":true,"for_":["scope specification"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"type","type":"dfn","url":"#scope-specification-type"},
 "#sec-session-challenge-header": {"displayText":"sec-session-challenge","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"sec-session-challenge","type":"http-header","url":"#sec-session-challenge-header"},
 "#sec-session-id-header": {"displayText":"sec-session-id","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"sec-session-id","type":"http-header","url":"#sec-session-id-header"},
@@ -2734,6 +2738,7 @@ let refsData = {
 "#session-scope-instructions-scope_specification": {"displayText":"scope_specification","export":true,"for_":["session scope instructions"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"scope_specification","type":"dfn","url":"#session-scope-instructions-scope_specification"},
 "#session-scope-origin": {"displayText":"origin","export":true,"for_":["session scope"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"origin","type":"dfn","url":"#session-scope-origin"},
 "#session-scope-rule": {"displayText":"session scope rule","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"session scope rule","type":"dfn","url":"#session-scope-rule"},
+"#session-scope-rule-path": {"displayText":"path","export":true,"for_":["session scope rule"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"path","type":"dfn","url":"#session-scope-rule-path"},
 "#session-scope-scope-specifications": {"displayText":"scope specifications","export":true,"for_":["session scope"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"scope specifications","type":"dfn","url":"#session-scope-scope-specifications"},
 "#sessions-by-registrable-domain": {"displayText":"sessions by registrable domain","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"sessions by registrable domain","type":"dfn","url":"#sessions-by-registrable-domain"},
 "https://datatracker.ietf.org/doc/html/rfc9651#inner-list": {"displayText":"sf-inner-list","export":true,"for_":[],"level":"","normative":true,"shortname":"rfc9651","spec":"rfc9651","status":"anchor-block","text":"sf-inner-list","type":"dfn","url":"https://datatracker.ietf.org/doc/html/rfc9651#inner-list"},
