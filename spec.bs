@@ -720,8 +720,8 @@ At the root of the JSON object the following keys can exist:
       // These SHOULD be equivalent to the Set-Cookie line accompanying this 
       // response.
       "name": "auth_cookie",
-      "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
-      // Attributes Max-Age, Expires and HttpOnly are ignored
+      "attributes": "Domain=example.com; Path=/; Secure; HttpOnly; SameSite=None"
+      // Attributes Max-Age and Expires are ignored
     }]
   }
   ```

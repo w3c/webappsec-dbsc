@@ -200,7 +200,7 @@ If the request is properly authorized, the server establishes whatever state rep
 HTTP/1.1 200 OK
 Content-Type: application/json
 Cache-Control: no-store
-Set-Cookie: auth_cookie=abcdef0123; Domain=example.com; Max-Age=600; Secure; HttpOnly;
+Set-Cookie: auth_cookie=abcdef0123; Domain=example.com; Max-Age=600; Secure; HttpOnly; SameSite=None
 ```
 
 ```jsonc
@@ -230,7 +230,7 @@ Set-Cookie: auth_cookie=abcdef0123; Domain=example.com; Max-Age=600; Secure; Htt
     // These SHOULD be equivalent to the Set-Cookie line accompanying this 
     // response.
     "name": "auth_cookie",
-    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+    "attributes": "Domain=example.com; Path=/; Secure; HttpOnly; SameSite=None"
     // Attributes Max-Age and Expires are ignored
   }]
 }
@@ -318,7 +318,7 @@ If the server is satisfied with the response, or if it did not request it, it an
 HTTP/1.1 200 OK
 Content-Type: application/json
 Cache-Control: no-store
-Set-Cookie: auth_cookie=abcdef0123; Domain=example.com; Max-Age=600; Secure; HttpOnly;
+Set-Cookie: auth_cookie=abcdef0123; Domain=example.com; Max-Age=600; Secure; HttpOnly; SameSite=None
 ```
 The contents is a json with the same specifications as during the registration.
 On receiving this response, the browser releases any requests that were deferred pending this refresh, including the new cookie.
