@@ -394,11 +394,13 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
 <div class="algorithm" data-algorithm="session-request">
   This algorithm describes how to <dfn export dfn-for="algorithms">send
   a request</dfn> for a device bound session registration or refresh. It
-  takes as input an |originating request|, |key pair|, |destination|, and
-  optional |session id|, |challenge|, and |authorization|.
+  takes as input an |originating request|, |key pair|, |destination|,
+  and optional |session id|, |challenge|, and |authorization|. It
+  returns one of "continue" or "restart", indicating if |originating
+  request| should be restarted or continued.
 
   1. If |originating request|'s [=request/URL=] is not [=/same site=] with
-     |destination|, return.
+     |destination|, return "continue".
   1. Let |signed challenge| be null. If |challenge| is non-null, sign it
      with |key pair| and store the result in |signed challenge|.
   1. Create a |request| for use in <a
@@ -417,19 +419,19 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
      href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
      fetch</a> for |request|.
   1. If the result is a redirect, and the destination does not have the
-     HTTPS scheme and is not localhost, cancel the request.
+     HTTPS scheme and is not localhost, cancel the request and return "continue".
   1. If |response| is a [=network error=], or |response|'s
-     [=response/status=] is 407, return.
+     [=response/status=] is 407, return "continue".
   1. If |response|'s [=response/status=] is a redirect status, and the
      destination does not have the HTTPS scheme and is not localhost, cancel the
      request.
   1. If |response|'s [=response/status=] is 401 and has a
      "Sec-Session-Challenge" header, start this algorithm over with a new
      challenge value.
-  1. If response|'s [=response/status=] is below 500, then terminate the
-     session and return.
+  1. If |response|'s [=response/status=] is below 500, then terminate the
+     session and return "continue".
   1. If |response|'s [=response/status=] is at least 500, then
-     return. Browsers may choose to trigger a backoff mechanism on
+     return "continue". Browsers may choose to trigger a backoff mechanism on
      subsequent refresh requests on this session, to limit the harm of a
      temporary outage on the refresh endpoint.
   1. Parse |response|'s [=response/body=] according to
@@ -439,8 +441,8 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. Run the steps of [[#algo-identify-session]] on |destination| and |session
        identifier|.
     1. If the result is non-null, delete the returned session.
-    1. Return from this algorithm.
-  1. Otherwise, perform the following validations, returning if any fail:
+    1. Return "continue" from this algorithm.
+  1. Otherwise, perform the following validations, returning "continue" if any fail:
     1. |session identifier| must be nonempty.
     1. The value of the key "refresh_url" must be non-empty.
     1. Let |origin| be the value of the key "scope.origin", if present, or the
@@ -453,15 +455,15 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. |refresh URL| must be same-site with |destination|.
   1. If the value of the key "scope.include_site" in |response| is true:
     1. Let |destination site| be the [=host/registrable domain=] of |destination|.
-    1. If |destination site| is equal to the [=url/host=] of |destination|, continue.
+    1. If |destination site| is equal to the [=url/host=] of |destination|, continue to the next step.
     1. Otherwise, let |well known URL| be a copy of |destination|, with the
        [=url/host=] replaced with |destination site|, and the [=url/path=]
        replaced with "/.well-known/device-bound-sessions".
     1. Let |well known response| be the result of fetching |well known URL|.
-    1. If |well known response|'s [=response/status=] is not 200, return.
-    1. If |well known response|'s [=response/body=] is not a JSON-encoded list of strings, return.
+    1. If |well known response|'s [=response/status=] is not 200, return "continue".
+    1. If |well known response|'s [=response/body=] is not a JSON-encoded list of strings, return "continue".
     1. If |well known response|'s [=response/body=] does not include the origin of
-       |destination|, return.
+       |destination|, return "continue".
   1. If the input |session id| is present, delete the session with site
      |destination|'s site and identifier |session id|.
   1. Create a new session with:
@@ -473,6 +475,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
        specifications=] the value of the key "scope.scope_specification".
     1. [=session credentials=] the value of the key "credentials".
     1. [=session key=] a newly-generated key pair.
+  1. Return "restart".
 
 ## Create session ## {#algo-create-session}
 To <dfn export id="create-session">Create a new session</dfn> due to the
@@ -857,13 +860,15 @@ present:
 
 ## Changes to the Fetch specification ## {#changes-to-fetch}
 
-This specification requires an update the <a
+This specification requires an update to the <a
 href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
 fetch</a> algorithm. Between steps 10.1 and 10.2 run
 [[#algo-identify-session-needing-refresh]]. If the resulting |session| is
 non-null, run [[#algo-session-request]] with the returned |session|'s [=session
 key=], [=refresh URL=], [=device bound session/session identifier=], [=cached
-challenge=], and an empty authorization.
+challenge=], and an empty authorization. If the result is "restart", restart <a
+href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
+fetch</a> with the original inputs. Otherwise continue.
 
 ## Changes to the Clear Site Data specification ## {#changes-to-clear-site-data}
 
