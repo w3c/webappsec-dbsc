@@ -397,7 +397,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   takes as input an |originating request|, |key pair|, |destination|,
   and optional |session id|, |challenge|, and |authorization|. It
   returns one of "continue" or "restart", indicating if |originating
-  request| should be restarted or continue.
+  request| should be restarted or continued.
 
   1. If |originating request|'s [=request/URL=] is not [=/same site=] with
      |destination|, return "continue".
@@ -419,7 +419,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
      href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
      fetch</a> for |request|.
   1. If the result is a redirect, and the destination does not have the
-     HTTPS scheme and is not localhost, cancel the request.
+     HTTPS scheme and is not localhost, cancel the request and return "continue".
   1. If |response| is a [=network error=], or |response|'s
      [=response/status=] is 407, return "continue".
   1. If |response|'s [=response/status=] is a redirect status, and the
@@ -428,7 +428,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. If |response|'s [=response/status=] is 401 and has a
      "Sec-Session-Challenge" header, start this algorithm over with a new
      challenge value.
-  1. If response|'s [=response/status=] is below 500, then terminate the
+  1. If |response|'s [=response/status=] is below 500, then terminate the
      session and return "continue".
   1. If |response|'s [=response/status=] is at least 500, then
      return "continue". Browsers may choose to trigger a backoff mechanism on
@@ -455,7 +455,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. |refresh URL| must be same-site with |destination|.
   1. If the value of the key "scope.include_site" in |response| is true:
     1. Let |destination site| be the [=host/registrable domain=] of |destination|.
-    1. If |destination site| is equal to the [=url/host=] of |destination|, continue.
+    1. If |destination site| is equal to the [=url/host=] of |destination|, continue to the next step.
     1. Otherwise, let |well known URL| be a copy of |destination|, with the
        [=url/host=] replaced with |destination site|, and the [=url/path=]
        replaced with "/.well-known/device-bound-sessions".
@@ -475,7 +475,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
        specifications=] the value of the key "scope.scope_specification".
     1. [=session credentials=] the value of the key "credentials".
     1. [=session key=] a newly-generated key pair.
-  1. Return "restart"
+  1. Return "restart".
 
 ## Create session ## {#algo-create-session}
 To <dfn export id="create-session">Create a new session</dfn> due to the
