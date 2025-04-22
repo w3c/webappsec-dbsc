@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="3f747687c6839fdf208f5e8030bfef9fab6b43fe" name="revision">
+  <meta content="4a1f8fb9ad5a5535b1b7565141b438cb17cf38b6" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -733,7 +733,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2025-04-21">21 April 2025</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2025-04-22">22 April 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1595,8 +1595,8 @@ This key is OPTIONAL, and if not present a value of true is default.</p>
     <c- c1>// These SHOULD be equivalent to the Set-Cookie line accompanying this </c->
     <c- c1>// response.</c->
     <c- f>"name"</c-><c- p>:</c-> <c- u>"auth_cookie"</c-><c- p>,</c->
-    <c- f>"attributes"</c-><c- p>:</c-> <c- u>"Domain=example.com; Path=/; Secure; SameSite=None"</c->
-    <c- c1>// Attributes Max-Age, Expires and HttpOnly are ignored</c->
+    <c- f>"attributes"</c-><c- p>:</c-> <c- u>"Domain=example.com; Path=/; Secure; HttpOnly; SameSite=None"</c->
+    <c- c1>// Attributes Max-Age and Expires are ignored</c->
   <c- p>}]</c->
 <c- p>}</c->
 </pre>
