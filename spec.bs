@@ -752,13 +752,13 @@ At the root of the JSON object, the following keys can exist:
     [[#algo-url-in-scope]]).
     
   : <dfn>scope_specification</dfn>
-  :: a [=list=] of [=session scope rules=] describing modifications to the
+  :: a [=list=] of [=session scope rule=]s describing modifications to the
     default scope (the entire origin or site). This key is OPTIONAL; if not
     present, an empty list will be used.
 </dl>
 
 ## DBSC Session Scope Rule Format ## {#format-session-scope-rule}
-The server sends <dfn>session scope rules</dfn> in the [=session scope
+The server sends <dfn>session scope rule</dfn>s in the [=session scope
 instructions=] during registration and optionally during session refresh.
 
 At the root of each [=session scope rule=], the following keys can exist:
