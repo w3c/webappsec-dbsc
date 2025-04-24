@@ -332,13 +332,13 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
        and |session|'s scope.
     1. If the result does not indicate the request is in scope, skip |session|
        and [=iteration/continue=].
-    1. Run the steps of [[#algo-identify-misssing-session-credential]] on
+    1. Run the steps of [[#algo-identify-missing-session-credential]] on
        |request| and |session|'s [=session credentials=]. If the result is
        true, return |session|.
   1. If no session has been identified, return null.
 </div>
 
-## Identify missing session credential ## {#algo-identify-misssing-session-credential}
+## Identify missing session credential ## {#algo-identify-missing-session-credential}
 <div class="algorithm" data-algorithm="identify-missing-session-credential">
   Given a [=request=] (|request|) and a [=/list=] of [=session credentials=]
   (|credentials|), returns a [=boolean=] indicating whether any |credential| in
@@ -695,6 +695,10 @@ At the root of the JSON object, the following keys can exist:
   : <dfn>scope</dfn>
   :: a [=dictionary=] of [=session scope instructions=] describing the request
     destinations covered by the session. This field MUST be present.
+
+  : <dfn>credentials</dfn>
+  :: a [=list=] of [=session credentials=] describing the cookies protected by
+    this session. This field MUST be present.
 </dl>
 
 <div class="example" id="sec-session-instruction-example">
@@ -777,6 +781,25 @@ At the root of each [=session scope rule=], the following keys can exist:
   : <dfn>path</dfn>
   :: a [=string=] indicating the path-prefixes that should match the rule. This
     key MUST be present. See [[#algo-url-in-scope]] for the detailed semantics.
+</dl>
+
+## DBSC Session Credentials Format ## {#format-session-credentials}
+The server sends <dfn>session credentials</dfn> in the [=session
+instructions=] during registration and optionally during session refresh.
+
+At the root of the JSON object, the following keys can exist:
+<dl dfn-for="session scope instructions">
+  : <dfn>type</dfn>
+  :: a [=string=] indicating the kind of credential protected by this session.
+    This key MUST be present, and the value MUST be "cookie".
+    
+  : <dfn>name</dfn>
+  :: a [=string=] indicating the name of the bound cookie.
+    
+  : <dfn>attributes</dfn>
+  :: a [=string=] containing the expected attributes of the protected cookie.
+    See [[#algo-identify-missing-session-credential]] for details on how this
+    is used. 
 </dl>
 
 ## DBSC Proof JWT Syntax ## {#format-jwt}
