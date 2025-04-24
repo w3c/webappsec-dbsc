@@ -885,7 +885,7 @@ present:
 
 This specification requires an update to the <a
 href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
-fetch</a> algorithm. Between steps 10.1 and 10.2 run
+fetch</a> algorithm. At the end of step 8.21, run
 [[#algo-identify-session-needing-refresh]]. If the resulting |session| is
 non-null, run [[#algo-session-request]] with the returned |session|'s [=session
 key=], [=refresh URL=], [=device bound session/session identifier=], [=cached
