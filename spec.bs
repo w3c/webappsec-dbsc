@@ -9,7 +9,7 @@ ED: https://w3c.github.io/webappsec-dbsc/
 Editor: Kristian Monsen 76841, Google, kristianm@google.com
 Editor: Daniel Rubery 162789, Google, drubery@google.com
 Editor: thefrog@chromium.org 164860, Google, thefrog@chromium.org
-Abstract: The Device Bound Sessions Credentials (DBSC) aims to prevent hijacking via cookie theft by building a protocol and infrastructure that allows a user agent to assert possession of a securely-stored private key. DBSC is a Web API and a protocol between user agents and servers to achieve this binding.
+Abstract: Device Bound Sessions Credentials (DBSC) aims to prevent hijacking via cookie theft by building a protocol and infrastructure that allows a user agent to assert possession of a securely-stored private key. DBSC is a Web API and a protocol between user agents and servers to achieve this binding.
 Repository: https://github.com/w3c/webappsec-dbsc/
 Markup Shorthands: css no, markdown yes
 Mailing List:
@@ -81,7 +81,7 @@ different situations. Some of the use cases of DBSC are:
 ### Device integrity ### {#example-device-integrity}
 <div class="example" id="device-integrity-example">
   A commercial site has different ways of detecting unauthorized login attempts.
-  A DBSC session on device could be used to see which users have logged on to
+  A DBSC session on the device could be used to see which users have logged on to
   this device before.
 </div>
 
@@ -170,7 +170,7 @@ order for DBSC to apply within the cross-site context.
 # Server considerations # {#server-considerations}
 
 In order to use DBSC, site owners need to establish two new endpoints:
-the regsitration endpoint and the refresh endpoint.
+the registration endpoint and the refresh endpoint.
 
 The registration endpoint is contacted asynchronously after receiving
 the Sec-Session-Registration header. This endpoint should:
@@ -230,7 +230,7 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
   : <dfn>cached challenge</dfn>
   :: a [=string=] that is to be used as the next challenge for this session
   : [=session scope=]
-  :: a [=struct=] defining which [=URL=]'s are in scope for this session
+  :: a [=struct=] defining which [=URL=]s are in scope for this session
   : [=session credentials=]
   :: a [=list=] of [=session credential=]s used by the session
   : <dfn>expiration timestamp</dfn>
@@ -646,7 +646,7 @@ case the session ID is optional.
 The \`<dfn export http-header id="sec-session-response-header">
 <code>Sec-Session-Response</code></dfn>\` header field can be used in the
 [=request=] by the user agent to send a [=DBSC proof=] to the server to prove
-that the client is still in possesion of the private key of the session key.
+that the client is still in possession of the private key of the session key.
 
 \`<a http-header><code>Sec-Session-Response</code></a>\` is a structured
 header. Its value must be a string. It's ABNF is:
@@ -670,7 +670,7 @@ with the current session identifier as a string argument.
 \`<a http-header><code>Sec-Session-Id</code></a>\` is a structured header.
 Its value must be a string. It's ABNF is:
 <pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
-This string MUST only contain the session identifier. Any paramters SHOULD be
+This string MUST only contain the session identifier. Any parameters SHOULD be
 ignored.
 
 <div class="example" id="sec-session-id-example">
@@ -928,7 +928,7 @@ present:
   HTTP/1.1 200 OK
   Sec-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
   ```
-  recieved on a response from ```http://example.com/page.html```
+  received on a response from ```http://example.com/page.html```
 </div>
 
 # Changes to other specifications # {#changes-to-other-specifications}
