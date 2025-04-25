@@ -384,7 +384,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
       [=iteration/continue=].
     1. Let |challenge| be the parsed item.
     1. Let |session id| be null.
-    1. If params["id"] exists and is an <a>sf-string</a>, Set |session id| to
+    1. If params["id"] exists and is an <a>sf-string</a>, set |session id| to
       params["id"].
     1. If |session id| is null, [=iteration/continue=].
     1. Identify session as described in [=identify a session=] given
@@ -678,7 +678,7 @@ ignored.
   ```
 </div>
 
-## \``Secure-Session-Skipped`\` HTTP header field ## {#header-secure-session-skipped}
+## `Secure-Session-Skipped` HTTP header field ## {#header-secure-session-skipped}
 The \`<dfn export http-header id="secure-session-skipped-header">
 <code>Secure-Session-Skipped</code></dfn>\` header field can be used in a
 [=request=] to indicate that the request is intentionally missing bound
@@ -689,18 +689,18 @@ is:
 
 <pre class="abnf">Secure-Session-Skipped = <a>sf-list</a></pre>
 
-Each item in the list must be MUST be an <a>sf-token</a> representing reason a
+Each item in the list must be MUST be an <a>sf-token</a> representing a
 coarse-grained reason for skipping cookie refresh. The only supported values
 are: "unreachable", "server_error", and "quota_exceeded".
 
-One <a>parameter</a> is defined:
+One <a>sf-parameter</a> is defined:
 - An <a>sf-parameter</a> whose key is "session_identifier", and whose value is an
   <a>sf-string</a>, conveying the identifier of the skipped session.
   
 <div class="example" id="sec-session-id-example">
   ```html
   GET example.com/requires_bound_cookie
-  Sec-Session-Skipped: unreachable;session_identifier=123
+  Sec-Session-Skipped: unreachable;session_identifier=123, quota_exceeded;session_identifier=456
   ```
 </div>
 
