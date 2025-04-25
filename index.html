@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="97263a5471963418ec6b6f53c72a74bfa55f1339" name="revision">
+  <meta content="c50c240d2eff6bec524d40572f55adc979b2c19f" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -755,7 +755,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   </div>
   <div class="p-summary" data-fill-with="abstract">
    <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
-   <p>The Device Bound Sessions Credentials (DBSC) aims to prevent hijacking via cookie theft by building a protocol and infrastructure that allows a user agent to assert possession of a securely-stored private key. DBSC is a Web API and a protocol between user agents and servers to achieve this binding.</p>
+   <p>Device Bound Sessions Credentials (DBSC) aims to prevent hijacking via cookie theft by building a protocol and infrastructure that allows a user agent to assert possession of a securely-stored private key. DBSC is a Web API and a protocol between user agents and servers to achieve this binding.</p>
   </div>
   <h2 class="no-num no-toc no-ref heading settled" id="sotd"><span class="content">Status of this document</span></h2>
   <div data-fill-with="status">
@@ -921,7 +921,7 @@ different situations. Some of the use cases of DBSC are:
   refuse this as an unauthorized user. </div>
    <h4 class="heading settled" data-level="1.1.2" id="example-device-integrity"><span class="secno">1.1.2. </span><span class="content">Device integrity</span><a class="self-link" href="#example-device-integrity"></a></h4>
    <div class="example" id="device-integrity-example"><a class="self-link" href="#device-integrity-example"></a> A commercial site has different ways of detecting unauthorized login attempts.
-  A DBSC session on device could be used to see which users have logged on to
+  A DBSC session on the device could be used to see which users have logged on to
   this device before. </div>
    <h4 class="heading settled" data-level="1.1.3" id="example-device-reputation"><span class="secno">1.1.3. </span><span class="content">Device reputation</span><a class="self-link" href="#example-device-reputation"></a></h4>
    <div class="example" id="device-reputation-example"><a class="self-link" href="#device-reputation-example"></a> A payment company hosted at site <code>payment.example.com</code> could create a session
@@ -996,7 +996,7 @@ order for DBSC to apply within the cross-site context.</p>
    <h3 class="heading settled" data-level="4.1" id="alternatives-webauthn"><span class="secno">4.1. </span><span class="content">WebAuthn and silent mediation</span><a class="self-link" href="#alternatives-webauthn"></a></h3>
    <h2 class="heading settled" data-level="5" id="server-considerations"><span class="secno">5. </span><span class="content">Server considerations</span><a class="self-link" href="#server-considerations"></a></h2>
    <p>In order to use DBSC, site owners need to establish two new endpoints:
-the regsitration endpoint and the refresh endpoint.</p>
+the registration endpoint and the refresh endpoint.</p>
    <p>The registration endpoint is contacted asynchronously after receiving
 the Sec-Session-Registration header. This endpoint should:</p>
    <ul>
@@ -1054,7 +1054,7 @@ requests while refreshing a session</p>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②">string</a> that is to be used as the next challenge for this session</p>
     <dt data-md><a data-link-type="dfn" href="#session-scope" id="ref-for-session-scope">session scope</a>
     <dd data-md>
-     <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct" id="ref-for-struct①">struct</a> defining which <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url①">URL</a>’s are in scope for this session</p>
+     <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct" id="ref-for-struct①">struct</a> defining which <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url①">URL</a>s are in scope for this session</p>
     <dt data-md><a data-link-type="dfn" href="#session-credentials" id="ref-for-session-credentials">session credentials</a>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list">list</a> of <a data-link-type="dfn" href="#session-credential" id="ref-for-session-credential">session credential</a>s used by the session</p>
@@ -1142,7 +1142,7 @@ defined in this struct should be added or removed from the scope</p>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate">for each</a> <var>scope specification</var> in <var>scope</var></p>
       <ol>
        <li data-md>
-        <p>If the <a data-link-type="dfn" href="#scope-specification-host" id="ref-for-scope-specification-host">host</a> and <a data-link-type="dfn" href="#scope-specification-path" id="ref-for-scope-specification-path">path</a> of <var>URL</var> match the <var>scope specification</var>, return the <var>scope specification</var>’s <a data-link-type="dfn" href="#scope-specification-type" id="ref-for-scope-specification-type">type</a>.</p>
+        <p>If the <a data-link-type="dfn" href="#scope-specification-host" id="ref-for-scope-specification-host">host</a> and <a data-link-type="dfn" href="#session-scope-rule-path" id="ref-for-session-scope-rule-path">path</a> of <var>URL</var> match the <var>scope specification</var>, return the <var>scope specification</var>’s <a data-link-type="dfn" href="#scope-specification-type" id="ref-for-scope-specification-type">type</a>.</p>
       </ol>
      <li data-md>
       <p>If the <var>URL</var> matches the <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-refresh-url" id="ref-for-device-bound-session-refresh-url">refresh URL</a>, return "exclude".</p>
@@ -1531,7 +1531,7 @@ Sec-Session-Challenge: "c1";id="session 1", "c2";id="session 2"
     </div>
     <h3 class="heading settled" data-level="9.3" id="header-sec-session-response"><span class="secno">9.3. </span><span class="content"><code>Sec-Session-Response</code> HTTP Header Field</span><a class="self-link" href="#header-sec-session-response"></a></h3>
      The `<dfn class="dfn-paneled" data-dfn-type="http-header" data-export data-lt="Sec-Session-Response" id="sec-session-response-header"> <code>Sec-Session-Response</code></dfn>` header field can be used in the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-request" id="ref-for-concept-request-request④">request</a> by the user agent to send a <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof④">DBSC proof</a> to the server to prove
-that the client is still in possesion of the private key of the session key. 
+that the client is still in possession of the private key of the session key. 
     <p>`<a data-link-type="http-header" href="#sec-session-response-header" id="ref-for-sec-session-response-header"><code>Sec-Session-Response</code></a>` is a structured
 header. Its value must be a string. It’s ABNF is:</p>
 <pre class="abnf">SecSessionChallenge = <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#string" id="ref-for-string①⑦">sf-string</a></pre>
@@ -1549,7 +1549,7 @@ with the current session identifier as a string argument.
     <p>`<a data-link-type="http-header" href="#sec-session-id-header" id="ref-for-sec-session-id-header"><code>Sec-Session-Id</code></a>` is a structured header.
 Its value must be a string. It’s ABNF is:</p>
 <pre class="abnf">SecSessionChallenge = <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#string" id="ref-for-string①⑧">sf-string</a></pre>
-    <p>This string MUST only contain the session identifier. Any paramters SHOULD be
+    <p>This string MUST only contain the session identifier. Any parameters SHOULD be
 ignored.</p>
     <div class="example" id="sec-session-id-example">
      <a class="self-link" href="#sec-session-id-example"></a> 
@@ -1787,7 +1787,7 @@ present:</p>
 <pre class="language-html highlight">HTTP/1.1 200 OK
 Sec-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
 </pre>
-     <p>recieved on a response from <code>http://example.com/page.html</code></p>
+     <p>received on a response from <code>http://example.com/page.html</code></p>
     </div>
     <h2 class="heading settled" data-level="10" id="changes-to-other-specifications"><span class="secno">10. </span><span class="content">Changes to other specifications</span><a class="self-link" href="#changes-to-other-specifications"></a></h2>
     <h3 class="heading settled" data-level="10.1" id="changes-to-fetch"><span class="secno">10.1. </span><span class="content">Changes to the Fetch specification</span><a class="self-link" href="#changes-to-fetch"></a></h3>
@@ -2406,7 +2406,7 @@ let dfnPanelData = {
 "request-deferred-device-bound-session-ids": {"dfnID":"request-deferred-device-bound-session-ids","dfnText":"deferred device bound session ids","external":false,"refSections":[{"refs":[{"id":"ref-for-request-deferred-device-bound-session-ids"},{"id":"ref-for-request-deferred-device-bound-session-ids\u2460"}],"title":"8.3. Identify session needing refresh"}],"url":"#request-deferred-device-bound-session-ids"},
 "scope-specification": {"dfnID":"scope-specification","dfnText":"scope specification","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification"}],"title":"7.4. Session scope"},{"refs":[{"id":"ref-for-scope-specification\u2460"}],"title":"8.2. Identify if a URL is in scope of a session"}],"url":"#scope-specification"},
 "scope-specification-host": {"dfnID":"scope-specification-host","dfnText":"host","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification-host"}],"title":"8.2. Identify if a URL is in scope of a session"}],"url":"#scope-specification-host"},
-"scope-specification-path": {"dfnID":"scope-specification-path","dfnText":"path","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification-path"}],"title":"8.2. Identify if a URL is in scope of a session"}],"url":"#scope-specification-path"},
+"scope-specification-path": {"dfnID":"scope-specification-path","dfnText":"path","external":false,"refSections":[],"url":"#scope-specification-path"},
 "scope-specification-type": {"dfnID":"scope-specification-type","dfnText":"type","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification-type"}],"title":"8.2. Identify if a URL is in scope of a session"}],"url":"#scope-specification-type"},
 "sec-session-challenge-header": {"dfnID":"sec-session-challenge-header","dfnText":"\nSec-Session-Challenge","external":false,"refSections":[{"refs":[{"id":"ref-for-sec-session-challenge-header"}],"title":"9.2. `Sec-Session-Challenge` HTTP Header Field"},{"refs":[{"id":"ref-for-sec-session-challenge-header\u2460"},{"id":"ref-for-sec-session-challenge-header\u2461"}],"title":"9.2.1. Sec-Session-Challenge structured header serialization"}],"url":"#sec-session-challenge-header"},
 "sec-session-id-header": {"dfnID":"sec-session-id-header","dfnText":"\nSec-Session-Id","external":false,"refSections":[{"refs":[{"id":"ref-for-sec-session-id-header"}],"title":"9.4. Sec-Session-Id HTTP Header Field"}],"url":"#sec-session-id-header"},
@@ -2437,7 +2437,7 @@ let dfnPanelData = {
 "session-scope-origin": {"dfnID":"session-scope-origin","dfnText":"origin","external":false,"refSections":[{"refs":[{"id":"ref-for-session-scope-origin"},{"id":"ref-for-session-scope-origin\u2460"},{"id":"ref-for-session-scope-origin\u2461"},{"id":"ref-for-session-scope-origin\u2462"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-session-scope-origin\u2463"}],"title":"8.6. Send request"}],"url":"#session-scope-origin"},
 "session-scope-rule": {"dfnID":"session-scope-rule","dfnText":"session scope rule","external":false,"refSections":[{"refs":[{"id":"ref-for-session-scope-rule"},{"id":"ref-for-session-scope-rule\u2460"}],"title":"9.7. DBSC Session Scope Instruction Format"},{"refs":[{"id":"ref-for-session-scope-rule\u2461"}],"title":"9.8. DBSC Session Scope Rule Format"}],"url":"#session-scope-rule"},
 "session-scope-rule-domain": {"dfnID":"session-scope-rule-domain","dfnText":"domain","external":false,"refSections":[],"url":"#session-scope-rule-domain"},
-"session-scope-rule-path": {"dfnID":"session-scope-rule-path","dfnText":"path","external":false,"refSections":[],"url":"#session-scope-rule-path"},
+"session-scope-rule-path": {"dfnID":"session-scope-rule-path","dfnText":"path","external":false,"refSections":[{"refs":[{"id":"ref-for-session-scope-rule-path"}],"title":"8.2. Identify if a URL is in scope of a session"}],"url":"#session-scope-rule-path"},
 "session-scope-rule-type": {"dfnID":"session-scope-rule-type","dfnText":"type","external":false,"refSections":[],"url":"#session-scope-rule-type"},
 "session-scope-scope-specifications": {"dfnID":"session-scope-scope-specifications","dfnText":"scope specifications","external":false,"refSections":[{"refs":[{"id":"ref-for-session-scope-scope-specifications"}],"title":"8.6. Send request"}],"url":"#session-scope-scope-specifications"},
 "sessions-by-registrable-domain": {"dfnID":"sessions-by-registrable-domain","dfnText":"sessions by registrable domain","external":false,"refSections":[{"refs":[{"id":"ref-for-sessions-by-registrable-domain"}],"title":"8.1. Identify session"},{"refs":[{"id":"ref-for-sessions-by-registrable-domain\u2460"},{"id":"ref-for-sessions-by-registrable-domain\u2461"}],"title":"8.3. Identify session needing refresh"},{"refs":[{"id":"ref-for-sessions-by-registrable-domain\u2462"}],"title":"8.5. Cache challenge"}],"url":"#sessions-by-registrable-domain"},
@@ -2841,7 +2841,6 @@ let refsData = {
 "#request-deferred-device-bound-session-ids": {"displayText":"deferred device bound session ids","export":true,"for_":["request"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"deferred device bound session ids","type":"dfn","url":"#request-deferred-device-bound-session-ids"},
 "#scope-specification": {"displayText":"scope specification","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"scope specification","type":"dfn","url":"#scope-specification"},
 "#scope-specification-host": {"displayText":"host","export":true,"for_":["scope specification"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"host","type":"dfn","url":"#scope-specification-host"},
-"#scope-specification-path": {"displayText":"path","export":true,"for_":["scope specification"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"path","type":"dfn","url":"#scope-specification-path"},
 "#scope-specification-type": {"displayText":"type","export":true,"for_":["scope specification"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"type","type":"dfn","url":"#scope-specification-type"},
 "#sec-session-challenge-header": {"displayText":"sec-session-challenge","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"sec-session-challenge","type":"http-header","url":"#sec-session-challenge-header"},
 "#sec-session-id-header": {"displayText":"sec-session-id","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"sec-session-id","type":"http-header","url":"#sec-session-id-header"},
@@ -2860,6 +2859,7 @@ let refsData = {
 "#session-scope-instructions-scope_specification": {"displayText":"scope_specification","export":true,"for_":["session scope instructions"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"scope_specification","type":"dfn","url":"#session-scope-instructions-scope_specification"},
 "#session-scope-origin": {"displayText":"origin","export":true,"for_":["session scope"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"origin","type":"dfn","url":"#session-scope-origin"},
 "#session-scope-rule": {"displayText":"session scope rule","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"session scope rule","type":"dfn","url":"#session-scope-rule"},
+"#session-scope-rule-path": {"displayText":"path","export":true,"for_":["session scope rule"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"path","type":"dfn","url":"#session-scope-rule-path"},
 "#session-scope-scope-specifications": {"displayText":"scope specifications","export":true,"for_":["session scope"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"scope specifications","type":"dfn","url":"#session-scope-scope-specifications"},
 "#sessions-by-registrable-domain": {"displayText":"sessions by registrable domain","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"sessions by registrable domain","type":"dfn","url":"#sessions-by-registrable-domain"},
 "https://datatracker.ietf.org/doc/html/rfc9651#inner-list": {"displayText":"sf-inner-list","export":true,"for_":[],"level":"","normative":true,"shortname":"rfc9651","spec":"rfc9651","status":"anchor-block","text":"sf-inner-list","type":"dfn","url":"https://datatracker.ietf.org/doc/html/rfc9651#inner-list"},
