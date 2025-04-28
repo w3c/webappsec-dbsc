@@ -158,9 +158,28 @@ If third party cookies are enabled it is possible for an attacker to leak
 whether or not a user is authenticated by measuring how long the request takes
 as the refresh is quite slow, partially due to the latency of TPM operations.
 
-This is mitigated by requiring user opt-in through the Storage Access
-API. The victim site must request access to its first-party state in
-order for DBSC to apply within the cross-site context.
+If third party cookies are enabled it is possible for an attacker to leak
+whether or not a user is authenticated by measuring how long the request takes
+as the refresh is quite slow, partially due to the latency of TPM operations.
+
+For non-CORS requests, this is directly mitigated by the
+`allowed_refresh_initiators` field in session configuration, which can be used
+to strictly limit the sites that can trigger DBSC refreshes. This cannot be
+replaced by existing solutions (e.g. X-Frame-Options) because the existing
+solutions only apply after the request has completed, and DBSC must apply before
+the request has started.
+
+For CORS requests, if a site wishes to have broadly-available authenticated
+third-party content, they will have some endpoints that
+Access-Control-Allow-Credentials for many requesting origins. For this case, we
+believe that the relevant authenticated endpoints themselves are very likely to
+have timing leaks of their own. Therefore DBSC only aims to make exploitation of
+the timing leak as difficult as finding such an endpoint. To accomplish that, we
+implicitly allow credentials in the initial DBSC refresh request, skipping the
+CORS preflight. This allows sites to have a narrow CORS policy on the refresh
+endpoint, preventing this easily-discoverable endpoint from exposing the timing
+leak. This is justified by the fact that refresh endpoints must be same-site to
+the deferred request, and the deferred request had to allow credentials as well.
 
 # Alternatives considered # {#alternatives}
 ## WebAuthn and silent mediation ## {#alternatives-webauthn}
@@ -230,6 +249,10 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
   : <dfn>session key</dfn>
   :: a key pair used by the session. The private key
     should be stored in a secure manner, see [[#security-considerations]].
+  : <dfn>allowed refresh initiators</dfn>
+  :: a [=list=] of [=string=]s describing which hosts are allowed to initiate
+    DBSC refreshes due to non-CORS requests. See
+    [[#algo-request-in-scope]] for details.
 </dl>
 
 ## Session scope ## {#framework-scope}
@@ -286,13 +309,14 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. Return |domain sessions|[|session identifier|]
 </div>
 
-## Identify if a URL is in scope of a session ## {#algo-url-in-scope}
-<div class="algorithm" data-algorithm="url-in-scope">
+## Identify if a request is in scope of a session ## {#algo-request-in-scope}
+<div class="algorithm" data-algorithm="request-in-scope">
   This algorithm describes how to determine if a URL is in scope of a
   device bound session. Given a [=URL=] (|URL|) and [=session=] (|session|), returns
   "include" if |URL| is in scope, and "exclude" otherwise.
 
   1. Let |scope| be |session|'s [=session scope=].
+  1. Let |URL| be |request|'s [=request/URL=].
   1. If |scope| [=include site=] is true, return "exclude" if |URL| is
      not [=/same site=] with |scope| [=session scope/origin=].
   1. If |scope| [=include site=] is false, return "exclude" if |URL| is not
@@ -308,7 +332,12 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
        1. |URL|'s [=url/path=] is exactly |path pattern|.
        1. |path pattern| ends in '/' and |URL|'s [=url/path=] starts with |path pattern|.
        1. |URL|'s [=url/path=] starts with |path pattern| followed by a '/'.
-  1. Return "include".
+  1. If |request|'s [=request/mode=] is "cors", return "include".
+  1. [=list/for each=] |initiator pattern| in |session|'s
+     [=allowed refresh initiators=]:
+    1. If running [[#algo-host-pattern-matches]] on |request|'s
+       [=request/origin=] and |initiator pattern| return true, return "include".
+  1. Return "exclude".
 </div>
 
 ## Identify if a host matches a pattern ## {#algo-host-pattern-matches}
@@ -347,7 +376,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. Let |id| be |session|'s [=device bound session/session identifier=].
     1. If the [=tuple=] (|site|, |id|) is in |request|'s
       [=deferred device bound session ids=], [=iteration/continue=].
-    1. Run the steps in [[#algo-url-in-scope]] on the |request|'s URL
+    1. Run the steps in [[#algo-request-in-scope]] on the |request|
        and |session|.
     1. If the result does not indicate the request is in scope,
       [=iteration/continue=].
@@ -506,6 +535,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
        specifications=] the value of the key "scope.scope_specification".
     1. [=session credentials=] the value of the key "credentials".
     1. [=session key=] a newly-generated key pair.
+    1. [=allowed refresh initiators=] the value of the key "allowed_refresh_initiators".
 
 ## Create session ## {#algo-create-session}
 <div class="algorithm" data-algorithm="process-registration">
@@ -775,6 +805,11 @@ At the root of the JSON object, the following keys can exist:
   : <dfn>credentials</dfn>
   :: a [=list=] of [=session credentials=] describing the cookies protected by
     this session. This field MUST be present.
+
+  : <dfn>allowed_refresh_initiators</dfn>
+  :: a [=list=] of [=string=]s describing which hosts are allowed to initiate
+    DBSC refreshes due to non-CORS requests. See
+    [[#algo-request-in-scope]] for details.
 </dl>
 
 <div class="example" id="sec-session-instruction-example">
@@ -810,7 +845,9 @@ At the root of the JSON object, the following keys can exist:
       "name": "auth_cookie",
       "attributes": "Domain=example.com; Path=/; Secure; HttpOnly; SameSite=None"
       // Attributes Max-Age and Expires are ignored
-    }]
+    }],
+    
+    "allowed_refresh_initiators": [ "example.com", "*.example.com" ]
   }
   ```
 </div>
@@ -832,7 +869,7 @@ At the root of the JSON object, the following keys can exist:
     site-scoped (true). This key is OPTIONAL; if not present, it will be false
     (origin-scoped). Note that this takes precedence over any
     [=session scope rule=]s in [=scope_specification=] (see
-    [[#algo-url-in-scope]]).
+    [[#algo-request-in-scope]]).
     
   : <dfn>scope_specification</dfn>
   :: a [=list=] of [=session scope rule=]s describing modifications to the
@@ -852,11 +889,11 @@ At the root of each [=session scope rule=], the following keys can exist:
     
   : <dfn>domain</dfn>
   :: a [=string=] indicating the domains that should match the rule. This key
-    MUST be present. This can include wildcards (see [[#algo-url-in-scope]]).
+    MUST be present. This can include wildcards (see [[#algo-request-in-scope]]).
     
   : <dfn>path</dfn>
   :: a [=string=] indicating the path-prefixes that should match the rule. This
-    key MUST be present. See [[#algo-url-in-scope]] for the detailed semantics.
+    key MUST be present. See [[#algo-request-in-scope]] for the detailed semantics.
 </dl>
 
 ## DBSC Session Credentials Format ## {#format-session-credentials}
