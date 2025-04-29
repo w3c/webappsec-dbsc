@@ -325,14 +325,6 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. Let |site| be the [=host/registrable domain=] of the |request| [=URL=].
   1. Let |domain sessions| be [=sessions by registrable domain=][|site|] as [=/session by id=]
   1. [=list/For each=] |session| of |domain sessions|
-    1. The browser MAY skip |session| in order to prevent denial of service for
-       the user or site. For example, this might happen if |session| is
-       requesting excessive TPM operations (harming the user) or the refresh
-       endpoint has recently been unreachable (denial of service risk for the
-       site). If the browser chooses to do this, it should perform the steps of
-       [[#algo-add-debug-header]] with |request|, an appropriate token (see
-       options in [[#header-secure-session-skipped]]), and |session|'s [=device
-       bound session/session identifier=] to indicate this to the site.
     1. If |session|'s [=expiration timestamp=] is before the present, [=iteration/continue=].
     1. Let |id| be |session|'s [=device bound session/session identifier=].
     1. If the [=tuple=] (|site|, |id|) is in |request|'s
@@ -408,6 +400,14 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   takes as input an |originating request|, |key pair|, |destination|,
   and optional |session id|, |challenge|, and |authorization|.
 
+  1. The browser MAY skip this request in order to prevent denial of service for
+     the user or site. For example, this might happen if this session is
+     requesting excessive TPM operations (harming the user) or the refresh
+     endpoint has recently been unreachable (denial of service risk for the
+     site). If the browser chooses to do this, it should perform the steps of
+     [[#algo-add-debug-header]] with |originating request|, an appropriate token (see
+     options in [[#header-secure-session-skipped]]), and |session id|
+     to indicate this to the site.
   1. If |originating request|'s [=request/URL=] is not [=/same site=] with
      |destination|, return.
   1. Let |signed challenge| be null. If |challenge| is non-null, sign it
@@ -432,9 +432,15 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. If |response|'s [=response/status=] is a redirect status, and the
      destination does not have the HTTPS scheme and is not localhost, cancel the
      request and return.
-  1. If |response|'s [=response/status=] is 401 and has a
-     "Sec-Session-Challenge" header, start this algorithm over with a new
-     challenge value.
+  1. If |response|'s [=response/status=] is 403:
+    1. If |session id| is null, return.
+    1. Let |session| be the result of running the steps of
+       [[#algo-identify-session]] on |destination| and |session id|.
+    1. If |session| is null, return.
+    1. The browser MAY choose to treat this as a failed refresh in the
+      case of excessive challenges.
+    1. Otherwise, restart this algorithm with the original inputs, except
+       replacing |challenge| with |session|'s [=cached challenge=].
   1. If |response|'s [=response/status=] is below 500, then terminate the
      session and return.
   1. If |response|'s [=response/status=] is at least 500, then
@@ -592,8 +598,8 @@ The \`<dfn export http-header id="sec-session-challenge-header">
 <code>Sec-Session-Challenge</code></dfn>\` header field can be used in a
 [=response=] by the server to send a challenge to the client that it expects to
 be used in future Sec-Session-Response headers inside the [=DBSC proof=], or to
-request a newly signed [=DBSC proof=] right away if the [=response/status=] is
-401.
+request a newly signed [=DBSC proof=] right away if the [=response/status=]
+is 403.
 
 [:Sec-Session-Challenge:] is a structured header. Its value must be a string.
 Its ABNF is: <pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
@@ -620,11 +626,11 @@ case the session ID is optional.
   https://example.com/login.html:
 
   ```html
-  HTTP/1.1 401 OK
+  HTTP/1.1 403 Forbidden
   Sec-Session-Challenge: "new challenge"
   ```
   ```html
-  HTTP/1.1 401 OK
+  HTTP/1.1 403 Forbidden
   Sec-Session-Challenge: "new challenge";id="my session"
   ```
   ```html

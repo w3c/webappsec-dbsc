@@ -126,14 +126,6 @@ As long as that session is active, the browser performs the following refresh as
 1. If any requests were deferred in step 2, the browser now makes those requests including the updated set of cookies.
 1. The browser may choose to proactively refresh cookies that are about to expire, if it predicts the user may soon need them. This is purely a latency optimization, and not required.
 
-There is an option for the server to opt out of the browser deferring requests. If so it will instead:
-1. Sign any requests that would be deferred, use the most recent challenge. If there is not one, use the current timestamp. The browser may cache these signatures.
-1. The server can respond with 401 if it wants the request signed with a new challenge.
-1. The server can also serve challenges ahead of time on any response with the Sec-Session-Challenge header.
-1. Once the browser gets an instruction to set the missing cookie it will stop signing requests.
-We do not recommend this option for most deployments, but it is possible for those that want to potentially save a network roundtrip in some circumstances.
-
-
 ### Start Session
 ![Start session diagram](header_setup.svg)
 
@@ -236,15 +228,12 @@ Set-Cookie: auth_cookie=abcdef0123; Domain=example.com; Max-Age=600; Secure; Htt
 }
 ```
 
-If the request is not properly authorized, the server can request a new signed request by answering instead with a 401:
+If the request is not properly authorized, the server can request a new registration by answering with a 403 and a new Sec-Session-Registration header. The status code is not especially important here; anything that fails registration will work.
 
 ```http
-HTTP/1.1 401
-Sec-Session-Challenge: "challenge_value"
+HTTP/1.1 403
+Sec-Session-Registration: (ES256 RS256);path="/registration";challenge="challenge_value"
 ```
-
-Where Sec-Session-Challenge header is a structured header with a list of challenge values that may specify an optional "id" parameter: "challenge_value";id="session_id".
-The challenge applies to the current context if "id" is not present; otherwise it applies to the specific session. The browser ignores the challenge if "id" doesn't match any session locally.
 
 Subsequently, as long as the browser considers this session "active", it follows the steps above, namely by refreshing the auth_cookie whenever needed, as covered in the next section.
 
@@ -267,10 +256,14 @@ Cookie: whatever_cookies_apply_to_this_request=value;
 Sec-Session-Id: session_id
 ```
 
-In response to this the server can optionally first request a proof of possession of the key by issuing a challenge to the browser by responding with a 401 response with a challenge:
+In response to this, the server can optionally first request a proof of
+possession of the key by issuing a challenge to the browser by responding with a
+403 response with a challenge. The Sec-Session-Challenge header is a structured
+header with a list of challenge values that specify an "id" parameter:
+"challenge_value";id="session_id".
 
 ```http
-HTTP/1.1 401
+HTTP/1.1 403
 Sec-Session-Challenge: "challenge_value";id="session_id"
 ```
 
