@@ -292,15 +292,14 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   device bound session. Given a [=URL=] (|URL|) and [=session=] (|session|), returns
   "include" if |URL| is in scope, and "exclude" otherwise.
 
-  1. Let |scope| be |session|'s [=scope specification=].
-  1. If |scope| [=include site=] is true, return "exclude" if any of the
-     following hold:
-     1. |URL| is not [=/same site=] with |scope| [=session scope/origin=].
-     1. |scope| [=session scope/origin=] is not the eTLD+1.
+  1. Let |scope| be |session|'s [=session scope=].
+  1. If |scope| [=include site=] is true, return "exclude" if |URL| is
+     not [=/same site=] with |scope| [=session scope/origin=].
   1. If |scope| [=include site=] is false, return "exclude" if |URL| is not
      [=same origin=] with |scope| [=session scope/origin=].
-  1. [=list/for each=] |scope specification| in |scope|
-    1. Let |host pattern| be |scope specification|'s [=scope
+  1. If the |URL| matches the |session|'s [=refresh URL=], return "exclude".
+  1. [=list/for each=] |scope specification| in |scope|'s [=scope specifications=]:
+    1. Let |host pattern| be |scope specification|'s [=scope 
        specification/host=], and |path pattern| be |scope
        specification|'s [=scope specification/path=].
     1. If running [[#algo-host-pattern-matches]] on |URL|'s [=url/host=]
@@ -309,7 +308,6 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
        1. |URL|'s [=url/path=] is exactly |path pattern|.
        1. |path pattern| ends in '/' and |URL|'s [=url/path=] starts with |path pattern|.
        1. |URL|'s [=url/path=] starts with |path pattern| followed by a '/'.
-  1. If the |URL| matches the |session|'s [=refresh URL=], return "exclude".
   1. Return "include".
 </div>
 
@@ -317,12 +315,13 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
 <div class="algorithm" data-algorithm="host-pattern-matches">
   This algorithm describes how to determine if a [=url/host=] (|host|)
   matches a |pattern|. It returns true if |pattern| covers |host|.
-  
+
+  1. If |pattern| equals '*', return true.
   1. If |pattern| starts with '*':
     1. If |pattern| does not start with '*.', return false.
-    1. Return true if |host| ends with all but the first two characters
+    1. Return true if |host| ends with all but the first character
        of |pattern|.
-  2. Return true if |host| is equal to |pattern|.
+  1. Return true if |host| is equal to |pattern|.
   
 <div class="example" id="host-pattern-matches-example">
   Some examples of pattern matches:
@@ -476,8 +475,9 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. Otherwise, perform the following validations, returning if any fail:
     1. |session identifier| must be non-empty.
     1. The value of the key "refresh_url" must be non-empty.
-    1. Let |origin| be the value of the key "scope.origin", if present, or the
-       origin of |destination| if not.
+    1. Let |origin| be an [=/origin=]] constructed from the value of the key
+       "scope.origin", if present, or the origin of |destination| if
+       not.
     1. |origin| must be a valid non-opaque origin.
     1. |origin| must be same-site with |destination|.
     1. Let |refresh URL| be the result of resolving |destination| with the value
@@ -486,6 +486,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. |refresh URL| must be same-site with |destination|.
   1. If the value of the key "scope.include_site" in |response| is true:
     1. Let |destination site| be the [=host/registrable domain=] of |destination|.
+    1. If |origin|'s [=origin/domain=] is not equal to |destination site|, return.
     1. If |destination site| is equal to the [=url/host=] of |destination|, continue to the next step.
     1. Otherwise, let |well known URL| be a copy of |destination|, with the
        [=url/host=] replaced with |destination site|, and the [=url/path=]
