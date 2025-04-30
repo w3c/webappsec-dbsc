@@ -94,17 +94,17 @@ different situations. Some of the use cases of DBSC are:
 </div>
 
 # Security Considerations # {#security-considerations}
-The goal of DBSC is to reduce session theft by offering an alternative to
-long-lived cookie bearer tokens, and to allow session authentication to be
+The goals of DBSC are to reduce session theft by offering an alternative to
+long-lived cookie bearer tokens and to allow session authentication to be
 bound to the user's device. This makes the internet safer for users in that it
 is less likely their identity is abused, as malware is forced to act locally and
 thus becomes easier to detect and mitigate. At the same time the goal is to
 disrupt the cookie theft ecosystem and force it to adapt to new protections long
 term.
 
-As long as the session is valid a host can know with cryptographic certainty
-that it is on the same device as the session was originally bound to if the
-session was registered to an uncompromised device.
+As long as the session is valid and was registered to an uncompromised device, a
+host can know with cryptographic certainty that it is on the same device as the
+one the session was originally bound to.
 
 In order to ensure this, session private keys should be stored in a way
 that cannot be exfiltrated by locally running malware, whenever possible.
@@ -146,10 +146,10 @@ Some of the consideration taken to ensure this:
 ## Cookies considerations ## {#privacy-cookies}
 It should be impossible for a site to use this API to circumvent the same origin
 policy, 3P cookie policies, etc. Due to the complexity of current and changing
-cookie behavior and the tight integration between DBSC and cookies the current
+cookie behavior and the tight integration between DBSC and cookies, the current
 solution is that each user agent should use the same policy for DBSC as it uses
-for cookies. If the DBSC cookie credential would not apply to a network request,
-based on user settings, applied policies or user agent implementation details,
+for cookies. If the DBSC cookie credential would not apply to a network request
+based on user settings, applied policies, or user agent implementation details,
 neither would any of the additional DBSC behavior. This ensures no new privacy
 behavior due to implementing DBSC.
 
@@ -423,6 +423,8 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. If |response|'s [=response/status=] is a [=redirect status=], and the
      destination does not have an HTTPS scheme and is not localhost, cancel the
      request and return.
+  1. If |response|'s [=response/status=] is at least 300 and below 400, then
+     return.
   1. If |response|'s [=response/status=] is 403:
     1. If |session id| is null, return.
     1. Let |session| be the result of running the steps of
@@ -430,6 +432,8 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. If |session| is null, return.
     1. Otherwise, restart this algorithm with the original inputs, except
        replacing |challenge| with |session|'s [=cached challenge=].
+  1. If |response|'s [=response/status=] is at least 400 and below 500, then
+     terminate the session and return.
   1. If |response|'s [=response/status=] is at least 500, then
      return. Browsers may choose to trigger a backoff mechanism on
      subsequent refresh requests on this session, to limit the harm of a
