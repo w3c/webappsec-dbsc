@@ -485,6 +485,11 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
      [[#algo-add-debug-header]] with |originating request|, an appropriate token (see
      options in [[#header-secure-session-skipped]]), and |session id|
      to indicate this to the site.
+  1. Let |terminate the session| be an algorithm with the following steps:
+    1. If |session id| is null, return.
+    1. Remove the session with site |destination|'s [=host/registrable domain=]
+       and identifier |session id| from the user agent's [=session store=], if
+       such a session is found.
   1. If |originating request|'s [=request/URL=] is not [=/same site=] with
      |destination|, return.
   1. Let |signed challenge| be null. If |challenge| is non-null, sign it
@@ -518,26 +523,27 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. If |session| is null, return.
     1. Otherwise, restart this algorithm with the original inputs, except
        replacing |challenge| with |session|'s [=cached challenge=].
-  1. If |response|'s [=response/status=] is at least 400 and below 500, then:
-    1. If |session id| is null, return.
-    1. Remove the session with site |destination|'s [=host/registrable domain=]
-       and identifier |session id| from the user agent's [=session store=], if
-       such a session is found.
-    1. Return.
+  1. If |response|'s [=response/status=] is at least 400 and below 500,
+     then |terminate the session| and return.
   1. If |response|'s [=response/status=] is at least 500, then
      return. Browsers may choose to trigger a backoff mechanism on
      subsequent refresh requests on this session, to limit the harm of a
      temporary outage on the refresh endpoint.
+  1. If |session id| is non-null, and |response|'s [=response/body=] is
+     empty, return.
   1. Parse |response|'s [=response/body=] according to
-     [[#format-session-instructions]].
+     [[#format-session-instructions]]. If parsing fails, |terminate the
+     session| and return.
   1. Let |session identifier| be the value of key "session_identifier".
   1. If the |response| JSON contains the key "continue", with value "false":
     1. Run the steps of [[#algo-identify-session]] on |destination| and |session
        identifier|.
     1. If the result is non-null, delete the returned session.
     1. Return from this algorithm.
-  1. Otherwise, perform the following validations, returning if any fail:
+  1. Otherwise, perform the following validations. If any fail,
+     |terminate the session| and return.
     1. |session identifier| must be non-empty.
+    1. If |session id| is non-null, it must match |session identifier|.
     1. The value of the key "refresh_url" must be non-empty.
     1. Let |origin| be an [=/origin=]] constructed from the value of the key
        "scope.origin", if present, or the origin of |destination| if
@@ -549,20 +555,21 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. |refresh URL| must have scheme HTTPS or be localhost.
     1. |refresh URL| must be same-site with |destination|.
   1. Let |destination site| be the [=host/registrable domain=] of |destination|.
-  1. If the value of the key "scope.include_site" in |response| is true:
-    1. If |origin|'s [=origin/domain=] is not equal to |destination site|, return.
-    1. If |destination site| is equal to the [=url/host=] of |destination|, continue to the next step.
+  1. If the value of the key "scope.include_site" in |response| is true,
+     and |session id| is null, perform the following validations. If any
+     fail, |terminate the session| and return.
+    1. |origin|'s [=origin/domain=] must be equal to |destination site|.
+    1. If |destination site| is equal to the [=url/host=] of
+       |destination|, skip all remaining validations.
     1. Otherwise, let |well known URL| be a copy of |destination|, with the
        [=url/host=] replaced with |destination site|, and the [=url/path=]
        replaced with "/.well-known/device-bound-sessions".
     1. Let |well known response| be the result of fetching |well known URL|.
-    1. If |well known response|'s [=response/status=] is not 200, return.
-    1. If |well known response|'s [=response/body=] is not a JSON-encoded list of strings, return.
-    1. If |well known response|'s [=response/body=] does not include the origin of
-       |destination|, return.
-  1. If the input |session id| is present, delete the session with site
-     |destination site| and identifier |session id| from the user agent's
-     [=session store=].
+    1. |well known response|'s [=response/status=] must be 200.
+    1. |well known response|'s [=response/body=] must be a JSON-encoded
+       list of strings.
+    1. |well known response|'s [=response/body=] must include the origin of
+       |destination|.
   1. Let |session| be a new session with:
     1. [=device bound session/session identifier=] set to |session identifier|.
     1. [=refresh URL=] set to |refresh URL|.
