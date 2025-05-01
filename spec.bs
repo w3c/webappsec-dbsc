@@ -419,7 +419,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
      href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
      fetch</a> for |request|.
   1. If |response| is a [=network error=], or |response|'s
-     [=response/status=] is 407, return.
+     [=response/status=] is 407 or 429, return.
   1. If |response|'s [=response/status=] is a [=redirect status=], and the
      destination does not have an HTTPS scheme and is not localhost, cancel the
      request and return.
