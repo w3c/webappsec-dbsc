@@ -522,7 +522,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. If |session id| is null, return.
     1. Remove the session with site |destination|'s [=host/registrable domain=]
        and identifier |session id| from the user agent's [=session store=], if
-       any exist.
+       such a session is found.
     1. Return.
   1. If |response|'s [=response/status=] is at least 500, then
      return. Browsers may choose to trigger a backoff mechanism on
@@ -551,7 +551,6 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. Let |destination site| be the [=host/registrable domain=] of |destination|.
   1. If the value of the key "scope.include_site" in |response| is true:
     1. If |origin|'s [=origin/domain=] is not equal to |destination site|, return.
-    1. If |origin| is not equal to |destination site|, return.
     1. If |destination site| is equal to the [=url/host=] of |destination|, continue to the next step.
     1. Otherwise, let |well known URL| be a copy of |destination|, with the
        [=url/host=] replaced with |destination site|, and the [=url/path=]
