@@ -556,11 +556,11 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. |refresh URL| must be same-site with |destination|.
   1. Let |destination site| be the [=host/registrable domain=] of |destination|.
   1. If the value of the key "scope.include_site" in |response| is true,
-     and |session id| is null, perform the following validations. If any
-     fail, |terminate the session| and return.
+     perform the following validations. If any fail, |terminate the
+     session| and return.
     1. |origin|'s [=origin/domain=] must be equal to |destination site|.
     1. If |destination site| is equal to the [=url/host=] of
-       |destination|, skip all remaining validations.
+       |destination|, skip all remaining validations in this step.
     1. Otherwise, let |well known URL| be a copy of |destination|, with the
        [=url/host=] replaced with |destination site|, and the [=url/path=]
        replaced with "/.well-known/device-bound-sessions".
@@ -579,7 +579,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. [=session credentials=] the value of the key "credentials".
     1. [=session key=] a newly-generated key pair.
     1. [=allowed refresh initiators=] the value of the key "allowed_refresh_initiators".
-  1. Add |session| to the user agent's [=session store=][|destination
+  1. Set |session| to the user agent's [=session store=][|destination
      site|][|session identifier|].
 
 ## Create session ## {#algo-create-session}
