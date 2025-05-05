@@ -815,8 +815,7 @@ registration and optionally during session refresh. If the response
 contains session instructions, it MUST be in JSON format.
 
 At the root of the JSON object, the following keys can exist:
-<dl dfn-for="session instructions">
-  : <dfn>session identifier</dfn>
+  : session identifier
   :: a [=string=] representing a [=device bound session/session identifier=].
     If this [=session instructions=] is sent during a refresh request this MUST be
     the [=device bound session/session identifier=] for the current session. If
@@ -827,38 +826,29 @@ At the root of the JSON object, the following keys can exist:
     current [=host/registrable domain=].
     This key MUST be present.
 
-  : <dfn>refresh_url</dfn>
+  : refresh_url
   :: a [=string=] representing the [=URL=] used for future refresh requests.
     This can be a full [=URL=], or relative to the current [=request=].
     This key is OPTIONAL; if not present the registration URL will be used for
     future refresh requests.
 
-  : <dfn>defer_requests</dfn>
-  :: a [=boolean=] describing the wanted session behavior during a session
-    refresh. If this value is true all requests related to this session will be
-    deferred while the session is refreshed. If instead the value is false every
-    request will instead be sent as normal, but with a [:Secure-Session-Response:]
-    header containing the [=DBSC proof=].
-    This key is OPTIONAL, and if not present a value of true is default.
-
-  : <dfn>continue</dfn>
+  : continue
   :: a [=boolean=] indicating if the session should continue to apply.
     Registration and refresh endpoints can set this to false to terminate a session.
     This key is OPTIONAL, and if not present, the default value will be true.
     
-  : <dfn>scope</dfn>
+  : scope
   :: a [=dictionary=] of [=session scope instructions=] describing the request
     destinations covered by the session. This field MUST be present.
 
-  : <dfn>credentials</dfn>
+  : credentials
   :: a [=list=] of [=session credentials=] describing the cookies protected by
     this session. This field MUST be present.
 
-  : <dfn>allowed_refresh_initiators</dfn>
+  : allowed_refresh_initiators
   :: a [=list=] of [=string=]s describing which hosts are allowed to initiate
     DBSC refreshes due to non-CORS requests. See
     [[#algo-request-allows-refresh]] for details.
-</dl>
 
 <div class="example" id="secure-session-instruction-example">
   ```json
@@ -905,108 +895,94 @@ The server sends <dfn>session scope instructions</dfn> in the [=session
 instructions=] during registration and optionally during session refresh.
 
 At the root of the JSON object, the following keys can exist:
-<dl dfn-for="session scope instructions">
-  : <dfn>origin</dfn>
+  : origin
   :: a [=string=] indicating the origin or site that the session applies to.
     This key is OPTIONAL; if not present, the origin of the URL serving the
     instructions will be used. This is the registration URL during registration
     and the refresh URL during refresh.
     
-  : <dfn>include_site</dfn>
+  : include_site
   :: a [=boolean=] indicating if the session is origin-scoped (false) or
     site-scoped (true). This key is OPTIONAL; if not present, it will be false
     (origin-scoped). Note that this takes precedence over any
-    [=session scope rule=]s in [=scope_specification=] (see
-    [[#algo-url-in-scope]]).
+     [=session scope rule=]s in [=scope specification=] (see
+     [[#algo-url-in-scope]]).
     
-  : <dfn>scope_specification</dfn>
+  : scope_specification
   :: a [=list=] of [=session scope rule=]s describing modifications to the
     default scope (the entire origin or site). This key is OPTIONAL; if not
     present, an empty list will be used.
-</dl>
 
 ## DBSC Session Scope Rule Format ## {#format-session-scope-rule}
 The server sends <dfn>session scope rule</dfn>s in the [=session scope
 instructions=] during registration and optionally during session refresh.
 
 At the root of each [=session scope rule=], the following keys can exist:
-<dl dfn-for="session scope rule">
-  : <dfn>type</dfn>
+  : type
   :: a [=string=] indicating whether the rule includes or excludes destinations.
     This key MUST be present, and the value MUST be "include" or "exclude".
     
-  : <dfn>domain</dfn>
+  : domain
   :: a [=string=] indicating the domains that should match the rule. This key
     MUST be present. This can include wildcards (see [[#algo-url-in-scope]]).
     
-  : <dfn>path</dfn>
+  : path
   :: a [=string=] indicating the path-prefixes that should match the rule. This
     key MUST be present. See [[#algo-url-in-scope]] for the detailed semantics.
-</dl>
 
 ## DBSC Session Credentials Format ## {#format-session-credentials}
 The server sends <dfn>session credentials</dfn> in the [=session
 instructions=] during registration and optionally during session refresh.
 
 At the root of the JSON object, the following keys can exist:
-<dl dfn-for="session scope instructions">
-  : <dfn>type</dfn>
+  : type
   :: a [=string=] indicating the kind of credential protected by this session.
     This key MUST be present, and the value MUST be "cookie".
     
-  : <dfn>name</dfn>
+  : name
   :: a [=string=] indicating the name of the bound cookie.
     
-  : <dfn>attributes</dfn>
+  : attributes
   :: a [=string=] containing the expected attributes of the protected cookie.
     See [[#algo-identify-missing-session-credential]] for details on how this
     is used. 
-</dl>
 
 ## DBSC Proof JWT Syntax ## {#format-jwt}
 A <dfn>DBSC proof</dfn> proof is a JWT that is signed (using JSON Web Signature
 (JWS)), with a private key chosen by the client. The header of a [=DBSC proof=]
 MUST contain at least the following <a>sf-parameter</a>s:
-<dl dfn-for="DBSC proof">
-  : <dfn>typ</dfn>
+  : typ
   :: a [=string=] MUST be "dbsc+jwt"
-  : <dfn>alg</dfn>
+  : alg
   :: a [=string=] defining the algorithm used to sign this JWT. It MUST be
     either "RS256" or "ES256" from [IANA.JOSE.ALGS].
-</dl>
 
 The payload of [=DBSC proof=] MUST contain at least the following claims:
-<dl dfn-for="DBSC proof">
-  : <dfn>aud</dfn>
+  : aud
   :: a [=string=], MUST be the [=URL=] this JWT was originally sent to.
     Example: "https://example.com/refresh.html"
-  : <dfn>jti</dfn>
+  : jti
   :: a [=string=], a copy of the challenge value sent in the registration
     header.
-  : <dfn>iat</dfn>
+  : iat
   :: a [=string=], this claim identifies the time at which the JWT was
     issued.  This claim can be used to determine the age of the JWT.  Its
     value MUST be a number containing a NumericDate value.
-  : <dfn>key</dfn>
+  : key
   :: a [=string=] defining a JWK as specified in [rfc7517].
-</dl>
 
 In addition the following claims MUST be present if present in
 [:Secure-Session-Registration:]:
-<dl dfn-for="DBSC proof">
-  : <dfn>authorization</dfn>
+  : authorization
   :: a [=string=], direct copy of the string from
     [:Secure-Session-Registration:], if set there. Note that this string is
     OPTIONAL to include in the header, but if it is present it is
     MANDATORY for clients to add the claim in the [=DBSC proof=].
-</dl>
 
 If the DBSC proof is for a refresh request, the following claim MUST be
 present:
-<dl dfn-for="DBSC proof">
-  : <dfn>sub</dfn>
+  : sub
   :: the [=device bound session/session identifier=], a [=string=].
-</dl>
 
 <div class="example" id="dbsc-proof-example">
   An example [=DBSC proof=] sent to https://example.com/reg:
@@ -1046,12 +1022,13 @@ present:
 
 This specification requires an update to the <a
 href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
-fetch</a> algorithm. A [=request=] has a [=list=] of [=tuple=]s
-([=host/registrable domain=] |domain|, [=string=] |session id|), <dfn
-for="request">deferred device bound session ids</dfn>. This list is initially
-empty. At the end of step 8.21
-run [[#algo-identify-session-needing-refresh]]. If the resulting |session| is
-non-null:
+fetch</a> algorithm. A [=request=] has a <dfn
+for="request">deferred device bound session ids</dfn>, a [=list=] of [=tuple=]s consisting of:
+  - a domain (a [=host/registrable domain=]).
+  - a session id (a [=string=]). 
+This list is initially empty. At the end of step 8.21, run
+[[#algo-identify-session-needing-refresh]]. If the resulting
+|session| is non-null:
   1. Run [[#algo-session-request]] with the returned |session|'s
     [=session key=], [=refresh URL=], [=device bound session/session
     identifier=], [=cached challenge=], and an empty authorization.
