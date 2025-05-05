@@ -234,9 +234,9 @@ of the same document.
 This document depends on the Infra Standard for a number of foundational
 concepts used in its algorithms and prose [[!INFRA]].
 
-## Sessions by registrable domain ## {#framework-sessions-origin}
-A <dfn>sessions by registrable domain</dfn> is an [=ordered map=] from
-[=host/registrable domain=] to [=session by id=].
+## Session store ## {#framework-session-store}
+The user agent maintains a <dfn>session store</dfn>. It is an
+[=ordered map=] from [=host/registrable domain=] to [=session by id=].
 
 ## Sessions by id ## {#framework-sessions-id}
 A <dfn>session by id</dfn> is an [=ordered map=] from
@@ -319,8 +319,8 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   null if no such session exists.
 
   1. Let |site| be the [=host/registrable domain=] of |url|.
-  1. Let |domain sessions| be [=sessions by registrable domain=][|site|] as a
-    [=/session by id=]
+  1. Let |domain sessions| be the user agent's [=session store=][|site|] as a
+     [=/session by id=]
   1. Return |domain sessions|[|session identifier|]
 </div>
 
@@ -393,12 +393,12 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
 
 ## Identify session needing refresh ## {#algo-identify-session-needing-refresh}
 <div class="algorithm" data-algorithm="identify-session-needing-refresh">
-  Given a [=request=] (|request|) and [=sessions by registrable
-  domain=], this algorithm describes how to identify which session, if
-  any, should block |request| from proceeding.
+  Given a [=request=] (|request|), this algorithm describes how to identify
+  which session, if any, should block |request| from proceeding.
 
   1. Let |site| be the [=host/registrable domain=] of the |request| [=URL=].
-  1. Let |domain sessions| be [=sessions by registrable domain=][|site|] as [=/session by id=]
+  1. Let |domain sessions| be the user agent's [=session store=][|site|] as
+     [=/session by id=]
   1. [=list/For each=] |session| of |domain sessions|
     1. If |session|'s [=expiration timestamp=] is before the present, remove
       |session| from |domain sessions| and [=iteration/continue=].
@@ -448,9 +448,8 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   <dfn export dfn-for="algorithms">process a challenge</dfn> received in an HTTP
   header.
 
-  Given a [=response=] (|response|) and a [=sessions by registrable domain=], this
-  algorithm updates the [=device bound session/cached challenge=] for a
-  [=device bound session=].
+  Given a [=response=] (|response|), this algorithm updates the [=device bound
+  session/cached challenge=] for a [=device bound session=].
 
   1. Let |header name| be "<code>Sec-Session-Challenge</code>".
   1. Let |challenge list| be the result of executing <a>get a structured
@@ -519,8 +518,12 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. If |session| is null, return.
     1. Otherwise, restart this algorithm with the original inputs, except
        replacing |challenge| with |session|'s [=cached challenge=].
-  1. If |response|'s [=response/status=] is at least 400 and below 500, then
-     terminate the session and return.
+  1. If |response|'s [=response/status=] is at least 400 and below 500, then:
+    1. If |session id| is null, return.
+    1. Remove the session with site |destination|'s [=host/registrable domain=]
+       and identifier |session id| from the user agent's [=session store=], if
+       such a session is found.
+    1. Return.
   1. If |response|'s [=response/status=] is at least 500, then
      return. Browsers may choose to trigger a backoff mechanism on
      subsequent refresh requests on this session, to limit the harm of a
@@ -545,8 +548,8 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
        of the key "refresh_url".
     1. |refresh URL| must have scheme HTTPS or be localhost.
     1. |refresh URL| must be same-site with |destination|.
+  1. Let |destination site| be the [=host/registrable domain=] of |destination|.
   1. If the value of the key "scope.include_site" in |response| is true:
-    1. Let |destination site| be the [=host/registrable domain=] of |destination|.
     1. If |origin|'s [=origin/domain=] is not equal to |destination site|, return.
     1. If |destination site| is equal to the [=url/host=] of |destination|, continue to the next step.
     1. Otherwise, let |well known URL| be a copy of |destination|, with the
@@ -558,8 +561,9 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. If |well known response|'s [=response/body=] does not include the origin of
        |destination|, return.
   1. If the input |session id| is present, delete the session with site
-     |destination|'s site and identifier |session id|.
-  1. Create a new session with:
+     |destination site| and identifier |session id| from the user agent's
+     [=session store=].
+  1. Let |session| be a new session with:
     1. [=device bound session/session identifier=] set to |session identifier|.
     1. [=refresh URL=] set to |refresh URL|.
     1. [=session scope=] a new scope with [=session scope/origin=] |origin|, [=include
@@ -568,6 +572,8 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. [=session credentials=] the value of the key "credentials".
     1. [=session key=] a newly-generated key pair.
     1. [=allowed refresh initiators=] the value of the key "allowed_refresh_initiators".
+  1. Add |session| to the user agent's [=session store=][|destination
+     site|][|session identifier|].
 
 ## Create session ## {#algo-create-session}
 <div class="algorithm" data-algorithm="process-registration">
