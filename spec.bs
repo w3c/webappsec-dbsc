@@ -1026,7 +1026,7 @@ fetch</a> algorithm. A [=request=] has a <dfn
 for="request">deferred device bound session ids</dfn>, a [=list=] of [=tuple=]s consisting of:
   - a domain (a [=host/registrable domain=]).
   - a session id (a [=string=]). 
-This list is initially empty. At the end of step 8.21 run
+This list is initially empty. At the end of step 8.21, run
 [[#algo-identify-session-needing-refresh]]. If the resulting
 |session| is non-null:
   1. Run [[#algo-session-request]] with the returned |session|'s
