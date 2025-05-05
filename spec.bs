@@ -156,11 +156,14 @@ behavior due to implementing DBSC.
 ## Timing side channel leak ## {#privacy-side-channel-leak}
 If third party cookies are enabled it is possible for an attacker to leak
 whether or not a user is authenticated by measuring how long the request takes
-as the refresh is quite slow, partially due to the latency of TPM operations.
+as the refresh is quite slow, partially due to the latency of TPM operations. 
 
-This is mitigated by requiring user opt-in through the Storage Access
-API. The victim site must request access to its first-party state in
-order for DBSC to apply within the cross-site context.
+This is mitigated by the `allowed_refresh_initiators` field in session
+configuration, which can be used to strictly limit the sites that can trigger
+DBSC refreshes. This cannot be replaced by existing solutions
+(e.g. X-Frame-Options) because the existing solutions only apply after the
+request has completed, and DBSC must choose whether to refresh before the
+request has started.
 
 # Alternatives considered # {#alternatives}
 ## WebAuthn and silent mediation ## {#alternatives-webauthn}
@@ -188,6 +191,37 @@ cookies. The expected behavior of this endpoint is:
   challenge.
 - Issue new bound cookies.
 - Serve the current session config.
+
+The refresh endpoint is likely to directly leak login state if cross-site
+fetches are allowed. Servers can check for a valid Sec-Secure-Session-Id header
+to ensure that incoming requests are initiated by the user agent and not a
+cross-site request. It's also recommended to set a narrow CORS policy on this
+endpoint, not allowing cross-site origins to make requests with credentials. The
+CORS integration has been designed to make this possible by implicitly including
+credentials when the deferred request does. For similar reasons, it's also
+recommended that the refresh endpoint refuse to be embedded via the
+`X-Frame-Options` or `Cross-Origin-Resource-Policy` headers.
+
+<div class="example" id="timing-leak-cors">
+Suppose `example.com` has two endpoints:
+- `/authenticated` will return `Access-Control-Allow-Credentials` for any
+  requesting origin.
+- `/refresh` is the the DBSC refresh endpoint.
+
+The site wants DBSC to protect cross-site requests to `/authenticated`, and
+believes that the risk from timing side channels on this one endpoint are
+minimal. If we did not implicitly allow credentials for the refresh request
+triggered by the user agent, then `/refresh` would be required to return
+`Access-Control-Allow-Credentials` for any requesting origin. Now attackers can
+very directly leak login state by fetching `/refresh` directly.
+
+By implicitly allowing credentials, the `/refresh` endpoint can refuse to ever
+return `Access-Control-Allow-Credentials`. It will still receive credentialled
+requests in the context of a DBSC refresh. Other sites will be unable to
+directly fetch the endpoint with credentials, preventing an easy cross-site leak
+of login state.
+</div>
+
 
 # Framework # {#framework}
 This document uses ABNF grammar to specify syntax, as defined in [[!RFC5234]]
@@ -230,6 +264,10 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
   : <dfn>session key</dfn>
   :: a key pair used by the session. The private key
     should be stored in a secure manner, see [[#security-considerations]].
+  : <dfn>allowed refresh initiators</dfn>
+  :: a [=list=] of [=string=]s describing which hosts are allowed to initiate
+    DBSC refreshes due to non-CORS requests. See
+    [[#algo-request-allows-refresh]] for details.
 </dl>
 
 ## Session scope ## {#framework-scope}
@@ -311,6 +349,26 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. Return "include".
 </div>
 
+## Identify if a request is allowed to refresh ## {#algo-request-allows-refresh}
+<div class="algorithm" data-algorithm="request-allows-refresh">
+  This algorithm describes how to determine if a request is allowed to
+  be refreshed by a device bound session. Given a [=request=]
+  (|request|) and [=session=] (|session|), returns "allowed" if
+  |request| can trigger a refresh, and "disallowed" otherwise.
+
+  1. If |session|'s [=session scope=]'s [=include site=] is true, and
+     |request|'s [=request/origin=] is [=/same site=] with |session|'s
+     [=session scope=] [=session scope/origin=], return "allowed".
+  1. If |session|'s [=session scope=]'s [=include site=] is false, and
+     |request|'s [=request/origin=] is [=/same origin=] with |session|'s
+     [=session scope=] [=session scope/origin=], return "allowed".
+  1. [=list/for each=] |initiator pattern| in |session|'s
+     [=allowed refresh initiators=]:
+    1. If running [[#algo-host-pattern-matches]] on |request|'s
+       [=request/origin=]'s [=origin/host=] and |initiator pattern|
+       returns true, return "allowed".
+  1. Return "disallowed".
+
 ## Identify if a host matches a pattern ## {#algo-host-pattern-matches}
 <div class="algorithm" data-algorithm="host-pattern-matches">
   This algorithm describes how to determine if a [=url/host=] (|host|)
@@ -347,10 +405,13 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. Let |id| be |session|'s [=device bound session/session identifier=].
     1. If the [=tuple=] (|site|, |id|) is in |request|'s
       [=deferred device bound session ids=], [=iteration/continue=].
-    1. Run the steps in [[#algo-url-in-scope]] on the |request|'s URL
+    1. Run the steps in [[#algo-url-in-scope]] on |request|'s [=request/URL=]
        and |session|.
     1. If the result does not indicate the request is in scope,
       [=iteration/continue=].
+    1. Run the steps in [[#algo-request-allows-refresh]] on |request| and
+      |session|.
+    1. If the result is not "allowed", [=iteration/continue=].
     1. If the result of running [[#algo-identify-missing-session-credential]]
       on |request| and |session|'s [=session credentials=] is false,
       [=iteration/continue=].
@@ -506,6 +567,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
        specifications=] the value of the key "scope.scope_specification".
     1. [=session credentials=] the value of the key "credentials".
     1. [=session key=] a newly-generated key pair.
+    1. [=allowed refresh initiators=] the value of the key "allowed_refresh_initiators".
 
 ## Create session ## {#algo-create-session}
 <div class="algorithm" data-algorithm="process-registration">
@@ -775,6 +837,11 @@ At the root of the JSON object, the following keys can exist:
   : <dfn>credentials</dfn>
   :: a [=list=] of [=session credentials=] describing the cookies protected by
     this session. This field MUST be present.
+
+  : <dfn>allowed_refresh_initiators</dfn>
+  :: a [=list=] of [=string=]s describing which hosts are allowed to initiate
+    DBSC refreshes due to non-CORS requests. See
+    [[#algo-request-allows-refresh]] for details.
 </dl>
 
 <div class="example" id="sec-session-instruction-example">
@@ -810,7 +877,9 @@ At the root of the JSON object, the following keys can exist:
       "name": "auth_cookie",
       "attributes": "Domain=example.com; Path=/; Secure; HttpOnly; SameSite=None"
       // Attributes Max-Age and Expires are ignored
-    }]
+    }],
+    
+    "allowed_refresh_initiators": [ "example.com", "*.example.com" ]
   }
   ```
 </div>
