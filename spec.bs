@@ -761,7 +761,7 @@ with the current session identifier as a string argument.
 
 \`<a http-header><code>Sec-Secure-Session-Id</code></a>\` is a structured header.
 Its value must be a string. It's ABNF is:
-<pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
+<pre class="abnf">SecSessionIdentifier = <a>sf-string</a></pre>
 This string MUST only contain the session identifier. Any parameters SHOULD be
 ignored.
 
