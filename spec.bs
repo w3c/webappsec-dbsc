@@ -336,7 +336,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. If |scope|'s [=include site=] is false, return "exclude" if |URL|'s
      [=/origin=] is not [=same origin=] with |scope|'s [=session scope/origin=].
   1. If the |URL| matches the |session|'s [=refresh URL=], return "exclude".
-  1. [=list/for each=] |scope specification| in |scope|'s [=scope specifications=]:
+  1. [=list/For each=] |scope specification| in |scope|'s [=scope specifications=]:
     1. Let |host pattern| be |scope specification|'s [=scope 
        specification/host=], and |path pattern| be |scope
        specification|'s [=scope specification/path=].
@@ -362,7 +362,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. If |session|'s [=session scope=]'s [=include site=] is false, and
      |request|'s [=request/origin=] is [=/same origin=] with |session|'s
      [=session scope=] [=session scope/origin=], return "allowed".
-  1. [=list/for each=] |initiator pattern| in |session|'s
+  1. [=list/For each=] |initiator pattern| in |session|'s
      [=allowed refresh initiators=]:
     1. If running [[#algo-host-pattern-matches]] on |request|'s
        [=request/origin=]'s [=origin/host=] and |initiator pattern|
@@ -427,7 +427,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   (|credentials|), returns a [=boolean=] indicating whether any |credential| in
   |credentials| is missing on |request|.
   
-  1. [=list/for each=] |credential| in |credentials|
+  1. [=list/For each=] |credential| in |credentials|
     1. If a cookie with |credential|'s [=session credential/attributes=] would
        not be attached to |request| (see <a
        href=https://httpwg.org/specs/rfc6265.html#cookie>section 5.4</a> of
@@ -467,8 +467,14 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. Let |session| be the result of running [[#algo-identify-session]] given
       |response|'s [=response/URL=] and |session id|.
     1. If |session| is null, [=iteration/continue=].
-    1. Store |challenge| as |session|'s [=cached challenge=] to be used next
-      time a [=DBSC proof=] is to be sent from this [=device bound session=].
+    1. [=list/For each=] |credential| in |session|'s [=session credentials=]:
+       1. If a cookie with |credential|'s [=session credential/attributes=] could
+          not be set by |response| (see <a
+          href=https://httpwg.org/specs/rfc6265.html#cookie>section 5.3</a> of
+          [[!COOKIES]]), [=iteration/continue=].
+       1. Store |challenge| as |session|'s [=cached challenge=] to be used next
+         time a [=DBSC proof=] is to be sent from this [=device bound session=].
+       1. [=iteration/Break=].
 </div>
 
 ## Send request ## {#algo-session-request}
@@ -577,9 +583,15 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. If |existing session| is non-null, set [=session key=] to |existing session|'s [=session key=].
     1. Otherwise set [=session key=] to a newly-generated key pair.
     1. [=allowed refresh initiators=] the value of the key "allowed_refresh_initiators".
-  1. Call |terminate the session| to remove the existing session.
-  1. Set the user agent's [=session store=][|destination
-     domain|][|session identifier|] to |session|.
+  1. [=list/For each=] |credential| in |session|'s [=session credentials=]:
+    1. If a cookie with |credential|'s [=session credential/attributes=] could
+       not be set by |response| (see <a
+       href=https://httpwg.org/specs/rfc6265.html#cookie>section 5.3</a> of
+       [[!COOKIES]]), [=iteration/continue=].
+    1. Call |terminate the session| to remove the existing session.
+    1. Set the user agent's [=session store=][|destination
+       domain|][|session identifier|] to |session|.
+    1. [=iteration/Break=]
 
 ## Create session ## {#algo-create-session}
 <div class="algorithm" data-algorithm="process-registration">
