@@ -159,7 +159,7 @@ The browser responds to the session start by selecting a compatible signature al
 POST /securesession/startsession HTTP/1.1
 Host: auth.example.com
 Accept: application/json
-Cookie: whatever_cookies_apply_to_this_request=value;
+Cookie: whatever_cookies_already_apply_to_this_request=value;
 Sec-Session-Response: JWT Proof
 
 ```
@@ -252,7 +252,7 @@ The browser refreshes the short-term session credential by calling the session e
 POST /securesession/refresh HTTP/1.1
 Host: auth.example.com
 Accept: application/json
-Cookie: whatever_cookies_apply_to_this_request=value;
+Cookie: whatever_cookies_already_apply_to_this_request=value;
 Sec-Session-Id: session_id
 ```
 
