@@ -427,10 +427,9 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
 
 ## Identify missing session credential ## {#algo-identify-missing-session-credential}
 <div class="algorithm" data-algorithm="identify-missing-session-credential">
-  Given a [=request=] (|request|) and a [=/list=] of [=device bound
-  session/session credentials=] (|credentials|), returns a [=boolean=]
-  indicating whether any |credential| in |credentials| is missing on
-  |request|.
+  Given a [=request=] (|request|) and a [=/list=] of [=/session credential=]s
+  (|credentials|), returns a [=boolean=] indicating whether any |credential| in
+  |credentials| is missing on |request|.
   
   1. [=list/For each=] |credential| in |credentials|
     1. If a cookie with |credential|'s [=session credential/attributes=] would
@@ -861,7 +860,7 @@ At the root of the JSON object, the following keys can exist:
     destinations covered by the session. This field MUST be present.
 
   : credentials
-  :: a [=list=] of [=device bound session/session credentials=] describing the cookies protected by
+  :: a [=list=] of [=/session credentials=] describing the cookies protected by
     this session. This field MUST be present.
 
   : allowed_refresh_initiators
