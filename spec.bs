@@ -533,7 +533,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
      session| and return.
   1. Let |session identifier| be the value of key "session_identifier".
   1. If the |response| JSON contains the key "continue", with value "false",
-     |terminate the session|.
+     |terminate the session| and return.
   1. Otherwise, perform the following validations. If any fail,
      |terminate the session| and return.
     1. |session identifier| must be non-empty.
