@@ -470,7 +470,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. [=list/For each=] |credential| in |session|'s [=session credentials=]:
        1. If a cookie with |credential|'s [=session credential/attributes=] could
           not be set by |response| (see <a
-          href=https://httpwg.org/specs/rfc6265.html#cookie>section 5.3</a> of
+          href=https://httpwg.org/specs/rfc6265.html#storage-model>section 5.3</a> of
           [[!COOKIES]]), [=iteration/continue=].
        1. Store |challenge| as |session|'s [=cached challenge=] to be used next
          time a [=DBSC proof=] is to be sent from this [=device bound session=].
@@ -591,7 +591,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. Call |terminate the session| to remove the existing session.
     1. Set the user agent's [=session store=][|destination
        domain|][|session identifier|] to |session|.
-    1. [=iteration/Break=]
+    1. [=iteration/Break=].
 
 ## Create session ## {#algo-create-session}
 <div class="algorithm" data-algorithm="process-registration">
