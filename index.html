@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="08713cd0012407f5cf0b09e780fea3f68794078a" name="revision">
+  <meta content="502fa496a4914d26e29b844ea932649d5245a179" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -733,7 +733,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2025-05-07">7 May 2025</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2025-05-08">8 May 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1413,7 +1413,7 @@ time a <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof">DBSC p
       <li data-md>
        <p>Let <var>session identifier</var> be the value of key "session_identifier".</p>
       <li data-md>
-       <p>If the <var>response</var> JSON contains the key "continue", with value "false", <var>terminate the session</var>.</p>
+       <p>If the <var>response</var> JSON contains the key "continue", with value "false", <var>terminate the session</var> and return.</p>
       <li data-md>
        <p>Otherwise, perform the following validations. If any fail, <var>terminate the session</var> and return.</p>
        <ol>
