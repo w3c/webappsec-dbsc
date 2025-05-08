@@ -72,10 +72,10 @@ different situations. Some of the use cases of DBSC are:
 
 ### Signed in session ### {#example-signin}
 <div class="example" id="signin-example">
-  A user logs in to his social account. To protect the user's private data the
-  site protects his logged in session with a DBSC session. If the user tries to
-  log in with the same cookie file on a different device, the site can detect and
-  refuse this as an unauthorized user.
+  A user logs in to their social account. To protect the user's private data the
+  site protects the logged in session with a DBSC session. If malware tries to
+  log in with the same cookie file on a different device, the site can detect
+  and refuse this as an unauthorized user.
 </div>
 
 ### Device integrity ### {#example-device-integrity}
@@ -175,7 +175,7 @@ Relying Parties (RPs) could simply establish a DBSC session independently of the
 Identity Provider (IdP). Unfortunately, most IdPs do not require a password if
 the user is already logged in. If user interaction isn't required, malware can
 use its temporary access to the user's machine to mimic the login flow and
-establish a DBSC session with a new private key the malware creates and can
+establish a DBSC session with a new private key the malware created and can
 exfiltrate. This violates the security goals of DBSC.
 
 Therefore, we need to link the RP and IdP session in some way. The simplest way
@@ -185,7 +185,7 @@ device, we trust that the private key is stored securely. But sharing keys acros
 sites has complex privacy properties. In order to mitigate the privacy risks of
 sharing a high-entropy identifier, we require that the RP already know the
 public key and session identifier for the IdP's session. The RP will include the
-IdP URL, session id, and key in the `Secure-Session-Registration` header. If
+IdP URL, session id, and key in the [:Secure-Session-Registration:] header. If
 the key is correct, the user agent will create a session on the RP with the same
 key as the IdP.
 
@@ -203,7 +203,7 @@ the same key pair, so querying whether a user has a specific DBSC public key on
 the IdP is much less than a one bit of entropy.
 
 In order to further limit the value of successfully unmasking a user, we also
-require opt-in from the IdP through a .well-known. Browsers should limit the
+require opt-in from the IdP through a `.well-known`. Browsers should limit the
 number of RP origins in that list. This will ensure that large groups of sites
 cannot collaborate to unmask a single high-value user as they browse the web.
 
@@ -211,7 +211,7 @@ cannot collaborate to unmask a single high-value user as they browse the web.
 Suppose the owners of `example.com` also run `example.co.uk`. Login always
 happens on `example.com`, and is propagated to `example.co.uk` through link
 decoration. In order to protect both sites with a DBSC session, `example.com`
-should continue to use its existing `Secure-Session-Registration` header:
+should continue to use its existing [:Secure-Session-Registration:] header:
 
 ```
 Secure-Session-Registration: (ES256);path="/register";challenge="challenge"
@@ -230,6 +230,7 @@ on `example.com`. This allows DBSC to protect `example.co.uk` without requiring
 users to reauthenticate on `example.com` at login.  </div>
 
 # Alternatives considered # {#alternatives}
+
 ## WebAuthn and silent mediation ## {#alternatives-webauthn}
 
 # Server considerations # {#server-considerations}
@@ -238,7 +239,7 @@ In order to use DBSC, site owners need to establish two new endpoints:
 the registration endpoint and the refresh endpoint.
 
 The registration endpoint is contacted asynchronously after the browser receives
-the Secure-Session-Registration header. This endpoint should:
+the [:Secure-Session-Registration:] header. This endpoint should:
 - Serve the session config, including a new session id.
 - Persist and associate the request's public key with the session id.
 
@@ -249,21 +250,21 @@ cause browser agents to begin denial-of-service prevention mechanisms, or even
 terminate the session. Both could lead to future requests without bound
 cookies. The expected behavior of this endpoint is:
 - Look up the public key and recent challenges for the session by id.
-- Validate the Secure-Session-Response header has signed a recent challenge with
+- Validate the [:Secure-Session-Response:] header has signed a recent challenge with
   the correct key. Note that due to network latency and race conditions, it's
   possible to receive a signature for an old challenge after issuing a new
   challenge.
 - Issue new bound cookies.
-- Serve the current session config.
+- Optionally update the current session config.
 
 The refresh endpoint is likely to directly leak login state if cross-site
-fetches are allowed. Servers can check for a valid Sec-Secure-Session-Id header
-to ensure that incoming requests are initiated by the user agent and not a
-cross-site request. It's also recommended to set a narrow CORS policy on this
-endpoint, not allowing cross-site origins to make requests with credentials. The
-CORS integration has been designed to make this possible by implicitly including
-credentials when the deferred request does. For similar reasons, it's also
-recommended that the refresh endpoint refuse to be embedded via the
+fetches are allowed. Servers can check for a valid [:Sec-Secure-Session-Id:]
+header to ensure that incoming requests are initiated by the user agent and not
+a cross-site request. It's also recommended to set a narrow CORS policy on this
+endpoint and not allow cross-site origins to make requests with credentials. The
+CORS integration for DBSC has been designed to make this possible by implicitly
+including credentials when the deferred request does. For similar reasons, it's
+also recommended that the refresh endpoint refuse to be embedded via the
 `X-Frame-Options` or `Cross-Origin-Resource-Policy` headers.
 
 <div class="example" id="timing-leak-cors">
@@ -307,8 +308,9 @@ This document depends on the Infra Standard for a number of foundational
 concepts used in its algorithms and prose [[!INFRA]].
 
 ## Session store ## {#framework-session-store}
-The user agent maintains a <dfn>session store</dfn>. It is an
-[=ordered map=] from [=host/registrable domain=] to [=session by id=].
+The user agent maintains a <dfn>session store</dfn>. It is an [=ordered map=]
+from [=host/registrable domain=] to [=session by id=]. Sessions should persist
+across user agent restarts.
 
 ## Sessions by id ## {#framework-sessions-id}
 A <dfn>session by id</dfn> is an [=ordered map=] from
@@ -328,17 +330,17 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
   : <dfn>cached challenge</dfn>
   :: a [=string=] that is to be used as the next challenge for this session
   : <dfn>session scope</dfn>
-  :: a [=/session scope=] defining which [=URL=]s are in scope for this session
+  :: a [=/session scope=] defining which [=URLs=] are in scope for this session
   : <dfn>session credentials</dfn>
-  :: a [=list=] of [=session credential=]s used by the session, derived from
-    [=/session credentials=]
+  :: a [=list=] of [=/session credentials=] used by the session, derived from
+    [=JSON session credentials=]
   : <dfn>expiration timestamp</dfn>
   :: a [=moment=] when this session should be removed.
   : <dfn>session key</dfn>
   :: a key pair used by the session. The private key
     should be stored in a secure manner, see [[#security-considerations]].
   : <dfn>allowed refresh initiators</dfn>
-  :: a [=list=] of [=string=]s describing which hosts are allowed to initiate
+  :: a [=list=] of [=strings=] describing which hosts are allowed to initiate
     DBSC refreshes due to non-CORS requests. See
     [[#algo-request-allows-refresh]] for details.
 </dl>
@@ -352,7 +354,7 @@ The <dfn>session scope</dfn> is a [=struct=] with the following
   : <dfn>include site</dfn>
   :: a [=boolean=] indicating if the session applies to an entire site or just an origin.
   : <dfn>scope specifications</dfn>
-  :: a [=list=] of [=scope specification=]s used by the session
+  :: a [=list=] of [=/scope specifications=] used by the session
 </dl>
 
 ## Scope specification ## {#framework-scope-specification}
@@ -465,10 +467,10 @@ if both `co.uk` and `de` are [=public suffixes=].
   
 <div class="example" id="host-pattern-matches-example">
   Some examples of pattern matches:
-  - `https://example.com` matches `*`
-  - `https://example.com` matches `example.com`
-  - `https://example.com` does not match `*.example.com`
-  - `https://subdomain.example.com` matches `*.example.com`
+  - `example.com` matches `*`
+  - `example.com` matches `example.com`
+  - `example.com` does not match `*.example.com`
+  - `subdomain.example.com` matches `*.example.com`
 </div>
   
 </div>
@@ -506,7 +508,7 @@ if both `co.uk` and `de` are [=public suffixes=].
 
 ## Identify missing session credential ## {#algo-identify-missing-session-credential}
 <div class="algorithm" data-algorithm="identify-missing-session-credential">
-  Given a [=request=] (|request|) and a [=/list=] of [=/session credential=]s
+  Given a [=request=] (|request|) and a [=/list=] of [=/session credentials=]
   (|credentials|), returns a [=boolean=] indicating whether any |credential| in
   |credentials| is missing on |request|.
   
@@ -787,8 +789,8 @@ id="add-debug-header">add the debug header</dfn> to a [=request=]
 
 # DBSC Formats # {#format}
 ## \``Secure-Session-Registration`\` HTTP header field ## {#header-secure-session-registration}
-The \`<dfn export http-header id="secure-session-registration-header">
-<code>Secure-Session-Registration</code></dfn>\` header field can be used in a
+The <dfn export http-header id="secure-session-registration-header">
+<code>\`Secure-Session-Registration\`</code></dfn> header field can be used in a
 [=response=] by the server to start a new [=/device bound session=] on the
 client.
 
@@ -852,8 +854,8 @@ The following <a>sf-parameter</a>s are defined:
 </div>
 
 ## \``Secure-Session-Challenge`\` HTTP Header Field ## {#header-secure-session-challenge}
-The \`<dfn export http-header id="secure-session-challenge-header">
-<code>Secure-Session-Challenge</code></dfn>\` header field can be used in a
+The <dfn export http-header id="secure-session-challenge-header">
+<code>\`Secure-Session-Challenge\`</code></dfn> header field can be used in a
 [=response=] by the server to send a challenge to the client that it expects to
 be used in future Secure-Session-Response headers inside the [=DBSC proof=], or to
 request a newly signed [=DBSC proof=] right away if the [=response/status=]
@@ -866,7 +868,7 @@ The semantics of the item are defined in
 
 The processing steps are defined in [[#algo-process-challenge]].
 
-### Secure-Session-Challenge structured header serialization ### {#challenge-structured-header-serialization}
+### [:Secure-Session-Challenge:] structured header serialization ### {#challenge-structured-header-serialization}
 The [:Secure-Session-Challenge:] is represented as a Structured Field.[[!RFC9651]]
 
 In this representation, a challenge is represented by a string.
@@ -906,13 +908,13 @@ case the session ID is optional.
   ```
 </div>
 
-## `Secure-Session-Response` HTTP Header Field ## {#header-secure-session-response}
-The \`<dfn export http-header id="secure-session-response-header">
-<code>Secure-Session-Response</code></dfn>\` header field can be used in the
+## \``Secure-Session-Response`\` HTTP Header Field ## {#header-secure-session-response}
+The <dfn export http-header id="secure-session-response-header">
+<code>\`Secure-Session-Response\`</code></dfn> header field can be used in the
 [=request=] by the user agent to send a [=DBSC proof=] to the server to prove
 that the client is still in possession of the private key of the session key.
 
-\`<a http-header><code>Secure-Session-Response</code></a>\` is a structured
+<a http-header><code>\`Secure-Session-Response\`</code></a> is a structured
 header. Its value must be a string. It's ABNF is:
 <pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
 This string MUST only contain the [=DBSC proof=] JWT. Any <a>sf-parameter</a>s SHOULD be
@@ -925,13 +927,13 @@ ignored.
   ```
 </div>  
 
-## `Sec-Secure-Session-Id` HTTP Header Field ## {#header-sec-secure-session-id}
-The \`<dfn export http-header id="sec-secure-session-id-header">
-<code>Sec-Secure-Session-Id</code></dfn>\` header field can be used in the
+## \``Sec-Secure-Session-Id`\` HTTP Header Field ## {#header-sec-secure-session-id}
+The <dfn export http-header id="sec-secure-session-id-header">
+<code>\`Sec-Secure-Session-Id\`</code></dfn> header field can be used in the
 [=request=] by the user agent to request the current session is refreshed, 
 with the current session identifier as a string argument.
 
-\`<a http-header><code>Sec-Secure-Session-Id</code></a>\` is a structured header.
+[:Sec-Secure-Session-Id:] is a structured header.
 Its value must be a string. It's ABNF is:
 <pre class="abnf">SecSessionIdentifier = <a>sf-string</a></pre>
 This string MUST only contain the session identifier. Any parameters SHOULD be
@@ -944,9 +946,9 @@ ignored.
   ```
 </div>
 
-## `Secure-Session-Skipped` HTTP header field ## {#header-secure-session-skipped}
-The \`<dfn export http-header id="secure-session-skipped-header">
-<code>Secure-Session-Skipped</code></dfn>\` header field can be used in a
+## \``Secure-Session-Skipped`\` HTTP header field ## {#header-secure-session-skipped}
+The <dfn export http-header id="secure-session-skipped-header">
+<code>\`Secure-Session-Skipped\`</code></dfn> header field can be used in a
 [=request=] to indicate that the request is intentionally missing bound
 credentials due to user agent policy.
 
@@ -971,18 +973,18 @@ One <a>sf-parameter</a> is defined:
 </div>
 
 
-## DBSC Session Instruction Format ## {#format-session-instructions}
-The server sends <dfn>session instructions</dfn> during session
+## JSON Session Instruction Format ## {#format-session-instructions}
+The server sends <dfn>JSON session instructions</dfn> during session
 registration and optionally during session refresh. If the response
 contains session instructions, it MUST be in JSON format.
 
 At the root of the JSON object, the following keys can exist:
   : session identifier
   :: a [=string=] representing a [=device bound session/session identifier=].
-    If this [=session instructions=] is sent during a refresh request this MUST be
+    If this [=JSON session instructions=] is sent during a refresh request this MUST be
     the [=device bound session/session identifier=] for the current session. If
     not these instructions SHOULD be ignored.
-    If this [=session instructions=] is sent during a registration it MUST either
+    If this [=JSON session instructions=] is sent during a registration it MUST either
     be a unique identifier for this [=host/registrable domain=], or it will
     overwrite the current [=device bound session=] with this identifier for the
     current [=host/registrable domain=].
@@ -1000,15 +1002,15 @@ At the root of the JSON object, the following keys can exist:
     This key is OPTIONAL, and if not present, the default value will be true.
     
   : scope
-  :: a [=dictionary=] of [=session scope instructions=] describing the request
-    destinations covered by the session. This field MUST be present.
+  :: a [=JSON session scope=] describing the request destinations covered by
+    the session. This field MUST be present.
 
   : credentials
-  :: a [=list=] of [=/session credentials=] describing the cookies protected by
+  :: a [=list=] of [=JSON session credentials=] describing the cookies protected by
     this session. This field MUST be present.
 
   : allowed_refresh_initiators
-  :: a [=list=] of [=string=]s describing which hosts are allowed to initiate
+  :: a [=list=] of [=strings=] describing which hosts are allowed to initiate
     DBSC refreshes due to non-CORS requests. See
     [[#algo-request-allows-refresh]] for details.
 
@@ -1052,8 +1054,8 @@ At the root of the JSON object, the following keys can exist:
   ```
 </div>
 
-## DBSC Session Scope Instruction Format ## {#format-session-scope-instructions}
-The server sends <dfn>session scope instructions</dfn> in the [=session
+## JSON Session Scope Instruction Format ## {#format-session-scope-instructions}
+The server sends a <dfn>JSON session scope</dfn> in the [=JSON session
 instructions=] during registration and optionally during session refresh.
 
 At the root of the JSON object, the following keys can exist:
@@ -1067,19 +1069,19 @@ At the root of the JSON object, the following keys can exist:
   :: a [=boolean=] indicating if the session is origin-scoped (false) or
     site-scoped (true). This key is OPTIONAL; if not present, it will be false
     (origin-scoped). Note that this takes precedence over any
-     [=session scope rule=]s in [=scope specification=] (see
+     [=JSON session scope rules=] in [=scope specification=] (see
      [[#algo-url-in-scope]]).
     
   : scope_specification
-  :: a [=list=] of [=session scope rule=]s describing modifications to the
+  :: a [=list=] of [=JSON session scope rules=] describing modifications to the
     default scope (the entire origin or site). This key is OPTIONAL; if not
     present, an empty list will be used.
 
-## DBSC Session Scope Rule Format ## {#format-session-scope-rule}
-The server sends <dfn>session scope rule</dfn>s in the [=session scope
-instructions=] during registration and optionally during session refresh.
+## JSON Session Scope Rule Format ## {#format-session-scope-rule}
+The server sends <dfn>JSON session scope rules</dfn> in the [=JSON session scope=]
+during registration and optionally during session refresh.
 
-At the root of each [=session scope rule=], the following keys can exist:
+At the root of each [=JSON session scope rule=], the following keys can exist:
   : type
   :: a [=string=] indicating whether the rule includes or excludes destinations.
     This key MUST be present, and the value MUST be "include" or "exclude".
@@ -1092,8 +1094,8 @@ At the root of each [=session scope rule=], the following keys can exist:
   :: a [=string=] indicating the path-prefixes that should match the rule. This
     key MUST be present. See [[#algo-url-in-scope]] for the detailed semantics.
 
-## DBSC Session Credentials Format ## {#format-session-credentials}
-The server sends <dfn>session credentials</dfn> in the [=session
+## JSON Session Credentials Format ## {#format-session-credentials}
+The server sends <dfn>JSON session credentials</dfn> in the [=JSON session
 instructions=] during registration and optionally during session refresh.
 
 At the root of the JSON object, the following keys can exist:
@@ -1184,11 +1186,11 @@ present:
 
 This specification requires an update to the <a
 href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
-fetch</a> algorithm. A [=request=] has a <dfn
-for="request">deferred device bound session ids</dfn>, a [=list=] of [=tuple=]s consisting of:
+fetch</a> algorithm. A [=request=] has a <dfn for="request">deferred device
+bound session ids</dfn>, a [=list=] of [=tuples=] consisting of:
   - a domain (a [=host/registrable domain=]).
   - a session id (a [=string=]). 
-This list is initially empty. At the end of step 8.21, run
+This list is initially empty. After computing cookies in step 8.21, run
 [[#algo-identify-session-needing-refresh]]. If the resulting
 |session| is non-null:
   1. Run [[#algo-session-request]] with the returned |session|'s
