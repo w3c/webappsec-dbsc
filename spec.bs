@@ -173,12 +173,12 @@ goal of easy adoptability, we want these sites to be able to protect themselves
 from cookie theft without a full rewrite of their authentication flows. Ideally,
 Relying Parties (RPs) could simply establish a DBSC session independently of the
 Identity Provider (IdP). Unfortunately, most IdPs do not require a password if
-the user is already logged in. Without user interaction, malware can use their
-temporary access to the user's machine can mimic the login flow and establish a
-DBSC session with a private key it can exfiltrate. This violates
-the security goals of DBSC.
+the user is already logged in. Without user interaction, malware can use its
+temporary access to the user's machine to mimic the login flow and establish a
+DBSC session with a new private key the malware creates and can exfiltrate. This
+violates the security goals of DBSC.
 
-Therefore we need to link the RP and IdP session in some way. The simplest way
+Therefore, we need to link the RP and IdP session in some way. The simplest way
 to do this is for the IdP and RP to simply use the same session key. Since we
 assume the IdP's session was established before the malware compromised the
 device, we trust that the private key is stored securely. But sharing keys across
@@ -189,12 +189,15 @@ IdP origin, session id, and key in the `Secure-Session-Registration` header. If
 the key is correct, the user agent will create a session on the RP with the same
 key as the IdP.
 
-To prevent malicious RPs from unmasking users by simply guessing many public
-keys, user agents should include significant backoff or quotas on registration
-attempts (this is also recommended to avoid denial of service on the TPM). Note
-that the security properties of DBSC rely on a cryptographic assumption that it
-is hard to get two users with the same key pair, so querying whether a user has
-a specific DBSC public key on the IdP is much less than a one bit of entropy.
+There is a potential risk that malicious RP and IdPs could unmask users by
+simply guessing many public keys. This would allow a collaborating RP and IdP to
+share a user's identity across sites, outside of the intended mechaisms for
+cross-site identity leaking. To prevent this, user agents should include
+significant backoff or quotas on registration attempts (this is also recommended
+to avoid denial of service on the TPM). Note that the security properties of
+DBSC rely on a cryptographic assumption that it is hard to get two users with
+the same key pair, so querying whether a user has a specific DBSC public key on
+the IdP is much less than a one bit of entropy.
 
 In order to further limit the value of successfully unmasking a user, we also
 require opt-in from the IdP through a .well-known. This will ensure that large
@@ -218,11 +221,10 @@ parameters to their `Secure-Session-Registration` header:
 Secure-Session-Registration: (ES256);path="/register";challenge="challenge";provider_key="abc";provider_id="example.com id";provider_url="https://example.com"
 ```
 
-With the appropriate .well-known entries, this will cause `example.co.uk` to
-register a new DBSC session using the same key as the session on
-`example.com`. This allows DBSC to protect `example.co.uk` without requiring
-users to reauthenticate on `example.com` at login.
-</div>
+Assuming `example.com` has the appropriate .well-known entries, this will cause
+`example.co.uk` to register a new DBSC session using the same key as the session
+on `example.com`. This allows DBSC to protect `example.co.uk` without requiring
+users to reauthenticate on `example.com` at login.  </div>
 
 # Alternatives considered # {#alternatives}
 ## WebAuthn and silent mediation ## {#alternatives-webauthn}
@@ -713,44 +715,43 @@ session or null if no key is possible.
        [:Secure-Session-Registration:], and is supported on this client,
        add |algorithm| to |algorithm list|.
   1. If |algorithm list| is empty, return null.
-  1. Let |unshared key| be a key pair created for |algorithm list|.
   1. If any of |params|["provider_key"], |params|["provider_id"], or
      |params|["provider_url"] exists:
-    1. If any of the three keys is missing, return |unshared key|.
+    1. If any of the three keys is missing, return null.
     1. Let |provider URL| be a [=/URL=] constructed from
        |params|["provider_url"].
     1. Let |provider origin| be the [=url/origin=] of |provider URL|.
-    1. If |provider origin| is opaque, return |unshared key|.
+    1. If |provider origin| is opaque, return null.
     1. Let |provider domain| be the [=host/registrable domain=] of
        |provider URL|'s [=url/host=].
     1. Let |provider identifier| be |params|["provider_id"].
     1. Let |provider session| be the session in the user agent's
        [=session store=][|provider domain|][|provider identifier|].
-    1. If |provider session| is null, return |unshared key|.
+    1. If |provider session| is null, return null.
     1. If |provider session|'s [=session key=] was created as the
-       relying party from another session, return |unshared key|.
+       relying party from another session, return null.
     1. If |provider session|'s [=device bound session/session scope=]
        [=session scope/origin=] is not [=/same origin=] with |provider
-       origin|, return |unshared key|.
+       origin|, return null.
     1. If |provider session|'s [=session key=] does not match
-       |params|["provider_key"], return |unshared key|.
+       |params|["provider_key"], return null.
     1. Let |well known URL| be a copy of |provider URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
     1. Let |well known response| be the result of fetching |well known
        URL|.
     1. If |well known response|'s [=response/status=] is not 200, return
-       |unshared key|.
+       null.
     1. If |well known response|'s [=response/body=] is not a
-       JSON-encoded dictionary, return |unshared key|.
+       JSON-encoded dictionary, return null.
     1. If |well known response|'s [=response/body=] does not include the
-       key "relying_origins", return |unshared key|.
+       key "relying_origins", return null.
     1. If the value of the key "relying_origins" does not include the
-       [=url/origin=] of |registration URL|, return |unshared key|.
+       [=url/origin=] of |registration URL|, return null.
     1. Browsers SHOULD place an upper limit on the number of
        [=registrable origin labels=] in "relying_origins" to prevent
        abuse.
     1. Return |provider session|'s [=session key=].
-  1. Return |unshared key|.
+  1. Return a new key pair created for |algorithm list|.
 </div>
  
 
