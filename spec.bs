@@ -255,10 +255,11 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
     session
   : <dfn>cached challenge</dfn>
   :: a [=string=] that is to be used as the next challenge for this session
-  : [=session scope=]
-  :: a [=struct=] defining which [=URL=]s are in scope for this session
-  : [=session credentials=]
-  :: a [=list=] of [=session credential=]s used by the session
+  : <dfn>session scope</dfn>
+  :: a [=/session scope=] defining which [=URL=]s are in scope for this session
+  : <dfn>session credentials</dfn>
+  :: a [=list=] of [=session credential=]s used by the session, derived from
+    [=/session credentials=]
   : <dfn>expiration timestamp</dfn>
   :: a [=moment=] when this session should be removed.
   : <dfn>session key</dfn>
@@ -330,7 +331,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   device bound session. Given a [=URL=] (|URL|) and [=session=] (|session|), returns
   "include" if |URL| is in scope, and "exclude" otherwise.
 
-  1. Let |scope| be |session|'s [=session scope=].
+  1. Let |scope| be |session|'s [=device bound session/session scope=].
   1. If |scope|'s [=include site=] is true, return "exclude" if |URL|'s
      [=/origin=] is not [=/same site=] with |scope|'s [=session scope/origin=].
   1. If |scope|'s [=include site=] is false, return "exclude" if |URL|'s
@@ -356,12 +357,14 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   (|request|) and [=session=] (|session|), returns "allowed" if
   |request| can trigger a refresh, and "disallowed" otherwise.
 
-  1. If |session|'s [=session scope=]'s [=include site=] is true, and
-     |request|'s [=request/origin=] is [=/same site=] with |session|'s
-     [=session scope=] [=session scope/origin=], return "allowed".
-  1. If |session|'s [=session scope=]'s [=include site=] is false, and
-     |request|'s [=request/origin=] is [=/same origin=] with |session|'s
-     [=session scope=] [=session scope/origin=], return "allowed".
+  1. If |session|'s [=device bound session/session scope=]'s [=include
+     site=] is true, and |request|'s [=request/origin=] is [=/same
+     site=] with |session|'s [=device bound session/session scope=]
+     [=session scope/origin=], return "allowed".
+  1. If |session|'s [=device bound session/session scope=]'s [=include
+     site=] is false, and |request|'s [=request/origin=] is [=/same
+     origin=] with |session|'s [=device bound session/session scope=]
+     [=session scope/origin=], return "allowed".
   1. [=list/For each=] |initiator pattern| in |session|'s
      [=allowed refresh initiators=]:
     1. If running [[#algo-host-pattern-matches]] on |request|'s
@@ -413,8 +416,9 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. Run the steps in [[#algo-request-allows-refresh]] on |request| and
       |session|.
     1. If the result is not "allowed", [=iteration/continue=].
-    1. If the result of running [[#algo-identify-missing-session-credential]]
-      on |request| and |session|'s [=session credentials=] is false,
+    1. If the result of running
+      [[#algo-identify-missing-session-credential]] on |request| and
+      |session|'s [=device bound session/session credentials=] is false,
       [=iteration/continue=].
     1. Add (|domain|, |id|) to |request|'s [=deferred device bound session ids=].
     1. Return |session|.
@@ -423,7 +427,7 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
 
 ## Identify missing session credential ## {#algo-identify-missing-session-credential}
 <div class="algorithm" data-algorithm="identify-missing-session-credential">
-  Given a [=request=] (|request|) and a [=/list=] of [=session credentials=]
+  Given a [=request=] (|request|) and a [=/list=] of [=/session credential=]s
   (|credentials|), returns a [=boolean=] indicating whether any |credential| in
   |credentials| is missing on |request|.
   
@@ -467,7 +471,8 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
     1. Let |session| be the result of running [[#algo-identify-session]] given
       |response|'s [=response/URL=] and |session id|.
     1. If |session| is null, [=iteration/continue=].
-    1. [=list/For each=] |credential| in |session|'s [=session credentials=]:
+    1. [=list/For each=] |credential| in |session|'s [=device bound
+       session/session credentials=]:
        1. If a cookie with |credential|'s [=session credential/attributes=] could
           not be set by |response| (see <a
           href=https://httpwg.org/specs/rfc6265.html#storage-model>section 5.3</a> of
@@ -576,14 +581,19 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   1. Let |session| be a new session with:
     1. [=device bound session/session identifier=] set to |session identifier|.
     1. [=refresh URL=] set to |refresh URL|.
-    1. [=session scope=] a new scope with [=session scope/origin=] |origin|, [=include
-       site=] the value of the key "scope.include_site", and [=scope
-       specifications=] the value of the key "scope.scope_specification".
-    1. [=session credentials=] the value of the key "credentials".
-    1. If |existing session| is non-null, set [=session key=] to |existing session|'s [=session key=].
+    1. [=device bound session/session scope=] a new scope with [=session
+       scope/origin=] |origin|, [=include site=] the value of the key
+       "scope.include_site", and [=scope specifications=] the value of the key
+       "scope.scope_specification".
+    1. [=device bound session/session credentials=] the value of the key
+       "credentials".
+    1. If |existing session| is non-null, set [=session key=] to |existing
+       session|'s [=session key=].
     1. Otherwise set [=session key=] to a newly-generated key pair.
-    1. [=allowed refresh initiators=] the value of the key "allowed_refresh_initiators".
-  1. [=list/For each=] |credential| in |session|'s [=session credentials=]:
+    1. [=allowed refresh initiators=] the value of the key
+       "allowed_refresh_initiators".
+  1. [=list/For each=] |credential| in |session|'s [=device bound
+     session/session credentials=]:
     1. If a cookie with |credential|'s [=session credential/attributes=] could
        not be set by |response| (see <a
        href=https://httpwg.org/specs/rfc6265.html#cookie>section 5.3</a> of
@@ -850,7 +860,7 @@ At the root of the JSON object, the following keys can exist:
     destinations covered by the session. This field MUST be present.
 
   : credentials
-  :: a [=list=] of [=session credentials=] describing the cookies protected by
+  :: a [=list=] of [=/session credentials=] describing the cookies protected by
     this session. This field MUST be present.
 
   : allowed_refresh_initiators
