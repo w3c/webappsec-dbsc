@@ -238,7 +238,7 @@ possible to extend it to meet the same goals as DBSC. We do not take this
 approach because WebAuthn's focus on interactive user sign in leads to several
 properties for its API that are contrary to the goals of a feature like
 DBSC. For example, WebAuthn credentials are not tied to specific sessions. They
-are meant to be long-lived and are not cleared along with site data.  This does
+are meant to be long-lived and are not cleared along with site data. This does
 not line up well with the necessary privacy properties for session
 keys. Similarly, WebAuthn credentials are designed for use with explicit user
 intent. Extending WebAuthn to subsume the functionality that DBSC provides would
