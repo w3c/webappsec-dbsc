@@ -173,10 +173,10 @@ goal of easy adoptability, we want these sites to be able to protect themselves
 from cookie theft without a full rewrite of their authentication flows. Ideally,
 Relying Parties (RPs) could simply establish a DBSC session independently of the
 Identity Provider (IdP). Unfortunately, most IdPs do not require a password if
-the user is already logged in. Without user interaction, malware can use its
-temporary access to the user's machine to mimic the login flow and establish a
-DBSC session with a new private key the malware creates and can exfiltrate. This
-violates the security goals of DBSC.
+the user is already logged in. If user interaction isn't required, malware can
+use its temporary access to the user's machine to mimic the login flow and
+establish a DBSC session with a new private key the malware creates and can
+exfiltrate. This violates the security goals of DBSC.
 
 Therefore, we need to link the RP and IdP session in some way. The simplest way
 to do this is for the IdP and RP to simply use the same session key. Since we
@@ -185,14 +185,17 @@ device, we trust that the private key is stored securely. But sharing keys acros
 sites has complex privacy properties. In order to mitigate the privacy risks of
 sharing a high-entropy identifier, we require that the RP already know the
 public key and session identifier for the IdP's session. The RP will include the
-IdP origin, session id, and key in the `Secure-Session-Registration` header. If
+IdP URL, session id, and key in the `Secure-Session-Registration` header. If
 the key is correct, the user agent will create a session on the RP with the same
 key as the IdP.
 
-There is a potential risk that malicious RP and IdPs could unmask users by
-simply guessing many public keys. This would allow a collaborating RP and IdP to
-share a user's identity across sites, outside of the intended mechaisms for
-cross-site identity leaking. To prevent this, user agents should include
+There is also a potential risk of malicious RPs and IdPs collaborating to try to
+identify users in cases where the RP and IdP can't already share information
+(e.g. when there are protections against fingerprinting or link decoration). The
+RPs could simply try to guess many public keys until they found a match, giving
+them a unique identifier for the user. This would allow a collaborating RP and
+IdP to share a user's identity across sites, outside of the intended mechanisms
+for cross-site identity linking. To prevent this, user agents should include
 significant backoff or quotas on registration attempts (this is also recommended
 to avoid denial of service on the TPM). Note that the security properties of
 DBSC rely on a cryptographic assumption that it is hard to get two users with
@@ -200,9 +203,9 @@ the same key pair, so querying whether a user has a specific DBSC public key on
 the IdP is much less than a one bit of entropy.
 
 In order to further limit the value of successfully unmasking a user, we also
-require opt-in from the IdP through a .well-known. This will ensure that large
-groups of sites cannot collaborate to unmask a single high-value user as they
-browse the web.
+require opt-in from the IdP through a .well-known. Browsers should limit the
+number of RP origins in that list. This will ensure that large groups of sites
+cannot collaborate to unmask a single high-value user as they browse the web.
 
 <div class="example" id="federated-sessions-example">
 Suppose the owners of `example.com` also run `example.co.uk`. Login always
@@ -282,6 +285,14 @@ requests in the context of a DBSC refresh. Other sites will be unable to
 directly fetch the endpoint with credentials, preventing an easy cross-site leak
 of login state.
 </div>
+
+Sites using federated login with DBSC (see [[#federated-sessions]]) should
+ensure that only sessions with the federated key are accepted. Security of
+federated sessions relies on the machine being uncompromised at Identity
+Provider (IdP) login, since malware can use temporary access to the machine to
+register a session on the Relying Party (RP) with new keys. Therefore RPs should
+only accept sessions registered with the appropriate public keys they received
+from the IdP.
 
 
 # Framework # {#framework}
@@ -747,7 +758,7 @@ session or null if no key is possible.
        key "relying_origins", return null.
     1. If the value of the key "relying_origins" does not include the
        [=url/origin=] of |registration URL|, return null.
-    1. Browsers SHOULD place an upper limit on the number of
+    1. User agents SHOULD place an upper limit on the number of
        [=registrable origin labels=] in "relying_origins" to prevent
        abuse.
     1. Return |provider session|'s [=session key=].
