@@ -377,7 +377,8 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
   : <dfn>name</dfn>
   :: a [=string=] that defines the name of the credential cookie
   : <dfn>attributes</dfn>
-  :: a [=string=] that defines the other attributes of the credential cookie
+  :: a [=string=] that defines the other attributes of the credential cookie.
+    User agents should supply the same defaults here as they would for cookies.
 </dl>
 
 ## Registrable origin label## {#framework-registrable-origin-label}
