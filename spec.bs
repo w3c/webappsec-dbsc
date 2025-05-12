@@ -233,6 +233,20 @@ users to reauthenticate on `example.com` at login.  </div>
 
 ## WebAuthn and silent mediation ## {#alternatives-webauthn}
 
+WebAuthn provides sites with certain key management capabilities, so it may be
+possible to extend it to meet the same goals as DBSC. We do not take this
+approach because WebAuthn's focus on interactive user sign in leads to several
+properties for its API that are contrary to the goals of a feature like
+DBSC. For example, WebAuthn credentials are not tied to specific sessions. They
+are meant to be long-lived and are not cleared along with site data. This does
+not line up well with the necessary privacy properties for session
+keys. Similarly, WebAuthn credentials are designed for use with explicit user
+intent. Extending WebAuthn to subsume the functionality that DBSC provides would
+require WebAuthn to establish a different kind of key that can be used
+silently. This introduces extra complexity for both WebAuthn and DBSC. Instead,
+we take the position that WebAuthn aims to provide secure sign in and DBSC is
+complementary, protecting users after sign in.
+
 # Server considerations # {#server-considerations}
 
 In order to use DBSC, site owners need to establish two new endpoints:
