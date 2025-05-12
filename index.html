@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="7621a42ee26b85d886ec9c384a06d1138ab8d919" name="revision">
+  <meta content="905c5b834a53fe31648c20b376a4793615de166f" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -1048,6 +1048,19 @@ users to reauthenticate on <code>example.com</code> at login. </p>
    <p></p>
    <h2 class="heading settled" data-level="4" id="alternatives"><span class="secno">4. </span><span class="content">Alternatives considered</span><a class="self-link" href="#alternatives"></a></h2>
    <h3 class="heading settled" data-level="4.1" id="alternatives-webauthn"><span class="secno">4.1. </span><span class="content">WebAuthn and silent mediation</span><a class="self-link" href="#alternatives-webauthn"></a></h3>
+   <p>WebAuthn provides sites with certain key management capabilities, so it may be
+possible to extend it to meet the same goals as DBSC. We do not take this
+approach because WebAuthn’s focus on interactive user sign in leads to several
+properties for its API that are contrary to the goals of a feature like
+DBSC. For example, WebAuthn credentials are not tied to specific sessions. They
+are meant to be long-lived and are not cleared along with site data. This does
+not line up well with the necessary privacy properties for session
+keys. Similarly, WebAuthn credentials are designed for use with explicit user
+intent. Extending WebAuthn to subsume the functionality that DBSC provides would
+require WebAuthn to establish a different kind of key that can be used
+silently. This introduces extra complexity for both WebAuthn and DBSC. Instead,
+we take the position that WebAuthn aims to provide secure sign in and DBSC is
+complementary, protecting users after sign in.</p>
    <h2 class="heading settled" data-level="5" id="server-considerations"><span class="secno">5. </span><span class="content">Server considerations</span><a class="self-link" href="#server-considerations"></a></h2>
    <p>In order to use DBSC, site owners need to establish two new endpoints:
 the registration endpoint and the refresh endpoint.</p>
