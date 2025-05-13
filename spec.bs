@@ -1103,11 +1103,13 @@ At the root of each [=JSON session scope rule=], the following keys can exist:
     
   : domain
   :: a [=string=] indicating the domains that should match the rule. This key
-    MUST be present. This can include wildcards (see [[#algo-url-in-scope]]).
+    is OPTIONAL; if not present, it will be '*', matching all domains. This can
+    include wildcards (see [[#algo-url-in-scope]]).
     
   : path
   :: a [=string=] indicating the path-prefixes that should match the rule. This
-    key MUST be present. See [[#algo-url-in-scope]] for the detailed semantics.
+    key is OPTIONAL; if not present, it will be '/', matching all paths. See
+    [[#algo-url-in-scope]] for the detailed semantics.
 
 ## JSON Session Credentials Format ## {#format-session-credentials}
 The server sends <dfn>JSON session credentials</dfn> in the [=JSON session
