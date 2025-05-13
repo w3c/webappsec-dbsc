@@ -585,11 +585,11 @@ if both `co.uk` and `de` are [=public suffixes=].
   takes as input an |originating request|, |key pair|, |destination|,
   and optional |session id|, |challenge|, and |authorization|.
 
-  1. The browser MAY skip this request in order to prevent denial of service for
+  1. The user agent MAY skip this request in order to prevent denial of service for
      the user or site. For example, this might happen if this session is
      requesting excessive TPM operations (harming the user) or the refresh
      endpoint has recently been unreachable (denial of service risk for the
-     site). If the browser chooses to do this, it should perform the steps of
+     site). If the user agent chooses to do this, it should perform the steps of
      [[#algo-add-debug-header]] with |originating request|, an appropriate token (see
      options in [[#header-secure-session-skipped]]), and |session id|
      to indicate this to the site.
@@ -631,7 +631,7 @@ if both `co.uk` and `de` are [=public suffixes=].
   1. If |response|'s [=response/status=] is at least 400 and below 500,
      then |terminate the session| and return.
   1. If |response|'s [=response/status=] is at least 500, then
-     return. Browsers may choose to trigger a backoff mechanism on
+     return. User agents may choose to trigger a backoff mechanism on
      subsequent refresh requests on this session, to limit the harm of a
      temporary outage on the refresh endpoint.
   1. If |session id| is non-null, and |response|'s [=response/body=] is
