@@ -749,6 +749,9 @@ if no key is possible.
   1. If any of |params|["provider_key"], |params|["provider_id"], or
      |params|["provider_url"] exists:
     1. If any of the three keys is missing, return null.
+    1. Let |permission| be [=request permission to use=]
+       "device-bound-session-key-sharing".
+    1. If |permission| is {{PermissionState/"denied"}}, return null.
     1. Let |provider URL| be a [=/URL=] constructed from
        |params|["provider_url"].
     1. Let |provider origin| be the [=url/origin=] of |provider URL|.
@@ -759,8 +762,6 @@ if no key is possible.
     1. Let |provider session| be the session in the user agent's
        [=session store=][|provider domain|][|provider identifier|].
     1. If |provider session| is null, return null.
-    1. If |provider session|'s [=session key=] was created as the
-       relying party from another session, return null.
     1. If |provider session|'s [=device bound session/session scope=]
        [=session scope/origin=] is not [=/same origin=] with |provider
        origin|, return null.
@@ -773,6 +774,8 @@ if no key is possible.
       1. |well known response|'s [=response/status=] is not 200
       1. |well known response|'s [=response/body=] is not a JSON-encoded
          dictionary
+      1. |well known response|'s [=response/body=] contains the key
+         "provider_origin".
       1. |well known response|'s [=response/body=] does not include the
          key "relying_origins".
       1. The value of the key "relying_origins" does not include the
@@ -789,6 +792,8 @@ if no key is possible.
       1. |well known response|'s [=response/status=] is not 200
       1. |well known response|'s [=response/body=] is not a JSON-encoded
          dictionary
+      1. |well known response|'s [=response/body=] contains the key
+         "relying_origins".
       1. |well known response|'s [=response/body=] does not include the
          key "provider_origin".
       1. The value of the key "provider origin" is not the
