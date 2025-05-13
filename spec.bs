@@ -178,32 +178,36 @@ use its temporary access to the user's machine to mimic the login flow and
 establish a DBSC session with a new private key the malware created and can
 exfiltrate. This violates the security goals of DBSC.
 
-Therefore, we need to link the RP and IdP session in some way. The simplest way
-to do this is for the IdP and RP to simply use the same session key. Since we
-assume the IdP's session was established before the malware compromised the
-device, we trust that the private key is stored securely. But sharing keys across
-sites has complex privacy properties. In order to mitigate the privacy risks of
-sharing a high-entropy identifier, we require that the RP already know the
-public key and session identifier for the IdP's session. The RP will include the
-IdP URL, session id, and key in the [:Secure-Session-Registration:] header. If
-the key is correct, the user agent will create a session on the RP with the same
-key as the IdP.
+Since DBSC is not inherently tied to login or identity, Identity Provider is not
+the most accurate term. Instead we use the term Session Provider (SP), although
+in the target use case we expect the SP and IdP to be the same party.
 
-There is also a potential risk of malicious RPs and IdPs collaborating to try to
-identify users in cases where the RP and IdP can't already share information
+In order to protect the RP's sessions, we need to link the RP and SP session in
+some way. The simplest way to do this is for the SP and RP to simply use the
+same session key. Since we assume the SP's session was established before the
+malware compromised the device, we trust that the private key is stored
+securely. But sharing keys across sites has complex privacy properties. In order
+to mitigate the privacy risks of sharing a high-entropy identifier, we require
+that the RP already know the public key and session identifier for the SP's
+session. The RP will include the SP URL, session id, and key in the
+[:Secure-Session-Registration:] header. If the key is correct, the user agent
+will create a session on the RP with the same key as the SP.
+
+There is also a potential risk of malicious RPs and SPs collaborating to try to
+identify users in cases where the RP and SP can't already share information
 (e.g. when there are protections against fingerprinting or link decoration). The
 RPs could simply try to guess many public keys until they found a match, giving
 them a unique identifier for the user. This would allow a collaborating RP and
-IdP to share a user's identity across sites, outside of the intended mechanisms
+SP to share a user's identity across sites, outside of the intended mechanisms
 for cross-site identity linking. To prevent this, user agents should include
 significant backoff or quotas on registration attempts (this is also recommended
 to avoid denial of service on the TPM). Note that the security properties of
 DBSC rely on a cryptographic assumption that it is hard to get two users with
 the same key pair, so querying whether a user has a specific DBSC public key on
-the IdP is much less than a one bit of entropy.
+the SP is much less than a one bit of entropy.
 
 In order to further limit the value of successfully unmasking a user, we also
-require opt-in from the IdP through a `.well-known`. Browsers should limit the
+require opt-in from the SP through a `.well-known`. Browsers should limit the
 number of RP origins in that list. This will ensure that large groups of sites
 cannot collaborate to unmask a single high-value user as they browse the web.
 
@@ -303,11 +307,11 @@ of login state.
 
 Sites using federated login with DBSC (see [[#federated-sessions]]) should
 ensure that only sessions with the federated key are accepted. Security of
-federated sessions relies on the machine being uncompromised at Identity
-Provider (IdP) login, since malware can use temporary access to the machine to
+federated sessions relies on the machine being uncompromised at Session
+Provider (SP) login, since malware can use temporary access to the machine to
 register a session on the Relying Party (RP) with new keys. Therefore RPs should
 only accept sessions registered with the appropriate public keys they received
-from the IdP.
+from the SP.
 
 
 # Framework # {#framework}
@@ -728,13 +732,12 @@ To <dfn export id="create-session">create a new session</dfn> due to the
 ## Create session key ## {#algo-create-session-key}
 <div class="algorithm" data-algorithm="create-session-key">
 
-This algorithm describes how to <dfn export
-id="create-session-key">create a session key</dfn>, including key
-sharing between a Relying Party (RP) and Identity Provider (IdP). It
-takes as input the |registration entry| and |params| of a
-[:Secure-Session-Registration:] header, and the [=URL=] (|registration
-URL|) of the registration endpoint. It returns a key pair for use in the
-session or null if no key is possible.
+This algorithm describes how to <dfn export id="create-session-key">create a
+session key</dfn>, including key sharing between a Relying Party and Session
+Provider. It takes as input the |registration entry| and |params| of a
+[:Secure-Session-Registration:] header, and the [=URL=] (|registration URL|) of
+the registration endpoint. It returns a key pair for use in the session or null
+if no key is possible.
 
   1. Let |algorithm list| be an empty [=list=].
   1. [=list/For each=] |algorithm| → |registration entry|
