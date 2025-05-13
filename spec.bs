@@ -769,18 +769,30 @@ if no key is possible.
     1. Let |well known URL| be a copy of |provider URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
     1. Let |well known response| be the result of fetching |well known
-       URL|.
-    1. If |well known response|'s [=response/status=] is not 200, return
-       null.
-    1. If |well known response|'s [=response/body=] is not a
-       JSON-encoded dictionary, return null.
-    1. If |well known response|'s [=response/body=] does not include the
-       key "relying_origins", return null.
-    1. If the value of the key "relying_origins" does not include the
-       [=url/origin=] of |registration URL|, return null.
+       URL|. If any of the following hold, return null:
+      1. |well known response|'s [=response/status=] is not 200
+      1. |well known response|'s [=response/body=] is not a JSON-encoded
+         dictionary
+      1. |well known response|'s [=response/body=] does not include the
+         key "relying_origins".
+      1. The value of the key "relying_origins" does not include the
+         [=url/origin=] of |registration URL|
     1. User agents SHOULD place an upper limit on the number of
        [=registrable origin labels=] in "relying_origins" to prevent
        abuse.
+    1. Let |well known URL| be a copy of |registration URL|, with the
+       [=url/path=] replaced with "/.well-known/device-bound-sessions".
+    1. Let |well known response| be the result of fetching |well known
+       URL|.
+    1. Let |well known response| be the result of fetching |well known
+       URL|. If any of the following hold, return null:
+      1. |well known response|'s [=response/status=] is not 200
+      1. |well known response|'s [=response/body=] is not a JSON-encoded
+         dictionary
+      1. |well known response|'s [=response/body=] does not include the
+         key "provider_origin".
+      1. The value of the key "provider origin" is not the
+         [=url/origin=] of |provider URL|.
     1. Return |provider session|'s [=session key=].
   1. Return a new key pair created for |algorithm list|.
 </div>
@@ -1333,6 +1345,8 @@ This endpoint must serve a JSON-encoded dictionary. Two keys are defined:
 - "relying_origins" is a list of strings. It contains origins that are
   allowed to be the Relying Party (RP) when sharing keys with this
   site's sessions.
+- "provider_origin" is an optional string. It contains the origin of the Session
+  Provider when this origin is being used as a Relying Party.
 
 <div class="example">
   If `https://example.com/.well-known/device-bound-sessions` serves
@@ -1357,7 +1371,13 @@ This endpoint must serve a JSON-encoded dictionary. Two keys are defined:
   In addition, `https://example.co.uk` and `https://example-partner.com`
   are allowed to share keys with sessions on `https://example.com`,
   enabling those sites to achieve both federated login and DBSC
-  protection.
+  protection. To do this, both sites must serve the following entry in their
+  `.well-known` files:
+  ```json
+  {
+    "provider_origin": "https://example.com/"
+  }
+  ```
 </div>
 
 # Changelog # {#changelog}
