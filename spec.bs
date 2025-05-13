@@ -517,6 +517,9 @@ if both `co.uk` and `de` are [=public suffixes=].
       |session|'s [=device bound session/session credentials=] is false,
       [=iteration/continue=].
     1. Add (|domain|, |id|) to |request|'s [=deferred device bound session ids=].
+    1. Set |session|'s [=expiration timestamp=] set to a future timestamp. The
+       exact choice of expiration timestamp is left to to the user agent. It is
+       recommended to align with the maximum cookie lifetime.
     1. Return |session|.
   1. If no session has been identified, return null.
 </div>
@@ -685,6 +688,9 @@ if both `co.uk` and `de` are [=public suffixes=].
     1. [=session key=] set to |key pair|.
     1. [=allowed refresh initiators=] the value of the key
        "allowed_refresh_initiators".
+    1. [=expiration timestamp=] set to a future timestamp. The exact choice of
+       expiration timestamp is left to to the user agent. It is recommended to
+       align with the maximum cookie lifetime.
   1. [=list/For each=] |credential| in |session|'s [=device bound
      session/session credentials=]:
     1. If a cookie with |credential|'s [=session credential/attributes=] could
