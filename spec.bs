@@ -518,7 +518,7 @@ if both `co.uk` and `de` are [=public suffixes=].
       [=iteration/continue=].
     1. Add (|domain|, |id|) to |request|'s [=deferred device bound session ids=].
     1. Set |session|'s [=expiration timestamp=] set to a future timestamp. The
-       exact choice of expiration timestamp is left to to the user agent. It is
+       exact choice of expiration timestamp is left up to the user agent. It is
        recommended to align with the maximum cookie lifetime.
     1. Return |session|.
   1. If no session has been identified, return null.
@@ -604,7 +604,7 @@ if both `co.uk` and `de` are [=public suffixes=].
   1. If |originating request|'s [=request/URL=]'s [=/origin=] is not [=/same site=] with
      |destination|'s [=/origin=], return.
   1. Let |signed challenge| be null. If |challenge| is non-null, create
-     a [=DBSC proof=] and sign it with |key pair| and store the result
+     a [=DBSC proof=], sign it with |key pair|, and store the result
      in |signed challenge|.
   1. Create a |request| for use in <a
      href="https://fetch.spec.whatwg.org/#http-fetch">HTTP fetch</a>.
@@ -689,7 +689,7 @@ if both `co.uk` and `de` are [=public suffixes=].
     1. [=allowed refresh initiators=] the value of the key
        "allowed_refresh_initiators".
     1. [=expiration timestamp=] set to a future timestamp. The exact choice of
-       expiration timestamp is left to to the user agent. It is recommended to
+       expiration timestamp is left up to the user agent. It is recommended to
        align with the maximum cookie lifetime.
   1. [=list/For each=] |credential| in |session|'s [=device bound
      session/session credentials=]:
