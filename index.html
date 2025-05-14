@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="632dbf5863173eaedb08014b72277806718438d5" name="revision">
+  <meta content="23212e75fc23b8b47311266b40ddfecb513ba327" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -1956,8 +1956,8 @@ and the refresh URL during refresh.</p>
       <dt data-md>include_site
       <dd data-md>
        <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean③">boolean</a> indicating if the session is origin-scoped (false) or
-site-scoped (true). This key is OPTIONAL; if not present, it will be false
-(origin-scoped). Note that this takes precedence over any <a data-link-type="dfn" href="#json-session-scope-rules" id="ref-for-json-session-scope-rules">JSON session scope rules</a> in <a data-link-type="dfn" href="#scope-specification" id="ref-for-scope-specification①">scope specification</a> (see <a href="#algo-url-in-scope">§ 7.2 Identify if a URL is in scope of a session</a>).</p>
+site-scoped (true). This key is MANDATORY. Note that this takes precedence
+over any <a data-link-type="dfn" href="#json-session-scope-rules" id="ref-for-json-session-scope-rules">JSON session scope rules</a> in <a data-link-type="dfn" href="#scope-specification" id="ref-for-scope-specification①">scope specification</a> (see <a href="#algo-url-in-scope">§ 7.2 Identify if a URL is in scope of a session</a>).</p>
       <dt data-md>scope_specification
       <dd data-md>
        <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①⓪">list</a> of <a data-link-type="dfn" href="#json-session-scope-rules" id="ref-for-json-session-scope-rules①">JSON session scope rules</a> describing modifications to the
@@ -1975,11 +1975,12 @@ This key MUST be present, and the value MUST be "include" or "exclude".</p>
       <dt data-md>domain
       <dd data-md>
        <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②⑨">string</a> indicating the domains that should match the rule. This key
-MUST be present. This can include wildcards (see <a href="#algo-url-in-scope">§ 7.2 Identify if a URL is in scope of a session</a>).</p>
+is OPTIONAL; if not present, it will be '*', matching all domains. This can
+include wildcards (see <a href="#algo-url-in-scope">§ 7.2 Identify if a URL is in scope of a session</a>).</p>
       <dt data-md>path
       <dd data-md>
        <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③⓪">string</a> indicating the path-prefixes that should match the rule. This
-key MUST be present. See <a href="#algo-url-in-scope">§ 7.2 Identify if a URL is in scope of a session</a> for the detailed semantics.</p>
+key is OPTIONAL; if not present, it will be '/', matching all paths. See <a href="#algo-url-in-scope">§ 7.2 Identify if a URL is in scope of a session</a> for the detailed semantics.</p>
      </dl>
      <h3 class="heading settled" data-level="8.9" id="format-session-credentials"><span class="secno">8.9. </span><span class="content">JSON Session Credentials Format</span><a class="self-link" href="#format-session-credentials"></a></h3>
       The server sends <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="json-session-credentials">JSON session credentials</dfn> in the <a data-link-type="dfn" href="#json-session-instructions" id="ref-for-json-session-instructions③">JSON session instructions</a> during registration and optionally during session refresh. 
