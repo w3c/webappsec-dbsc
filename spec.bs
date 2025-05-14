@@ -178,34 +178,41 @@ use its temporary access to the user's machine to mimic the login flow and
 establish a DBSC session with a new private key the malware created and can
 exfiltrate. This violates the security goals of DBSC.
 
-Therefore, we need to link the RP and IdP session in some way. The simplest way
-to do this is for the IdP and RP to simply use the same session key. Since we
-assume the IdP's session was established before the malware compromised the
-device, we trust that the private key is stored securely. But sharing keys across
-sites has complex privacy properties. In order to mitigate the privacy risks of
-sharing a high-entropy identifier, we require that the RP already know the
-public key and session identifier for the IdP's session. The RP will include the
-IdP URL, session id, and key in the [:Secure-Session-Registration:] header. If
-the key is correct, the user agent will create a session on the RP with the same
-key as the IdP.
+Since DBSC is not inherently tied to login or identity, Identity Provider is not
+the most accurate term. Instead we use the term Session Provider (SP), although
+in the target use case we expect the SP and IdP to be the same party.
 
-There is also a potential risk of malicious RPs and IdPs collaborating to try to
-identify users in cases where the RP and IdP can't already share information
+In order to protect the RP's sessions, we need to link the RP and SP session in
+some way. The simplest way to do this is for the SP and RP to use the same
+session key. Since we assume the SP's session was established before the malware
+compromised the device, we trust that the private key is stored securely. But
+sharing keys across sites has complex privacy properties. In order to mitigate
+the privacy risks of sharing a high-entropy identifier, we require that the RP
+already know the public key and session identifier for the SP's session. The RP
+will include the SP URL, session id, and key in the
+[:Secure-Session-Registration:] header. If the key is correct, the user agent
+will create a session on the RP with the same key as the SP.
+
+There is also a potential risk of malicious RPs and SPs collaborating to try to
+identify users in cases where the RP and SP can't already share information
 (e.g. when there are protections against fingerprinting or link decoration). The
 RPs could simply try to guess many public keys until they found a match, giving
 them a unique identifier for the user. This would allow a collaborating RP and
-IdP to share a user's identity across sites, outside of the intended mechanisms
+SP to share a user's identity across sites, outside of the intended mechanisms
 for cross-site identity linking. To prevent this, user agents should include
 significant backoff or quotas on registration attempts (this is also recommended
 to avoid denial of service on the TPM). Note that the security properties of
 DBSC rely on a cryptographic assumption that it is hard to get two users with
 the same key pair, so querying whether a user has a specific DBSC public key on
-the IdP is much less than a one bit of entropy.
+the SP is much less than a one bit of entropy.
 
 In order to further limit the value of successfully unmasking a user, we also
-require opt-in from the IdP through a `.well-known`. Browsers should limit the
-number of RP origins in that list. This will ensure that large groups of sites
-cannot collaborate to unmask a single high-value user as they browse the web.
+require opt-in from the SP through a `.well-known`. Browsers should limit the
+number of RP origins in that list. We also need to prevent an RP from using
+multiple SPs and aggregating identities that way. To do that, we require RPs
+declare their SP in the `.well-known` as well. Together, these will ensure that
+large groups of sites cannot collaborate to unmask a single high-value user as
+they browse the web.
 
 <div class="example" id="federated-sessions-example">
 Suppose the owners of `example.com` also run `example.co.uk`. Login always
@@ -303,11 +310,11 @@ of login state.
 
 Sites using federated login with DBSC (see [[#federated-sessions]]) should
 ensure that only sessions with the federated key are accepted. Security of
-federated sessions relies on the machine being uncompromised at Identity
-Provider (IdP) login, since malware can use temporary access to the machine to
+federated sessions relies on the machine being uncompromised at Session
+Provider (SP) login, since malware can use temporary access to the machine to
 register a session on the Relying Party (RP) with new keys. Therefore RPs should
 only accept sessions registered with the appropriate public keys they received
-from the IdP.
+from the SP.
 
 
 # Framework # {#framework}
@@ -728,13 +735,12 @@ To <dfn export id="create-session">create a new session</dfn> due to the
 ## Create session key ## {#algo-create-session-key}
 <div class="algorithm" data-algorithm="create-session-key">
 
-This algorithm describes how to <dfn export
-id="create-session-key">create a session key</dfn>, including key
-sharing between a Relying Party (RP) and Identity Provider (IdP). It
-takes as input the |registration entry| and |params| of a
-[:Secure-Session-Registration:] header, and the [=URL=] (|registration
-URL|) of the registration endpoint. It returns a key pair for use in the
-session or null if no key is possible.
+This algorithm describes how to <dfn export id="create-session-key">create a
+session key</dfn>, including key sharing between a Relying Party and Session
+Provider. It takes as input the |registration entry| and |params| of a
+[:Secure-Session-Registration:] header, and the [=URL=] (|registration URL|) of
+the registration endpoint. It returns a key pair for use in the session or null
+if no key is possible.
 
   1. Let |algorithm list| be an empty [=list=].
   1. [=list/For each=] |algorithm| → |registration entry|
@@ -746,6 +752,9 @@ session or null if no key is possible.
   1. If any of |params|["provider_key"], |params|["provider_id"], or
      |params|["provider_url"] exists:
     1. If any of the three keys is missing, return null.
+    1. Let |permission| be the result of performing [=request permission
+       to use=] for "device-bound-session-key-sharing".
+    1. If |permission| is {{PermissionState/"denied"}}, return null.
     1. Let |provider URL| be a [=/URL=] constructed from
        |params|["provider_url"].
     1. Let |provider origin| be the [=url/origin=] of |provider URL|.
@@ -756,28 +765,40 @@ session or null if no key is possible.
     1. Let |provider session| be the session in the user agent's
        [=session store=][|provider domain|][|provider identifier|].
     1. If |provider session| is null, return null.
-    1. If |provider session|'s [=session key=] was created as the
-       relying party from another session, return null.
     1. If |provider session|'s [=device bound session/session scope=]
        [=session scope/origin=] is not [=/same origin=] with |provider
        origin|, return null.
     1. If |provider session|'s [=session key=] does not match
        |params|["provider_key"], return null.
-    1. Let |well known URL| be a copy of |provider URL|, with the
+    1. Let |provider well known URL| be a copy of |provider URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
-    1. Let |well known response| be the result of fetching |well known
-       URL|.
-    1. If |well known response|'s [=response/status=] is not 200, return
-       null.
-    1. If |well known response|'s [=response/body=] is not a
-       JSON-encoded dictionary, return null.
-    1. If |well known response|'s [=response/body=] does not include the
-       key "relying_origins", return null.
-    1. If the value of the key "relying_origins" does not include the
-       [=url/origin=] of |registration URL|, return null.
+    1. Let |provider well known response| be the result of fetching |provider
+       well known URL|. If any of the following hold, return null:
+      1. |provider well known response|'s [=response/status=] is not 200.
+      1. |provider well known response|'s [=response/body=] is not a JSON-encoded
+         dictionary.
+      1. |provider well known response|'s [=response/body=] contains the key
+         "provider_origin".
+      1. |provider well known response|'s [=response/body=] does not include the
+         key "relying_origins".
+      1. The value of the key "relying_origins" does not include the
+         [=url/origin=] of |registration URL|.
     1. User agents SHOULD place an upper limit on the number of
        [=registrable origin labels=] in "relying_origins" to prevent
        abuse.
+    1. Let |relying well known URL| be a copy of |registration URL|, with the
+       [=url/path=] replaced with "/.well-known/device-bound-sessions".
+    1. Let |relying well known response| be the result of fetching |relying well
+       known URL|. If any of the following hold, return null:
+      1. |relying well known response|'s [=response/status=] is not 200.
+      1. |relying well known response|'s [=response/body=] is not a JSON-encoded
+         dictionary.
+      1. |relying well known response|'s [=response/body=] contains the key
+         "relying_origins".
+      1. |relying well known response|'s [=response/body=] does not include the
+         key "provider_origin".
+      1. The value of the key "provider origin" is not the
+         [=url/origin=] of |provider URL|.
     1. Return |provider session|'s [=session key=].
   1. Return a new key pair created for |algorithm list|.
 </div>
@@ -1330,6 +1351,8 @@ This endpoint must serve a JSON-encoded dictionary. Two keys are defined:
 - "relying_origins" is a list of strings. It contains origins that are
   allowed to be the Relying Party (RP) when sharing keys with this
   site's sessions.
+- "provider_origin" is an optional string. It contains the origin of the Session
+  Provider when this origin is being used as a Relying Party.
 
 <div class="example">
   If `https://example.com/.well-known/device-bound-sessions` serves
@@ -1354,7 +1377,13 @@ This endpoint must serve a JSON-encoded dictionary. Two keys are defined:
   In addition, `https://example.co.uk` and `https://example-partner.com`
   are allowed to share keys with sessions on `https://example.com`,
   enabling those sites to achieve both federated login and DBSC
-  protection.
+  protection. To do this, both sites must serve the following entry in their
+  `.well-known` files:
+  ```json
+  {
+    "provider_origin": "https://example.com/"
+  }
+  ```
 </div>
 
 # Changelog # {#changelog}
