@@ -524,6 +524,9 @@ if both `co.uk` and `de` are [=public suffixes=].
       |session|'s [=device bound session/session credentials=] is false,
       [=iteration/continue=].
     1. Add (|domain|, |id|) to |request|'s [=deferred device bound session ids=].
+    1. Set |session|'s [=expiration timestamp=] set to a future timestamp. The
+       exact choice of expiration timestamp is left up to the user agent. It is
+       recommended to align with the maximum cookie lifetime.
     1. Return |session|.
   1. If no session has been identified, return null.
 </div>
@@ -592,11 +595,11 @@ if both `co.uk` and `de` are [=public suffixes=].
   takes as input an |originating request|, |key pair|, |destination|,
   and optional |session id|, |challenge|, and |authorization|.
 
-  1. The browser MAY skip this request in order to prevent denial of service for
+  1. The user agent MAY skip this request in order to prevent denial of service for
      the user or site. For example, this might happen if this session is
      requesting excessive TPM operations (harming the user) or the refresh
      endpoint has recently been unreachable (denial of service risk for the
-     site). If the browser chooses to do this, it should perform the steps of
+     site). If the user agent chooses to do this, it should perform the steps of
      [[#algo-add-debug-header]] with |originating request|, an appropriate token (see
      options in [[#header-secure-session-skipped]]), and |session id|
      to indicate this to the site.
@@ -607,8 +610,9 @@ if both `co.uk` and `de` are [=public suffixes=].
        user agent's [=session store=], if such a session if found.
   1. If |originating request|'s [=request/URL=]'s [=/origin=] is not [=/same site=] with
      |destination|'s [=/origin=], return.
-  1. Let |signed challenge| be null. If |challenge| is non-null, sign it
-     with |key pair| and store the result in |signed challenge|.
+  1. Let |signed challenge| be null. If |challenge| is non-null, create
+     a [=DBSC proof=], sign it with |key pair|, and store the result
+     in |signed challenge|.
   1. Create a |request| for use in <a
      href="https://fetch.spec.whatwg.org/#http-fetch">HTTP fetch</a>.
   1. Set |request|'s [=request/method=] to "POST".
@@ -637,7 +641,7 @@ if both `co.uk` and `de` are [=public suffixes=].
   1. If |response|'s [=response/status=] is at least 400 and below 500,
      then |terminate the session| and return.
   1. If |response|'s [=response/status=] is at least 500, then
-     return. Browsers may choose to trigger a backoff mechanism on
+     return. User agents may choose to trigger a backoff mechanism on
      subsequent refresh requests on this session, to limit the harm of a
      temporary outage on the refresh endpoint.
   1. If |session id| is non-null, and |response|'s [=response/body=] is
@@ -691,6 +695,9 @@ if both `co.uk` and `de` are [=public suffixes=].
     1. [=session key=] set to |key pair|.
     1. [=allowed refresh initiators=] the value of the key
        "allowed_refresh_initiators".
+    1. [=expiration timestamp=] set to a future timestamp. The exact choice of
+       expiration timestamp is left up to the user agent. It is recommended to
+       align with the maximum cookie lifetime.
   1. [=list/For each=] |credential| in |session|'s [=device bound
      session/session credentials=]:
     1. If a cookie with |credential|'s [=session credential/attributes=] could
