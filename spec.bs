@@ -183,13 +183,13 @@ the most accurate term. Instead we use the term Session Provider (SP), although
 in the target use case we expect the SP and IdP to be the same party.
 
 In order to protect the RP's sessions, we need to link the RP and SP session in
-some way. The simplest way to do this is for the SP and RP to simply use the
-same session key. Since we assume the SP's session was established before the
-malware compromised the device, we trust that the private key is stored
-securely. But sharing keys across sites has complex privacy properties. In order
-to mitigate the privacy risks of sharing a high-entropy identifier, we require
-that the RP already know the public key and session identifier for the SP's
-session. The RP will include the SP URL, session id, and key in the
+some way. The simplest way to do this is for the SP and RP to use the same
+session key. Since we assume the SP's session was established before the malware
+compromised the device, we trust that the private key is stored securely. But
+sharing keys across sites has complex privacy properties. In order to mitigate
+the privacy risks of sharing a high-entropy identifier, we require that the RP
+already know the public key and session identifier for the SP's session. The RP
+will include the SP URL, session id, and key in the
 [:Secure-Session-Registration:] header. If the key is correct, the user agent
 will create a session on the RP with the same key as the SP.
 
@@ -208,8 +208,11 @@ the SP is much less than a one bit of entropy.
 
 In order to further limit the value of successfully unmasking a user, we also
 require opt-in from the SP through a `.well-known`. Browsers should limit the
-number of RP origins in that list. This will ensure that large groups of sites
-cannot collaborate to unmask a single high-value user as they browse the web.
+number of RP origins in that list. We also need to prevent an RP from using
+multiple SPs and aggregating identities that way. To do that, we require RPs
+declare their SP in the `.well-known` as well. Together, these will ensure that
+large groups of sites cannot collaborate to unmask a single high-value user as
+they browse the web.
 
 <div class="example" id="federated-sessions-example">
 Suppose the owners of `example.com` also run `example.co.uk`. Login always
@@ -749,8 +752,8 @@ if no key is possible.
   1. If any of |params|["provider_key"], |params|["provider_id"], or
      |params|["provider_url"] exists:
     1. If any of the three keys is missing, return null.
-    1. Let |permission| be [=request permission to use=]
-       "device-bound-session-key-sharing".
+    1. Let |permission| be the result of performing [=request permission
+       to use=] for "device-bound-session-key-sharing".
     1. If |permission| is {{PermissionState/"denied"}}, return null.
     1. Let |provider URL| be a [=/URL=] constructed from
        |params|["provider_url"].
@@ -767,34 +770,32 @@ if no key is possible.
        origin|, return null.
     1. If |provider session|'s [=session key=] does not match
        |params|["provider_key"], return null.
-    1. Let |well known URL| be a copy of |provider URL|, with the
+    1. Let |provider well known URL| be a copy of |provider URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
-    1. Let |well known response| be the result of fetching |well known
-       URL|. If any of the following hold, return null:
-      1. |well known response|'s [=response/status=] is not 200
-      1. |well known response|'s [=response/body=] is not a JSON-encoded
-         dictionary
-      1. |well known response|'s [=response/body=] contains the key
+    1. Let |provider well known response| be the result of fetching |provider
+       well known URL|. If any of the following hold, return null:
+      1. |provider well known response|'s [=response/status=] is not 200.
+      1. |provider well known response|'s [=response/body=] is not a JSON-encoded
+         dictionary.
+      1. |provider well known response|'s [=response/body=] contains the key
          "provider_origin".
-      1. |well known response|'s [=response/body=] does not include the
+      1. |provider well known response|'s [=response/body=] does not include the
          key "relying_origins".
       1. The value of the key "relying_origins" does not include the
-         [=url/origin=] of |registration URL|
+         [=url/origin=] of |registration URL|.
     1. User agents SHOULD place an upper limit on the number of
        [=registrable origin labels=] in "relying_origins" to prevent
        abuse.
-    1. Let |well known URL| be a copy of |registration URL|, with the
+    1. Let |relying well known URL| be a copy of |registration URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
-    1. Let |well known response| be the result of fetching |well known
-       URL|.
-    1. Let |well known response| be the result of fetching |well known
-       URL|. If any of the following hold, return null:
-      1. |well known response|'s [=response/status=] is not 200
-      1. |well known response|'s [=response/body=] is not a JSON-encoded
-         dictionary
-      1. |well known response|'s [=response/body=] contains the key
+    1. Let |relying well known response| be the result of fetching |relying well
+       known URL|. If any of the following hold, return null:
+      1. |relying well known response|'s [=response/status=] is not 200.
+      1. |relying well known response|'s [=response/body=] is not a JSON-encoded
+         dictionary.
+      1. |relying well known response|'s [=response/body=] contains the key
          "relying_origins".
-      1. |well known response|'s [=response/body=] does not include the
+      1. |relying well known response|'s [=response/body=] does not include the
          key "provider_origin".
       1. The value of the key "provider origin" is not the
          [=url/origin=] of |provider URL|.
