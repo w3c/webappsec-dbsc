@@ -190,7 +190,7 @@ sharing keys across sites has complex privacy properties. In order to mitigate
 the privacy risks of sharing a high-entropy identifier, we require that the RP
 already know the public key and session identifier for the SP's session. The RP
 will include the SP URL, session id, and key in the
-[:Secure-Session-Registration:] header. If the key is correct, the user agent
+[:Sec-Session-Registration:] header. If the key is correct, the user agent
 will create a session on the RP with the same key as the SP.
 
 There is also a potential risk of malicious RPs and SPs collaborating to try to
@@ -218,17 +218,17 @@ they browse the web.
 Suppose the owners of `example.com` also run `example.co.uk`. Login always
 happens on `example.com`, and is propagated to `example.co.uk` through link
 decoration. In order to protect both sites with a DBSC session, `example.com`
-should continue to use its existing [:Secure-Session-Registration:] header:
+should continue to use its existing [:Sec-Session-Registration:] header:
 
 ```
-Secure-Session-Registration: (ES256);path="/register";challenge="challenge"
+Sec-Session-Registration: (ES256);path="/register";challenge="challenge"
 ```
 
 When extending the DBSC session to `example.com.uk`, the site should append new
-parameters to their `Secure-Session-Registration` header:
+parameters to their `Sec-Session-Registration` header:
 
 ```
-Secure-Session-Registration: (ES256);path="/register";challenge="challenge";provider_key="abc";provider_id="example.com id";provider_url="https://example.com"
+Sec-Session-Registration: (ES256);path="/register";challenge="challenge";provider_key="abc";provider_id="example.com id";provider_url="https://example.com"
 ```
 
 Assuming `example.com` has the appropriate .well-known entries, this will cause
@@ -260,7 +260,7 @@ In order to use DBSC, site owners need to establish two new endpoints:
 the registration endpoint and the refresh endpoint.
 
 The registration endpoint is contacted asynchronously after the browser receives
-the [:Secure-Session-Registration:] header. This endpoint should:
+the [:Sec-Session-Registration:] header. This endpoint should:
 - Serve the session config, including a new session id.
 - Persist and associate the request's public key with the session id.
 
@@ -271,7 +271,7 @@ cause browser agents to begin denial-of-service prevention mechanisms, or even
 terminate the session. Both could lead to future requests without bound
 cookies. The expected behavior of this endpoint is:
 - Look up the public key and recent challenges for the session by id.
-- Validate the [:Secure-Session-Response:] header has signed a recent challenge with
+- Validate the [:Sec-Session-Response:] header has signed a recent challenge with
   the correct key. Note that due to network latency and race conditions, it's
   possible to receive a signature for an old challenge after issuing a new
   challenge.
@@ -279,7 +279,7 @@ cookies. The expected behavior of this endpoint is:
 - Optionally update the current session config.
 
 The refresh endpoint is likely to directly leak login state if cross-site
-fetches are allowed. Servers can check for a valid [:Sec-Secure-Session-Id:]
+fetches are allowed. Servers can check for a valid [:Sec-Sec-Session-Id:]
 header to ensure that incoming requests are initiated by the user agent and not
 a cross-site request. It's also recommended to set a narrow CORS policy on this
 endpoint and not allow cross-site origins to make requests with credentials. The
@@ -562,7 +562,7 @@ if both `co.uk` and `de` are [=public suffixes=].
   Given a [=response=] (|response|), this algorithm updates the [=device bound
   session/cached challenge=] for a [=device bound session=].
 
-  1. Let |header name| be "<code>Secure-Session-Challenge</code>".
+  1. Let |header name| be "<code>Sec-Session-Challenge</code>".
   1. Let |challenge list| be the result of executing <a>get a structured
     field value</a> given |header name| and "list" from |response|’s
     [=response/header list=].
@@ -601,7 +601,7 @@ if both `co.uk` and `de` are [=public suffixes=].
      endpoint has recently been unreachable (denial of service risk for the
      site). If the user agent chooses to do this, it should perform the steps of
      [[#algo-add-debug-header]] with |originating request|, an appropriate token (see
-     options in [[#header-secure-session-skipped]]), and |session id|
+     options in [[#header-sec-session-skipped]]), and |session id|
      to indicate this to the site.
   1. Let |terminate the session| be an algorithm with the following steps:
     1. If |session id| is null, return.
@@ -619,7 +619,7 @@ if both `co.uk` and `de` are [=public suffixes=].
   1. Set |request|'s [=request/URL=] to |destination|.
   1. Set |request|'s [=request/redirect mode=] to "follow".
   1. If |signed challenge| is non-null, [=header list/append=] the header
-     ("Secure-Session-Response", |signed challenge|) to |request|'s
+     ("Sec-Session-Response", |signed challenge|) to |request|'s
      [=request/header list=].
   1. If |authorization| is non-null, [=header list/append=] the header
      ("Authorization", |authorization|) to |request|'s [=request/header list=].
@@ -713,7 +713,7 @@ if both `co.uk` and `de` are [=public suffixes=].
 <div class="algorithm" data-algorithm="process-registration">
 To <dfn export id="create-session">create a new session</dfn> due to the
 [=response=] (|response|) to a [=request=] (|request|), do the following steps:
-  1. Let |header name| be "<code>Secure-Session-Registration</code>".
+  1. Let |header name| be "<code>Sec-Session-Registration</code>".
   1. Let |registration list| be the result of executing <a>get a structured
     field value</a> given |header name| and "list" from |response|’s
     [=response/header list=].
@@ -745,7 +745,7 @@ To <dfn export id="create-session">create a new session</dfn> due to the
 This algorithm describes how to <dfn export id="create-session-key">create a
 session key</dfn>, including key sharing between a Relying Party and Session
 Provider. It takes as input the |registration entry| and |params| of a
-[:Secure-Session-Registration:] header, and the [=URL=] (|registration URL|) of
+[:Sec-Session-Registration:] header, and the [=URL=] (|registration URL|) of
 the registration endpoint. It returns a key pair for use in the session or null
 if no key is possible.
 
@@ -753,7 +753,7 @@ if no key is possible.
   1. [=list/For each=] |algorithm| → |registration entry|
     1. If |algorithm| is not an <a>sf-token</a>, [=iteration/continue=].
     1. If |algorithm| represents a crypto algorithm supported in
-       [:Secure-Session-Registration:], and is supported on this client,
+       [:Sec-Session-Registration:], and is supported on this client,
        add |algorithm| to |algorithm list|.
   1. If |algorithm list| is empty, return null.
   1. If any of |params|["provider_key"], |params|["provider_id"], or
@@ -821,26 +821,26 @@ id="add-debug-header">add the debug header</dfn> to a [=request=]
   1. Set the <a>sf-parameter</a> "session_identifier" on |value| to |session id|.
   1. Let |skipped header value| be the result of running the steps of [=get a
      structured field value=] with [=header name=]
-     "Secure-Session-Skipped", type "list", and |request|'s
+     "Sec-Session-Skipped", type "list", and |request|'s
      [=request/header list=].
   1. If |skipped header value| is null, set it to an empty <a>sf-list</a>.
   1. Append |value| to |skipped header value|.
   1. Run the steps of [=set a structured field value=] given
-    ("Secure-Session-Skipped", |skipped header value|) on |request|'s
+    ("Sec-Session-Skipped", |skipped header value|) on |request|'s
     [=request/header list=].
 </div>
 
 # DBSC Formats # {#format}
-## \``Secure-Session-Registration`\` HTTP header field ## {#header-secure-session-registration}
-The <dfn export http-header id="secure-session-registration-header">
-<code>\`Secure-Session-Registration\`</code></dfn> header field can be used in a
+## \``Sec-Session-Registration`\` HTTP header field ## {#header-sec-session-registration}
+The <dfn export http-header id="sec-session-registration-header">
+<code>\`Sec-Session-Registration\`</code></dfn> header field can be used in a
 [=response=] by the server to start a new [=/device bound session=] on the
 client.
 
-[:Secure-Session-Registration:] is a List Structured Header [[RFC9651]]. Its ABNF
+[:Sec-Session-Registration:] is a List Structured Header [[RFC9651]]. Its ABNF
 is:
 
-<pre class="abnf">Secure-Session-Registration = <a>sf-list</a></pre>
+<pre class="abnf">Sec-Session-Registration = <a>sf-list</a></pre>
 
 Each item in the list must be an inner list, and each item in the inner list
 MUST be an <a>sf-token</a> representing a supported algorithm (ES256, RS256).
@@ -867,52 +867,52 @@ The following <a>sf-parameter</a>s are defined:
   is an <a>sf-string</a>, conveying that this session should share keys
   with a session on that site.
 
-<div class="example" id="secure-session-registration-example">
-  Some examples of [:Secure-Session-Registration:] from
+<div class="example" id="sec-session-registration-example">
+  Some examples of [:Sec-Session-Registration:] from
   https://example.com/login.html:
 
   ```html
   HTTP/1.1 200 OK
-  Secure-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
+  Sec-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
   ```
   ```html
   HTTP/1.1 200 OK
-  Secure-Session-Registration: (ES256 RS256);path="reg";challenge="cv"
+  Sec-Session-Registration: (ES256 RS256);path="reg";challenge="cv"
   ```
   ```html
   HTTP/1.1 200 OK
-  Secure-Session-Registration: (ES256);path="reg1";challenge="cv1";authorization="a"
-  Secure-Session-Registration: (RS256);path="reg2";challenge="cv2";authorization="b"
+  Sec-Session-Registration: (ES256);path="reg1";challenge="cv1";authorization="a"
+  Sec-Session-Registration: (RS256);path="reg2";challenge="cv2";authorization="b"
   ```
   ```html
   HTTP/1.1 200 OK
-  Secure-Session-Registration: (ES256);path="reg1";challenge="cv1";authorization="a", (RS256);path="reg2";challenge="cv2";authorization="b"
+  Sec-Session-Registration: (ES256);path="reg1";challenge="cv1";authorization="a", (RS256);path="reg2";challenge="cv2";authorization="b"
   ```
   
   ```html
   HTTP/1.1 200 OK
-  Secure-Session-Registration: (ES256);path="reg1";challenge="cv1";provider_key="abc";provider_id="idp_id";provider_url="https://id_origin.example.com"
+  Sec-Session-Registration: (ES256);path="reg1";challenge="cv1";provider_key="abc";provider_id="idp_id";provider_url="https://id_origin.example.com"
   ```
 
 </div>
 
-## \``Secure-Session-Challenge`\` HTTP Header Field ## {#header-secure-session-challenge}
-The <dfn export http-header id="secure-session-challenge-header">
-<code>\`Secure-Session-Challenge\`</code></dfn> header field can be used in a
+## \``Sec-Session-Challenge`\` HTTP Header Field ## {#header-sec-session-challenge}
+The <dfn export http-header id="sec-session-challenge-header">
+<code>\`Sec-Session-Challenge\`</code></dfn> header field can be used in a
 [=response=] by the server to send a challenge to the client that it expects to
-be used in future Secure-Session-Response headers inside the [=DBSC proof=], or to
+be used in future Sec-Session-Response headers inside the [=DBSC proof=], or to
 request a newly signed [=DBSC proof=] right away if the [=response/status=]
 is 403.
 
-[:Secure-Session-Challenge:] is a structured header. Its value must be a string.
+[:Sec-Session-Challenge:] is a structured header. Its value must be a string.
 Its ABNF is: <pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
 The semantics of the item are defined in
 [[#challenge-structured-header-serialization]].
 
 The processing steps are defined in [[#algo-process-challenge]].
 
-### [:Secure-Session-Challenge:] structured header serialization ### {#challenge-structured-header-serialization}
-The [:Secure-Session-Challenge:] is represented as a Structured Field.[[!RFC9651]]
+### [:Sec-Session-Challenge:] structured header serialization ### {#challenge-structured-header-serialization}
+The [:Sec-Session-Challenge:] is represented as a Structured Field.[[!RFC9651]]
 
 In this representation, a challenge is represented by a string.
 
@@ -924,81 +924,81 @@ Note: The server might need to use this header to request the [=DBSC proof=] to
 be signed with a new challenge before a session id has been assigned. In this
 case the session ID is optional.
 
-<div class="example" id="secure-session-challenge-example">
-  Some examples of [:Secure-Session-Challenge:] from
+<div class="example" id="sec-session-challenge-example">
+  Some examples of [:Sec-Session-Challenge:] from
   https://example.com/login.html:
 
   ```html
   HTTP/1.1 403 Forbidden
-  Secure-Session-Challenge: "new challenge"
+  Sec-Session-Challenge: "new challenge"
   ```
   ```html
   HTTP/1.1 403 Forbidden
-  Secure-Session-Challenge: "new challenge";id="my session"
+  Sec-Session-Challenge: "new challenge";id="my session"
   ```
   ```html
   HTTP/1.1 200 OK
-  Secure-Session-Challenge: "new challenge";id="my session"
+  Sec-Session-Challenge: "new challenge";id="my session"
   ```
   ```html
   HTTP/1.1 200 OK
-  Secure-Session-Challenge: "new challenge";id="my session 1"
-  Secure-Session-Challenge: "another challenge";id="my session 2"
+  Sec-Session-Challenge: "new challenge";id="my session 1"
+  Sec-Session-Challenge: "another challenge";id="my session 2"
   ```
   ```html
   HTTP/1.1 200 OK
-  Secure-Session-Challenge: "c1";id="session 1", "c2";id="session 2"
+  Sec-Session-Challenge: "c1";id="session 1", "c2";id="session 2"
   ```
 </div>
 
-## \``Secure-Session-Response`\` HTTP Header Field ## {#header-secure-session-response}
-The <dfn export http-header id="secure-session-response-header">
-<code>\`Secure-Session-Response\`</code></dfn> header field can be used in the
+## \``Sec-Session-Response`\` HTTP Header Field ## {#header-sec-session-response}
+The <dfn export http-header id="sec-session-response-header">
+<code>\`Sec-Session-Response\`</code></dfn> header field can be used in the
 [=request=] by the user agent to send a [=DBSC proof=] to the server to prove
 that the client is still in possession of the private key of the session key.
 
-<a http-header><code>\`Secure-Session-Response\`</code></a> is a structured
+<a http-header><code>\`Sec-Session-Response\`</code></a> is a structured
 header. Its value must be a string. It's ABNF is:
 <pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
 This string MUST only contain the [=DBSC proof=] JWT. Any <a>sf-parameter</a>s SHOULD be
 ignored.
 
-<div class="example" id="secure-session-response-example">
+<div class="example" id="sec-session-response-example">
   ```html
   POST example.com/refresh
-  Secure-Session-Response: "eyJhbGciOiJFUzI1NiIsInR5cCI6ImRic2Mrand0In0.eyJhdWQiOiJodHRwczovL2V4YW1wbGUuY29tL3JlZyIsImp0aSI6ImN2IiwiaWF0IjoiMTcyNTU3OTA1NSIsImp3ayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IjZfR0Iydm9RMHFyb01oNk9sREZDRlNfU0pyaVFpMVBUdnZCT2hHWjNiSEkiLCJ5IjoiSWVnT0pVTHlFN1N4SF9DZDFLQ0VSN2xXQnZHRkhRLWgweHlqelVqRUlXRSJ9LCJhdXRob3JpemF0aW9uIjoiYWMifQ.6Fb_vVBDmfNghQiBmIGe8o7tBfYPbPCywhQruP0vIhxgmcJmuNTaMHeVn_M8ZnOm1_bzIitbZqCWEn-1Qzmtyw"
+  Sec-Session-Response: "eyJhbGciOiJFUzI1NiIsInR5cCI6ImRic2Mrand0In0.eyJhdWQiOiJodHRwczovL2V4YW1wbGUuY29tL3JlZyIsImp0aSI6ImN2IiwiaWF0IjoiMTcyNTU3OTA1NSIsImp3ayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IjZfR0Iydm9RMHFyb01oNk9sREZDRlNfU0pyaVFpMVBUdnZCT2hHWjNiSEkiLCJ5IjoiSWVnT0pVTHlFN1N4SF9DZDFLQ0VSN2xXQnZHRkhRLWgweHlqelVqRUlXRSJ9LCJhdXRob3JpemF0aW9uIjoiYWMifQ.6Fb_vVBDmfNghQiBmIGe8o7tBfYPbPCywhQruP0vIhxgmcJmuNTaMHeVn_M8ZnOm1_bzIitbZqCWEn-1Qzmtyw"
   ```
 </div>  
 
-## \``Sec-Secure-Session-Id`\` HTTP Header Field ## {#header-sec-secure-session-id}
-The <dfn export http-header id="sec-secure-session-id-header">
-<code>\`Sec-Secure-Session-Id\`</code></dfn> header field can be used in the
+## \``Sec-Sec-Session-Id`\` HTTP Header Field ## {#header-sec-sec-session-id}
+The <dfn export http-header id="sec-sec-session-id-header">
+<code>\`Sec-Sec-Session-Id\`</code></dfn> header field can be used in the
 [=request=] by the user agent to request the current session is refreshed, 
 with the current session identifier as a string argument.
 
-[:Sec-Secure-Session-Id:] is a structured header.
+[:Sec-Sec-Session-Id:] is a structured header.
 Its value must be a string. It's ABNF is:
 <pre class="abnf">SecSessionIdentifier = <a>sf-string</a></pre>
 This string MUST only contain the session identifier. Any parameters SHOULD be
 ignored.
 
-<div class="example" id="sec-secure-session-id-example">
+<div class="example" id="sec-sec-session-id-example">
   ```html
   POST example.com/refresh
-  Sec-Secure-Session-Id: "session-id"
+  Sec-Sec-Session-Id: "session-id"
   ```
 </div>
 
-## \``Secure-Session-Skipped`\` HTTP header field ## {#header-secure-session-skipped}
-The <dfn export http-header id="secure-session-skipped-header">
-<code>\`Secure-Session-Skipped\`</code></dfn> header field can be used in a
+## \``Sec-Session-Skipped`\` HTTP header field ## {#header-sec-session-skipped}
+The <dfn export http-header id="sec-session-skipped-header">
+<code>\`Sec-Session-Skipped\`</code></dfn> header field can be used in a
 [=request=] to indicate that the request is intentionally missing bound
 credentials due to user agent policy.
 
-[:Secure-Session-Skipped:] is a List Structured Header [[RFC9651]]. Its ABNF
+[:Sec-Session-Skipped:] is a List Structured Header [[RFC9651]]. Its ABNF
 is:
 
-<pre class="abnf">Secure-Session-Skipped = <a>sf-list</a></pre>
+<pre class="abnf">Sec-Session-Skipped = <a>sf-list</a></pre>
 
 Each item in the list must be MUST be an <a>sf-token</a> representing a
 coarse-grained reason for skipping cookie refresh. The only supported values
@@ -1008,10 +1008,10 @@ One <a>sf-parameter</a> is defined:
 - An <a>sf-parameter</a> whose key is "session_identifier", and whose value is an
   <a>sf-string</a>, conveying the identifier of the skipped session.
   
-<div class="example" id="secure-session-skipped-example">
+<div class="example" id="sec-session-skipped-example">
   ```html
   GET example.com/requires_bound_cookie
-  Secure-Session-Skipped: unreachable;session_identifier=123, quota_exceeded;session_identifier=456
+  Sec-Session-Skipped: unreachable;session_identifier=123, quota_exceeded;session_identifier=456
   ```
 </div>
 
@@ -1057,7 +1057,7 @@ At the root of the JSON object, the following keys can exist:
     DBSC refreshes due to non-CORS requests. See
     [[#algo-request-allows-refresh]] for details.
 
-<div class="example" id="secure-session-instruction-example">
+<div class="example" id="sec-session-instruction-example">
   ```json
   {
     "session_identifier": "session_id",
@@ -1180,10 +1180,10 @@ The payload of [=DBSC proof=] MUST contain at least the following claims:
   :: a [=string=] defining a JWK as specified in [rfc7517].
 
 In addition the following claims MUST be present if present in
-[:Secure-Session-Registration:]:
+[:Sec-Session-Registration:]:
   : authorization
   :: a [=string=], direct copy of the string from
-    [:Secure-Session-Registration:], if set there. Note that this string is
+    [:Sec-Session-Registration:], if set there. Note that this string is
     OPTIONAL to include in the header, but if it is present it is
     MANDATORY for clients to add the claim in the [=DBSC proof=].
 
@@ -1219,7 +1219,7 @@ present:
   Based on this response header from the server:
   ```html
   HTTP/1.1 200 OK
-  Secure-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
+  Sec-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
   ```
   received on a response from ```http://example.com/page.html```
 </div>
@@ -1257,10 +1257,10 @@ registered domain.
 The permanent message header field registry should be updated with the following
 registrations: [[!RFC3864]]
 
-## Secure-Session-Challenge ## {#iana-ses-session-challenge}
+## Sec-Session-Challenge ## {#iana-ses-session-challenge}
 <dl>
   <dt>Header field name</dt>
-  <dd>Secure-Session-Challenge</dd>
+  <dd>Sec-Session-Challenge</dd>
 
   <dt>Applicable protocol</dt>
   <dd>http</dd>
@@ -1272,13 +1272,13 @@ registrations: [[!RFC3864]]
   <dd>W3C</dd>
 
   <dt>Specification document</dt>
-  <dd>This specification (See [[#header-secure-session-challenge]])</dd>
+  <dd>This specification (See [[#header-sec-session-challenge]])</dd>
 </dl>
 
-## Sec-Secure-Session-Id ## {#iana-sec-secure-session-id}
+## Sec-Sec-Session-Id ## {#iana-sec-sec-session-id}
 <dl>
   <dt>Header field name</dt>
-  <dd>Sec-Secure-Session-Id</dd>
+  <dd>Sec-Sec-Session-Id</dd>
 
   <dt>Applicable protocol</dt>
   <dd>http</dd>
@@ -1290,13 +1290,13 @@ registrations: [[!RFC3864]]
   <dd>W3C</dd>
 
   <dt>Specification document</dt>
-  <dd>This specification (See [[#header-sec-secure-session-id]])</dd>
+  <dd>This specification (See [[#header-sec-sec-session-id]])</dd>
 </dl>
 
-## Secure-Session-Registration ## {#iana-secure-session-registration}
+## Sec-Session-Registration ## {#iana-sec-session-registration}
 <dl>
   <dt>Header field name</dt>
-  <dd>Secure-Session-Registration</dd>
+  <dd>Sec-Session-Registration</dd>
 
   <dt>Applicable protocol</dt>
   <dd>http</dd>
@@ -1308,13 +1308,13 @@ registrations: [[!RFC3864]]
   <dd>W3C</dd>
 
   <dt>Specification document</dt>
-  <dd>This specification (See [[#header-secure-session-registration]])</dd>
+  <dd>This specification (See [[#header-sec-session-registration]])</dd>
 </dl>
 
-## Secure-Session-Response ## {#iana-secure-session-response}
+## Sec-Session-Response ## {#iana-sec-session-response}
 <dl>
   <dt>Header field name</dt>
-  <dd>Secure-Session-Response</dd>
+  <dd>Sec-Session-Response</dd>
 
   <dt>Applicable protocol</dt>
   <dd>http</dd>
@@ -1326,13 +1326,13 @@ registrations: [[!RFC3864]]
   <dd>W3C</dd>
 
   <dt>Specification document</dt>
-  <dd>This specification (See [[#header-secure-session-response]])</dd>
+  <dd>This specification (See [[#header-sec-session-response]])</dd>
 </dl>
 
-## Secure-Session-Skipped ## {#iana-secure-session-skipped}
+## Sec-Session-Skipped ## {#iana-sec-session-skipped}
 <dl>
   <dt>Header field name</dt>
-  <dd>Secure-Session-Skipped</dd>
+  <dd>Sec-Session-Skipped</dd>
 
   <dt>Applicable protocol</dt>
   <dd>http</dd>
@@ -1344,7 +1344,7 @@ registrations: [[!RFC3864]]
   <dd>W3C</dd>
 
   <dt>Specification document</dt>
-  <dd>This specification (See [[#header-secure-session-skipped]])</dd>
+  <dd>This specification (See [[#header-sec-session-skipped]])</dd>
 </dl>
 
 ## device-bound-sessions Well Known ## {#well-known}
