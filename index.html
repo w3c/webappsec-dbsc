@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version b25686b9f, updated Fri Mar 14 14:15:20 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="1003e39be16f1ca6278036854960b7b64198fec8" name="revision">
+  <meta content="d407cf4ba3f3077010ad14868024c445ba746246" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -733,7 +733,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2025-05-14">14 May 2025</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2025-05-20">20 May 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1097,6 +1097,9 @@ challenge.</p>
     <li data-md>
      <p>Optionally update the current session config.</p>
    </ul>
+   <p>Browsers may choose to refresh sessions proactively to attempt to minimize the
+latency cost of sites adopting DBSC. Sites should not assume that a refresh will
+only happen when a bound cookie is expired.</p>
    <p>The refresh endpoint is likely to directly leak login state if cross-site
 fetches are allowed. Servers can check for a valid `<code><a data-link-type="http-header">Sec-Secure-Session-Id</a></code>`
 header to ensure that incoming requests are initiated by the user agent and not
@@ -1437,6 +1440,9 @@ field value</a> given <var>header name</var> and "list" from <var>response</var>
   a request</dfn> for a device bound session registration or refresh. It
   takes as input an <var>originating request</var>, <var>key pair</var>, <var>destination</var>,
   and optional <var>session id</var>, <var>challenge</var>, and <var>authorization</var>. 
+     <p>User agents will perform these steps whenever a bound credential is missing,
+  but MAY do this at any time. Sending a request proactively before the bound
+  credential expires can minimize the latency costs of DBSC.</p>
      <ol>
       <li data-md>
        <p>The user agent MAY skip this request in order to prevent denial of service for
