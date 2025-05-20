@@ -278,6 +278,10 @@ cookies. The expected behavior of this endpoint is:
 - Issue new bound cookies.
 - Optionally update the current session config.
 
+Browsers may choose to refresh sessions proactively to attempt to minimize the
+latency cost of sites adopting DBSC. Sites should not assume that a refresh will
+only happen when a bound cookie is expired.
+
 The refresh endpoint is likely to directly leak login state if cross-site
 fetches are allowed. Servers can check for a valid [:Sec-Secure-Session-Id:]
 header to ensure that incoming requests are initiated by the user agent and not
@@ -594,6 +598,10 @@ if both `co.uk` and `de` are [=public suffixes=].
   a request</dfn> for a device bound session registration or refresh. It
   takes as input an |originating request|, |key pair|, |destination|,
   and optional |session id|, |challenge|, and |authorization|.
+
+  User agents will perform these steps whenever a bound credential is missing,
+  but MAY do this at any time. Sending a request proactively before the bound
+  credential expires can minimize the latency costs of DBSC.
 
   1. The user agent MAY skip this request in order to prevent denial of service for
      the user or site. For example, this might happen if this session is
