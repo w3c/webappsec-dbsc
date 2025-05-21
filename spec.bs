@@ -1360,7 +1360,7 @@ registrations: [[!RFC3864]]
 The Well-Known URI registry should be updated to include
 /.well-known/device-bound-sessions.
 
-This endpoint must serve a JSON-encoded dictionary. Two keys are defined:
+This endpoint must serve a JSON-encoded dictionary. Three keys are defined:
 - "registering_origins" is a list of strings. It contains origins that
   are allowed to register sessions for an entire site.
 - "relying_origins" is a list of strings. It contains origins that are
