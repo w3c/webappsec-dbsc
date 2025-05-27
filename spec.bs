@@ -47,23 +47,22 @@ spec: RFC9651;urlPrefix:https://datatracker.ietf.org/doc/html/rfc9651#;type:dfn
 <em>This section is not normative.</em><br/>
 <em>Note this is a very early drafting for writing collaboration only</em>
 
-The web is built on a stateless protocol. To provide required functionality, web
-applications store data locally on a user's computer. This is used for logged in
-user sessions that can last for a long time.
+The web is built on a stateless protocol. To maintain state for certain functionality,
+web applications store data locally on a user's device. This storage can last for a
+long time, such as for logged-in user sessions.
 
-In general, user agents do not have a secure way of storing data supporting these
-activities across commonly used operating systems, and actions authenticated by
-this data may have serious consequences, for example transferring money from a
-bank account.
+In general, user agents do not have a secure way of storing this kind of data on
+common operating systems, and actions authenticated by this data may have serious
+consequences, such as transferring money from a bank account.
 
 This document defines a new API, Device Bound Sessions Credentials (DBSC), that
-enables the server to verify that a session cannot be exported from a device by
-using commonly available TPMs, or similar APIs, that are designed for this
+enables servers to verify that a session has not been exported from a device. A
+server can use commonly available TPMs, or similar APIs, that are designed for this
 purpose.
 
 The goal is to provide users with a safe and secure experience, while offering
-the use cases users are already used to. At the same time we want to ensure that
-the users privacy is respected with no new privacy identifiers being leaked by
+the use cases users are already used to. At the same time, we want to ensure that
+user privacy is respected with no new privacy identifiers being leaked by
 this protocol.
 
 ## Examples ## {#examples}
@@ -72,8 +71,8 @@ different situations. Some of the use cases of DBSC are:
 
 ### Signed in session ### {#example-signin}
 <div class="example" id="signin-example">
-  A user logs in to their social account. To protect the user's private data the
-  site protects the logged in session with a DBSC session. If malware tries to
+  A user logs in to their social account. To protect the user's private data, the
+  site protects the logged-in session with a DBSC session. If malware tries to
   log in with the same cookie file on a different device, the site can detect
   and refuse this as an unauthorized user.
 </div>
