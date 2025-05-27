@@ -51,7 +51,7 @@ The web is built on a stateless protocol. To provide required functionality, web
 applications store data locally on a user's computer. This is used for logged in
 user sessions that can last for a long time.
 
-In general user agents do not have a secure way of storing data supporting these
+In general, user agents do not have a secure way of storing data supporting these
 activities across commonly used operating systems, and actions authenticated by
 this data may have serious consequences, for example transferring money from a
 bank account.
