@@ -337,11 +337,11 @@ concepts used in its algorithms and prose [[!INFRA]].
 
 ## Session store ## {#framework-session-store}
 The user agent maintains a <dfn>session store</dfn>. It is an [=ordered map=]
-from [=host/registrable domain=] to [=session by id=]. Sessions should persist
+from [=host/registrable domain=] to [=sessions by id map=]. Sessions should persist
 across user agent restarts.
 
 ## Sessions by id ## {#framework-sessions-id}
-A <dfn>session by id</dfn> is an [=ordered map=] from
+A <dfn>sessions by id map</dfn> is an [=ordered map=] from
 [=device bound session/session identifier=] to [=device bound session=] for a
 given [=host/registrable domain=].
 
@@ -350,7 +350,7 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
 [=struct/items=]:
 <dl dfn-for="device bound session">
   : <dfn>session identifier</dfn>
-  :: a [=string=] that is a unique identifier of a session on an
+  :: a [=string=] that is a unique identifier of a session on a
     [=host/registrable domain=]
   : <dfn>refresh URL</dfn>
   :: a [=string=] that is representing the [=URL=] to be used to refresh the
@@ -360,46 +360,45 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
   : <dfn>session scope</dfn>
   :: a [=/session scope=] defining which [=URLs=] are in scope for this session
   : <dfn>session credentials</dfn>
-  :: a [=list=] of [=/session credentials=] used by the session, derived from
+  :: a [=list=] of [=/session credential=]s used by the session, derived from
     [=JSON session credentials=]
   : <dfn>expiration timestamp</dfn>
-  :: a [=moment=] when this session should be removed.
+  :: a [=moment=] when this session should be removed
   : <dfn>session key</dfn>
   :: a key pair used by the session. The private key
-    should be stored in a secure manner, see [[#security-considerations]].
+    should be stored in a secure manner (see [[#security-considerations]]).
   : <dfn>allowed refresh initiators</dfn>
   :: a [=list=] of [=strings=] describing which hosts are allowed to initiate
-    DBSC refreshes due to non-CORS requests. See
-    [[#algo-request-allows-refresh]] for details.
+    DBSC refreshes. See [[#algo-request-allows-refresh]] for details.
 </dl>
 
 ## Session scope ## {#framework-scope}
-The <dfn>session scope</dfn> is a [=struct=] with the following
+A <dfn>session scope</dfn> is a [=struct=] with the following
 [=struct/items=]:
 <dl dfn-for="session scope">
   : <dfn>origin</dfn>
-  :: The [=/origin=] this session was registered for.
+  :: the [=/origin=] this session was registered for
   : <dfn>include site</dfn>
-  :: a [=boolean=] indicating if the session applies to an entire site or just an origin.
+  :: a [=boolean=] indicating if the session applies to an entire site or just an origin
   : <dfn>scope specifications</dfn>
-  :: a [=list=] of [=/scope specifications=] used by the session
+  :: a [=list=] of [=/scope specification=]s used by the session
 </dl>
 
 ## Scope specification ## {#framework-scope-specification}
-The <dfn>scope specification</dfn> is a [=struct=] with the following
+A <dfn>scope specification</dfn> is a [=struct=] with the following
 [=struct/items=]:
 <dl dfn-for="scope specification">
   : <dfn>type</dfn>
   :: a [=string=] to be either "include" or "exclude", defining if the item
     defined in this struct should be added or removed from the scope
   : <dfn>host</dfn>
-  :: a [=string=] defining the domain or domain pattern that must match for this scope specification to apply.
+  :: a [=string=] defining the domain or domain pattern that must match for this scope specification to apply
   : <dfn>path</dfn>
   :: a [=string=] that defines the path part of this scope specification
 </dl>
 
 ## Session credential ## {#framework-session-credential}
-The <dfn>session credential</dfn> is a [=struct=] with the following
+A <dfn>session credential</dfn> is a [=struct=] with the following
 [=struct/items=]:
 <dl dfn-for="session credential">
   : <dfn>name</dfn>
@@ -412,9 +411,9 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
 ## Registrable origin label## {#framework-registrable-origin-label}
 The <dfn>registrable origin label</dfn> of a [=/domain=] is the first
 [=domain label=] of the [=registrable domain=] of a [=/domain=], or null
-if the [=registrable domain=] is null. For example, the [=registrable
-origin label=] of both `example.co.uk` and `www.example.de` is `example`
-if both `co.uk` and `de` are [=public suffixes=].
+if the [=registrable domain=] is null. For example, if both `co.uk` and
+`de` are [=public suffixes=], then the [=registrable origin label=] of
+both `example.co.uk` and `www.example.de` is `example`.
 
 # Algorithms # {#algorithms}
 ## Identify session ## {#algo-identify-session}
@@ -431,7 +430,7 @@ if both `co.uk` and `de` are [=public suffixes=].
 
   1. Let |domain| be the [=host/registrable domain=] of |url|'s [=url/host=].
   1. Let |domain sessions| be the user agent's [=session store=][|domain|] as a
-     [=/session by id=]
+     [=/sessions by id map=]
   1. Return |domain sessions|[|session identifier|]
 </div>
 
@@ -511,8 +510,8 @@ if both `co.uk` and `de` are [=public suffixes=].
 
   1. Let |domain| be the [=host/registrable domain=] of the |request|'s
      [=request/url=]'s [=url/host=].
-  1. Let |domain sessions| be the user agent's [=session store=][|domain|] as
-     [=/session by id=]
+  1. Let |domain sessions| be the user agent's [=session store=][|domain|] as a
+     [=/sessions by id map=]
   1. [=list/For each=] |session| of |domain sessions|
     1. If |session|'s [=expiration timestamp=] is before the present, remove
       |session| from |domain sessions| and [=iteration/continue=].
@@ -1065,8 +1064,7 @@ At the root of the JSON object, the following keys can exist:
 
   : allowed_refresh_initiators
   :: a [=list=] of [=strings=] describing which hosts are allowed to initiate
-    DBSC refreshes due to non-CORS requests. See
-    [[#algo-request-allows-refresh]] for details.
+    DBSC refreshes. See [[#algo-request-allows-refresh]] for details.
 
 <div class="example" id="secure-session-instruction-example">
   ```json
