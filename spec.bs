@@ -153,9 +153,10 @@ neither would any of the additional DBSC behavior. This ensures no new privacy
 behavior due to implementing DBSC.
 
 ## Timing side channel leak ## {#privacy-side-channel-leak}
-If third party cookies are enabled it is possible for an attacker to leak
-whether or not a user is authenticated by measuring how long the request takes
-as the refresh is quite slow, partially due to the latency of TPM operations. 
+If third party cookies are enabled, it is possible for an attacker to determine
+whether or not a user is authenticated by measuring how long the request takes.
+This is because the refresh is quite slow, partially due to the latency of TPM
+operations.
 
 This is mitigated by the `allowed_refresh_initiators` field in session
 configuration, which can be used to strictly limit the sites that can trigger
@@ -188,7 +189,7 @@ compromised the device, we trust that the private key is stored securely. But
 sharing keys across sites has complex privacy properties. In order to mitigate
 the privacy risks of sharing a high-entropy identifier, we require that the RP
 already know the public key and session identifier for the SP's session. The RP
-will include the SP URL, session id, and key in the
+will include the SP URL, session id, and public key in the
 [:Secure-Session-Registration:] header. If the key is correct, the user agent
 will create a session on the RP with the same key as the SP.
 
@@ -215,7 +216,7 @@ they browse the web.
 
 <div class="example" id="federated-sessions-example">
 Suppose the owners of `example.com` also run `example.co.uk`. Login always
-happens on `example.com`, and is propagated to `example.co.uk` through link
+happens on `example.com` and is propagated to `example.co.uk` through link
 decoration. In order to protect both sites with a DBSC session, `example.com`
 should continue to use its existing [:Secure-Session-Registration:] header:
 
@@ -224,16 +225,18 @@ Secure-Session-Registration: (ES256);path="/register";challenge="challenge"
 ```
 
 When extending the DBSC session to `example.com.uk`, the site should append new
-parameters to their `Secure-Session-Registration` header:
+parameters to the `Secure-Session-Registration` header:
 
 ```
 Secure-Session-Registration: (ES256);path="/register";challenge="challenge";provider_key="abc";provider_id="example.com id";provider_url="https://example.com"
 ```
 
-Assuming `example.com` has the appropriate .well-known entries, this will cause
-`example.co.uk` to register a new DBSC session using the same key as the session
-on `example.com`. This allows DBSC to protect `example.co.uk` without requiring
-users to reauthenticate on `example.com` at login.  </div>
+Assuming `example.com` and `example.co.uk` have the appropriate .well-known
+entries, this will cause `example.co.uk` to register a new DBSC session using
+the same key as the session on `example.com`. This allows DBSC to protect
+`example.co.uk` without requiring users to reauthenticate on `example.com` at
+login.
+</div>
 
 # Alternatives considered # {#alternatives}
 
