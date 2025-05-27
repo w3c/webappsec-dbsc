@@ -97,7 +97,7 @@ The goals of DBSC are to reduce session theft by offering an alternative to
 long-lived cookie bearer tokens and to allow session authentication to be
 bound to the user's device. This makes the internet safer for users in that it
 is less likely their identity is abused, as malware is forced to act locally and
-thus becomes easier to detect and mitigate. At the same time the goal is to
+thus becomes easier to detect and mitigate. At the same time, the goal is to
 disrupt the cookie theft ecosystem and force it to adapt to new protections long
 term.
 
@@ -116,7 +116,7 @@ key, but the signing capability will likely still be available for any program
 running as the user on the user's device.
 
 DBSC will also not prevent an attack if the attacker is replacing or injecting
-into the user agent at the time of session registration as the attacker can bind
+into the user agent at the time of session registration, as the attacker can bind
 the session either to keys that are not TPM bound, or to a TPM that the attacker
 controls permanently.
 
@@ -124,11 +124,11 @@ DBSC is not designed to give hosts any sort of guarantee about the
 specific device a session is registered to, or the state of this device.
 
 # Privacy Considerations # {#privacy-considerations}
-The goal of the DBSC protocol is to introduce no additional surface for user
+The privacy goal of the DBSC protocol is to introduce no additional surface for user
 tracking: implementing this API (for a browser) or enabling it (for a website)
 should not entail any significant user privacy tradeoffs.
 
-Some of the consideration taken to ensure this:
+Some of the considerations taken to ensure this:
 
 - Lifetime of a session/key material: This should provide no additional client
   data storage (i.e., a pseudo-cookie). As such, we require that browsers MUST
