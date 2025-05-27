@@ -244,7 +244,7 @@ login.
 
 WebAuthn provides sites with certain key management capabilities, so it may be
 possible to extend it to meet the same goals as DBSC. We do not take this
-approach because WebAuthn's focus on interactive user sign in leads to several
+approach because WebAuthn's focus on interactive user sign-in leads to several
 properties for its API that are contrary to the goals of a feature like
 DBSC. For example, WebAuthn credentials are not tied to specific sessions. They
 are meant to be long-lived and are not cleared along with site data. This does
@@ -253,8 +253,8 @@ keys. Similarly, WebAuthn credentials are designed for use with explicit user
 intent. Extending WebAuthn to subsume the functionality that DBSC provides would
 require WebAuthn to establish a different kind of key that can be used
 silently. This introduces extra complexity for both WebAuthn and DBSC. Instead,
-we take the position that WebAuthn aims to provide secure sign in and DBSC is
-complementary, protecting users after sign in.
+we take the position that WebAuthn aims to provide secure sign-in and DBSC is
+complementary, protecting users after sign-in.
 
 # Server considerations # {#server-considerations}
 
@@ -284,34 +284,35 @@ Browsers may choose to refresh sessions proactively to attempt to minimize the
 latency cost of sites adopting DBSC. Sites should not assume that a refresh will
 only happen when a bound cookie is expired.
 
-The refresh endpoint is likely to directly leak login state if cross-site
-fetches are allowed. Servers can check for a valid [:Sec-Secure-Session-Id:]
-header to ensure that incoming requests are initiated by the user agent and not
-a cross-site request. It's also recommended to set a narrow CORS policy on this
-endpoint and not allow cross-site origins to make requests with credentials. The
-CORS integration for DBSC has been designed to make this possible by implicitly
-including credentials when the deferred request does. For similar reasons, it's
-also recommended that the refresh endpoint refuse to be embedded via the
-`X-Frame-Options` or `Cross-Origin-Resource-Policy` headers.
+The refresh endpoint is likely to directly leak login state via a timing side
+channel if cross-site fetches are allowed. Servers can check for a valid
+[:Sec-Secure-Session-Id:] header to ensure that incoming requests are initiated
+by the user agent and not a cross-site request. It's also recommended to set a
+narrow CORS policy on this endpoint and not allow cross-site origins to make
+requests with credentials. The CORS integration for DBSC has been designed to
+make this possible by implicitly including credentials when the deferred
+request does. For similar reasons, it's also recommended that the refresh
+endpoint refuse to be embedded via the `X-Frame-Options` or
+`Cross-Origin-Resource-Policy` headers.
 
 <div class="example" id="timing-leak-cors">
 Suppose `example.com` has two endpoints:
 - `/authenticated` will return `Access-Control-Allow-Credentials` for any
   requesting origin.
-- `/refresh` is the the DBSC refresh endpoint.
+- `/refresh` is the DBSC refresh endpoint.
 
-The site wants DBSC to protect cross-site requests to `/authenticated`, and
-believes that the risk from timing side channels on this one endpoint are
+The site wants DBSC to protect cross-site requests to `/authenticated` and
+believes that the risks from timing side channels on this one endpoint are
 minimal. If we did not implicitly allow credentials for the refresh request
 triggered by the user agent, then `/refresh` would be required to return
-`Access-Control-Allow-Credentials` for any requesting origin. Now attackers can
-very directly leak login state by fetching `/refresh` directly.
+`Access-Control-Allow-Credentials` for any requesting origin. Then attackers
+could leak login state by fetching `/refresh` directly.
 
-By implicitly allowing credentials, the `/refresh` endpoint can refuse to ever
-return `Access-Control-Allow-Credentials`. It will still receive credentialled
-requests in the context of a DBSC refresh. Other sites will be unable to
-directly fetch the endpoint with credentials, preventing an easy cross-site leak
-of login state.
+Since DBSC's call into `/refresh` implicitly allows credentials, the `/refresh`
+endpoint can refuse to ever return `Access-Control-Allow-Credentials`. It will
+still receive credentialled requests in the context of a DBSC refresh. Other
+sites will be unable to directly fetch the endpoint with credentials,
+preventing an easy cross-site leak of login state.
 </div>
 
 Sites using federated login with DBSC (see [[#federated-sessions]]) should
