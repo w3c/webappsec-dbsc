@@ -1034,21 +1034,21 @@ At the root of the JSON object, the following keys can exist:
     the [=device bound session/session identifier=] for the current session. If
     not, these instructions SHOULD be ignored.
     If this [=JSON session instructions=] is sent during a registration, either it MUST
-    be a unique identifier for a session under this [=host/registrable domain=],
+    be a unique identifier for a session under the corresponding [=host/registrable domain=],
     or the instructions will overwrite the current [=device bound session=] with this
-    identifier for the current [=host/registrable domain=].
+    identifier for the [=host/registrable domain=].
     This key MUST be present.
 
   : refresh_url
   :: a [=string=] representing the [=URL=] used for future refresh requests.
-    This can be a full [=URL=], or relative to the current [=request=].
-    This key is OPTIONAL; if not present the registration URL will be used for
+    This can be a full [=URL=], or it can be relative to the current [=request=].
+    This key is OPTIONAL; if not present, the registration URL will be used for
     future refresh requests.
 
   : continue
   :: a [=boolean=] indicating if the session should continue to apply.
     Registration and refresh endpoints can set this to false to terminate a session.
-    This key is OPTIONAL, and if not present, the default value will be true.
+    This key is OPTIONAL; if not present, the default value will be true.
     
   : scope
   :: a [=JSON session scope=] describing the request destinations covered by
