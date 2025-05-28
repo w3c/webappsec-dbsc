@@ -430,22 +430,22 @@ both `example.co.uk` and `www.example.de` is `example`.
 
   1. Let |domain| be the [=host/registrable domain=] of |url|'s [=url/host=].
   1. Let |domain sessions| be the user agent's [=session store=][|domain|] as a
-     [=/sessions by id map=]
-  1. Return |domain sessions|[|session identifier|]
+     [=/sessions by id map=].
+  1. Return |domain sessions|[|session identifier|].
 </div>
 
 ## Identify if a URL is in scope of a session ## {#algo-url-in-scope}
 <div class="algorithm" data-algorithm="url-in-scope">
   This algorithm describes how to determine if a URL is in scope of a
-  device bound session. Given a [=URL=] (|URL|) and [=session=] (|session|), returns
-  "include" if |URL| is in scope, and "exclude" otherwise.
+  device bound session. Given a [=URL=] (|URL|) and [=device bound session=]
+  (|session|), returns "include" if |URL| is in scope, and "exclude" otherwise.
 
   1. Let |scope| be |session|'s [=device bound session/session scope=].
   1. If |scope|'s [=include site=] is true, return "exclude" if |URL|'s
      [=/origin=] is not [=/same site=] with |scope|'s [=session scope/origin=].
   1. If |scope|'s [=include site=] is false, return "exclude" if |URL|'s
      [=/origin=] is not [=same origin=] with |scope|'s [=session scope/origin=].
-  1. If the |URL| matches the |session|'s [=refresh URL=], return "exclude".
+  1. If |URL| matches |session|'s [=refresh URL=], return "exclude".
   1. [=list/For each=] |scope specification| in |scope|'s [=scope specifications=]:
     1. Let |host pattern| be |scope specification|'s [=scope 
        specification/host=], and |path pattern| be |scope
@@ -462,7 +462,7 @@ both `example.co.uk` and `www.example.de` is `example`.
 ## Identify if a request is allowed to refresh ## {#algo-request-allows-refresh}
 <div class="algorithm" data-algorithm="request-allows-refresh">
   This algorithm describes how to determine if a request is allowed to
-  be refreshed by a device bound session. Given a [=request=]
+  trigger refresh for a device bound session. Given a [=request=]
   (|request|) and [=session=] (|session|), returns "allowed" if
   |request| can trigger a refresh, and "disallowed" otherwise.
 
