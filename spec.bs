@@ -655,9 +655,9 @@ both `example.co.uk` and `www.example.de` is `example`.
   1. Parse |response|'s [=response/body=] according to
      [[#format-session-instructions]]. If parsing fails, |terminate the
      session| and return.
-  1. Let |session identifier| be the value of key "session_identifier".
-  1. If the |response| JSON contains the key "continue", with value "false",
+  1. If the |response| JSON contains the key "continue" and its value is false,
      |terminate the session| and return.
+  1. Let |session identifier| be the value of key "session_identifier".
   1. Otherwise, perform the following validations. If any fail,
      |terminate the session| and return.
     1. |session identifier| must be non-empty.
