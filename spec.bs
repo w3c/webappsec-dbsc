@@ -1162,25 +1162,26 @@ At the root of the JSON object, the following keys can exist:
 
 ## DBSC Proof JWT Syntax ## {#format-jwt}
 A <dfn>DBSC proof</dfn> proof is a JWT that is signed (using JSON Web Signature
-(JWS)), with a private key chosen by the client. The header of a [=DBSC proof=]
-MUST contain at least the following <a>sf-parameter</a>s:
+(JWS)), with a private key chosen by the client.
+
+The header of a [=DBSC proof=] MUST contain at least the following <a>sf-parameter</a>s:
   : typ
-  :: a [=string=] MUST be "dbsc+jwt"
+  :: a [=string=]. This MUST be "dbsc+jwt".
   : alg
   :: a [=string=] defining the algorithm used to sign this JWT. It MUST be
     either "RS256" or "ES256" from [IANA.JOSE.ALGS].
 
 The payload of [=DBSC proof=] MUST contain at least the following claims:
   : aud
-  :: a [=string=], MUST be the [=URL=] this JWT was originally sent to.
-    Example: "https://example.com/refresh.html"
+  :: a [=string=]. This MUST be the [=URL=] this JWT was originally sent to.
+    Example: "https://example.com/refresh.html".
   : jti
-  :: a [=string=], a copy of the challenge value sent in the registration
+  :: a [=string=]. This is a copy of the challenge value sent in the registration
     header.
   : iat
-  :: a [=string=], this claim identifies the time at which the JWT was
-    issued.  This claim can be used to determine the age of the JWT.  Its
-    value MUST be a number containing a NumericDate value.
+  :: a [=string=]. This identifies the time the JWT was issued. It can be used
+    to determine the age of the JWT. Its value MUST be a number containing a
+    NumericDate value.
   : key
   :: a [=string=] defining a JWK as specified in [rfc7517].
 
