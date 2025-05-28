@@ -1179,24 +1179,24 @@ The payload of [=DBSC proof=] MUST contain at least the following claims:
   :: a [=string=]. This is a copy of the challenge value sent in the registration
     header.
   : iat
-  :: a [=string=]. This identifies the time the JWT was issued. It can be used
-    to determine the age of the JWT. Its value MUST be a number containing a
+  :: a [=string=] identifying the time the JWT was issued. It can be used to
+    determine the age of the JWT. Its value MUST be a number containing a
     NumericDate value.
   : key
   :: a [=string=] defining a JWK as specified in [rfc7517].
 
-In addition the following claims MUST be present if present in
-[:Secure-Session-Registration:]:
+In addition, the following claim MUST be present if present in the
+[:Secure-Session-Registration:] header field:
   : authorization
-  :: a [=string=], direct copy of the string from
-    [:Secure-Session-Registration:], if set there. Note that this string is
-    OPTIONAL to include in the header, but if it is present it is
+  :: a [=string=]. This is a direct copy of the string from the
+    [:Secure-Session-Registration:] header field if set there. Note that this
+    string is OPTIONAL to include in the header, but if it is present, it is
     MANDATORY for clients to add the claim in the [=DBSC proof=].
 
 If the DBSC proof is for a refresh request, the following claim MUST be
 present:
   : sub
-  :: the [=device bound session/session identifier=], a [=string=].
+  :: a [=string=] specifying the [=device bound session/session identifier=].
 
 <div class="example" id="dbsc-proof-example">
   An example [=DBSC proof=] sent to https://example.com/reg:
