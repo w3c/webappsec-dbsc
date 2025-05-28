@@ -964,7 +964,7 @@ The <dfn export http-header id="secure-session-response-header">
 that the client is still in possession of the private key of the session key.
 
 <a http-header><code>\`Secure-Session-Response\`</code></a> is a structured
-header. Its value must be a string. It's ABNF is:
+header. Its value must be a string. Its ABNF is:
 <pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
 This string MUST only contain the [=DBSC proof=] JWT. Any <a>sf-parameter</a>s SHOULD be
 ignored.
@@ -979,11 +979,11 @@ ignored.
 ## \``Sec-Secure-Session-Id`\` HTTP header field ## {#header-sec-secure-session-id}
 The <dfn export http-header id="sec-secure-session-id-header">
 <code>\`Sec-Secure-Session-Id\`</code></dfn> header field can be used in the
-[=request=] by the user agent to request the current session is refreshed, 
+[=request=] by the user agent to request the current session be refreshed,
 with the current session identifier as a string argument.
 
 [:Sec-Secure-Session-Id:] is a structured header.
-Its value must be a string. It's ABNF is:
+Its value must be a string. Its ABNF is:
 <pre class="abnf">SecSessionIdentifier = <a>sf-string</a></pre>
 This string MUST only contain the session identifier. Any parameters SHOULD be
 ignored.
