@@ -463,7 +463,7 @@ both `example.co.uk` and `www.example.de` is `example`.
 <div class="algorithm" data-algorithm="request-allows-refresh">
   This algorithm describes how to determine if a request is allowed to
   trigger refresh for a device bound session. Given a [=request=]
-  (|request|) and [=session=] (|session|), returns "allowed" if
+  (|request|) and [=device bound session=] (|session|), returns "allowed" if
   |request| can trigger a refresh, and "disallowed" otherwise.
 
   1. If |session|'s [=device bound session/session scope=]'s [=include
