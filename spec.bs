@@ -1240,7 +1240,9 @@ fetch</a> algorithm. A [=request=] has a <dfn for="request">deferred device
 bound session ids</dfn>, a [=list=] of [=tuples=] consisting of:
   - a domain (a [=host/registrable domain=]).
   - a session id (a [=string=]). 
-This list is initially empty. After computing cookies in step 8.21, run
+This list is initially empty.
+
+After computing cookies in step 8.21, run
 [[#algo-identify-session-needing-refresh]]. If the resulting
 |session| is non-null:
   1. Run [[#algo-session-request]] with the returned |session|'s
@@ -1253,7 +1255,7 @@ This list is initially empty. After computing cookies in step 8.21, run
 ## Changes to the Clear Site Data specification ## {#changes-to-clear-site-data}
 
 This specification requires that the Clear Site Data specification
-sections 4.2.5 "Clear DOM-accessible storage for origin" clear all
+section 4.2.5 "Clear DOM-accessible storage for origin" clear all
 device bound sessions whose scope matches origin. It also requires an
 update to 4.2.4 to clear device bound sessions for the site matching the
 registered domain.
