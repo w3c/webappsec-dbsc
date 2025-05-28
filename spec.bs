@@ -1006,7 +1006,7 @@ is:
 
 <pre class="abnf">Secure-Session-Skipped = <a>sf-list</a></pre>
 
-Each item in the list must be MUST be an <a>sf-token</a> representing a
+Each item in the list MUST be an <a>sf-token</a> representing a
 coarse-grained reason for skipping cookie refresh. The only supported values
 are: "unreachable", "server_error", and "quota_exceeded".
 
@@ -1030,13 +1030,13 @@ contains session instructions, it MUST be in JSON format.
 At the root of the JSON object, the following keys can exist:
   : session identifier
   :: a [=string=] representing a [=device bound session/session identifier=].
-    If this [=JSON session instructions=] is sent during a refresh request this MUST be
+    If this [=JSON session instructions=] is sent during a refresh request, this MUST be
     the [=device bound session/session identifier=] for the current session. If
-    not these instructions SHOULD be ignored.
-    If this [=JSON session instructions=] is sent during a registration it MUST either
-    be a unique identifier for this [=host/registrable domain=], or it will
-    overwrite the current [=device bound session=] with this identifier for the
-    current [=host/registrable domain=].
+    not, these instructions SHOULD be ignored.
+    If this [=JSON session instructions=] is sent during a registration, either it MUST
+    be a unique identifier for a session under this [=host/registrable domain=],
+    or the instructions will overwrite the current [=device bound session=] with this
+    identifier for the current [=host/registrable domain=].
     This key MUST be present.
 
   : refresh_url
