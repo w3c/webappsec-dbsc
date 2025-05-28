@@ -1116,16 +1116,16 @@ At the root of the JSON object, the following keys can exist:
   : include_site
   :: a [=boolean=] indicating if the session is origin-scoped (false) or
     site-scoped (true). This key is MANDATORY. Note that this takes precedence
-    over any [=JSON session scope rules=] in [=scope specification=] (see
+    over any [=JSON session scope rule=]s in [=scope specification=] (see
     [[#algo-url-in-scope]]).
     
   : scope_specification
-  :: a [=list=] of [=JSON session scope rules=] describing modifications to the
+  :: a [=list=] of [=JSON session scope rule=]s describing modifications to the
     default scope (the entire origin or site). This key is OPTIONAL; if not
     present, an empty list will be used.
 
 ## JSON Session Scope Rule Format ## {#format-session-scope-rule}
-The server sends <dfn>JSON session scope rules</dfn> in the [=JSON session scope=]
+The server sends <dfn>JSON session scope rule</dfn>s in the [=JSON session scope=]
 during registration and optionally during session refresh.
 
 At the root of each [=JSON session scope rule=], the following keys can exist:
