@@ -1134,9 +1134,9 @@ At the root of each [=JSON session scope rule=], the following keys can exist:
     This key MUST be present, and the value MUST be "include" or "exclude".
     
   : domain
-  :: a [=string=] indicating the domains that should match the rule. This key
-    is OPTIONAL; if not present, it will be '*', matching all domains. This can
-    include wildcards (see [[#algo-url-in-scope]]).
+  :: a [=string=] indicating the domains that should match the rule. This can
+    include wildcards (see [[#algo-url-in-scope]]). This key is OPTIONAL; if
+    not present, it will be '*', matching all domains.
     
   : path
   :: a [=string=] indicating the path-prefixes that should match the rule. This
