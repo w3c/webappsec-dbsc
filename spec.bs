@@ -730,10 +730,10 @@ To <dfn export id="create-session">create a new session</dfn> due to the
     1. If |params|["path"] does not exist, or is not of type <a>sf-string</a>,
       [=iteration/continue=].
     1. Let |path| be |params|["path"].
-    1. Let |challenge| be null, and Let |authorization| be null.
-    1. If |params|["challenge"] exists and is of type <a>sf-string</a>
-      Set |challenge| to |params|["challenge"].
-    1. If |params|["authorization"] exists and is a string Set |authorization|
+    1. Let |challenge| be null, and let |authorization| be null.
+    1. If |params|["challenge"] exists and is of type <a>sf-string</a>,
+      set |challenge| to |params|["challenge"].
+    1. If |params|["authorization"] exists and is a string, set |authorization|
       to |params|["authorization"].
     1. Let |endpoint| be the result of resolving |path| relative to the
        |response|'s URL.
