@@ -855,8 +855,8 @@ Only these two values are currently supported.
 The following <a>sf-parameter</a>s are defined:
 - An <a>sf-parameter</a> whose key is "path", and whose value is an
   <a>sf-string</a>, conveying the path to the registration endpoint. This may be
-  relative to the current [=URL=], or a full [=URL=]. Entries without this
-  parameter will be ignored in [[#algo-create-session]].
+  relative to the current [=URL=], or it may be a full [=URL=]. Entries without
+  this parameter will be ignored in [[#algo-create-session]].
 - An <a>sf-parameter</a> whose key is "challenge", and whose value is an
   <a>sf-string</a>, conveying the challenge to be used in the session
   registration.
@@ -871,7 +871,7 @@ The following <a>sf-parameter</a>s are defined:
   with a session with the given session identifier.
 - An <a>sf-parameter</a> whose key is "provider_url", and whose value
   is an <a>sf-string</a>, conveying that this session should share keys
-  with a session on that site.
+  with a session on the corresponding site.
 
 <div class="example" id="secure-session-registration-example">
   Some examples of [:Secure-Session-Registration:] from
@@ -922,13 +922,13 @@ The [:Secure-Session-Challenge:] is represented as a Structured Field.[[!RFC9651
 
 In this representation, a challenge is represented by a string.
 
-Challenges MAY have an <a>sf-parameter</a> named `"id"`, whose value MUST be a String
+Challenges MAY have an <a>sf-parameter</a> named `"id"`, whose value MUST be a string
 representing a [=device bound session/session identifier=]. Any other
 <a>sf-parameter</a>s SHOULD be ignored.
 
 Note: The server might need to use this header to request the [=DBSC proof=] to
 be signed with a new challenge before a session id has been assigned. In this
-case the session ID is optional.
+case the session id is optional.
 
 <div class="example" id="secure-session-challenge-example">
   Some examples of [:Secure-Session-Challenge:] from
