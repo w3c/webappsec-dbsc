@@ -522,7 +522,7 @@ both `example.co.uk` and `www.example.de` is `example`.
        and |session|. If the result is not "include", [=iteration/continue=].
     1. Run the steps in [[#algo-request-allows-refresh]] on |request| and
       |session|. If the result is not "allowed", [=iteration/continue=].
-    1. Run the steps in [[#algo-identify-missing-session-credential]] on
+    1. Run the steps in [[#algo-identify-if-missing-session-credential]] on
       |request| and |session|'s [=device bound session/session credentials=].
       If the result is false, [=iteration/continue=].
     1. Add (|domain|, |id|) to |request|'s [=deferred device bound session ids=].
@@ -530,12 +530,12 @@ both `example.co.uk` and `www.example.de` is `example`.
        exact choice of expiration timestamp is left up to the user agent. It is
        recommended to align with the maximum cookie lifetime.
     1. Return |session|.
-  1. If no session has been identified, return null.
+  1. Return null.
 </div>
 
-## Identify missing session credential ## {#algo-identify-missing-session-credential}
-<div class="algorithm" data-algorithm="identify-missing-session-credential">
-  Given a [=request=] (|request|) and a [=/list=] of [=/session credentials=]
+## Identify if missing session credential ## {#algo-identify-if-missing-session-credential}
+<div class="algorithm" data-algorithm="identify-if-missing-session-credential">
+  Given a [=request=] (|request|) and a [=/list=] of [=/session credential=]s
   (|credentials|), returns a [=boolean=] indicating whether any |credential| in
   |credentials| is missing on |request|.
   
@@ -546,7 +546,7 @@ both `example.co.uk` and `www.example.de` is `example`.
        [[!COOKIES]]), [=iteration/continue=].
     1. If |request|'s [=request/header list=] contains a |cookie| that
        satisfies all of the following conditions, [=iteration/continue=]:
-      1. |cookie|'s name matches |credential|'s [=session credential/name=]
+      1. |cookie|'s name matches |credential|'s [=session credential/name=].
       1. All of the following attributes of |cookie| match those in
          |credential|'s [=session credential/attributes=]: Domain, Path,
          Secure, HttpOnly, SameSite.
