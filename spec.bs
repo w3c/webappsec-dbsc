@@ -1222,12 +1222,12 @@ present:
   }
   ```
 
-  Based on this response header from the server:
+  Based on a response to ```http://example.com/page.html``` having this
+  response header from the server:
   ```html
   HTTP/1.1 200 OK
   Secure-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
   ```
-  received on a response from ```http://example.com/page.html```
 </div>
 
 # Changes to other specifications # {#changes-to-other-specifications}
