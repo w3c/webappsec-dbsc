@@ -1157,7 +1157,7 @@ At the root of the JSON object, the following keys can exist:
     
   : attributes
   :: a [=string=] containing the expected attributes of the protected cookie.
-    See [[#algo-identify-missing-session-credential]] for details on how this
+    See [[#algo-identify-if-missing-session-credential]] for details on how this
     is used. 
 
 ## DBSC Proof JWT Syntax ## {#format-jwt}
