@@ -56,13 +56,13 @@ common operating systems, and actions authenticated by this data may have seriou
 consequences, such as transferring money from a bank account.
 
 This document defines a new API, Device Bound Sessions Credentials (DBSC), that
-enables servers to verify that a session has not been exported from a device. A
+enables a server to verify that a session has not been exported from a device. A
 server can use commonly available TPMs, or similar APIs, that are designed for this
 purpose.
 
 The goal is to provide users with a safe and secure experience, while offering
 the use cases users are already used to. At the same time, we want to ensure that
-user privacy is respected with no new privacy identifiers being leaked by
+user privacy is respected, with no new privacy identifiers being leaked by
 this protocol.
 
 ## Examples ## {#examples}
