@@ -47,23 +47,22 @@ spec: RFC9651;urlPrefix:https://datatracker.ietf.org/doc/html/rfc9651#;type:dfn
 <em>This section is not normative.</em><br/>
 <em>Note this is a very early drafting for writing collaboration only</em>
 
-The web is built on a stateless protocol. To provide required functionality, web
-applications store data locally on a user's computer. This is used for logged in
-user sessions that can last for a long time.
+The web is built on a stateless protocol. To maintain state for certain functionality,
+web applications store data locally on a user's device. This storage can last for a
+long time, such as for logged-in user sessions.
 
-In general user agents do not have a secure way of storing data supporting these
-activities across commonly used operating systems, and actions authenticated by
-this data may have serious consequences, for example transferring money from a
-bank account.
+In general, user agents do not have a secure way of storing this kind of data on
+common operating systems, and actions authenticated by this data may have serious
+consequences, such as transferring money from a bank account.
 
 This document defines a new API, Device Bound Sessions Credentials (DBSC), that
-enables the server to verify that a session cannot be exported from a device by
-using commonly available TPMs, or similar APIs, that are designed for this
+enables a server to verify that a session has not been exported from a device. A
+server can use commonly available TPMs, or similar APIs, that are designed for this
 purpose.
 
 The goal is to provide users with a safe and secure experience, while offering
-the use cases users are already used to. At the same time we want to ensure that
-the users privacy is respected with no new privacy identifiers being leaked by
+the use cases users are already used to. At the same time, we want to ensure that
+user privacy is respected, with no new privacy identifiers being leaked by
 this protocol.
 
 ## Examples ## {#examples}
@@ -72,8 +71,8 @@ different situations. Some of the use cases of DBSC are:
 
 ### Signed in session ### {#example-signin}
 <div class="example" id="signin-example">
-  A user logs in to their social account. To protect the user's private data the
-  site protects the logged in session with a DBSC session. If malware tries to
+  A user logs in to their social account. To protect the user's private data, the
+  site protects the logged-in session with a DBSC session. If malware tries to
   log in with the same cookie file on a different device, the site can detect
   and refuse this as an unauthorized user.
 </div>
@@ -98,7 +97,7 @@ The goals of DBSC are to reduce session theft by offering an alternative to
 long-lived cookie bearer tokens and to allow session authentication to be
 bound to the user's device. This makes the internet safer for users in that it
 is less likely their identity is abused, as malware is forced to act locally and
-thus becomes easier to detect and mitigate. At the same time the goal is to
+thus becomes easier to detect and mitigate. At the same time, the goal is to
 disrupt the cookie theft ecosystem and force it to adapt to new protections long
 term.
 
@@ -117,7 +116,7 @@ key, but the signing capability will likely still be available for any program
 running as the user on the user's device.
 
 DBSC will also not prevent an attack if the attacker is replacing or injecting
-into the user agent at the time of session registration as the attacker can bind
+into the user agent at the time of session registration, as the attacker can bind
 the session either to keys that are not TPM bound, or to a TPM that the attacker
 controls permanently.
 
@@ -125,11 +124,11 @@ DBSC is not designed to give hosts any sort of guarantee about the
 specific device a session is registered to, or the state of this device.
 
 # Privacy Considerations # {#privacy-considerations}
-The goal of the DBSC protocol is to introduce no additional surface for user
+The privacy goal of the DBSC protocol is to introduce no additional surface for user
 tracking: implementing this API (for a browser) or enabling it (for a website)
 should not entail any significant user privacy tradeoffs.
 
-Some of the consideration taken to ensure this:
+Some of the considerations taken to ensure this:
 
 - Lifetime of a session/key material: This should provide no additional client
   data storage (i.e., a pseudo-cookie). As such, we require that browsers MUST
@@ -154,9 +153,10 @@ neither would any of the additional DBSC behavior. This ensures no new privacy
 behavior due to implementing DBSC.
 
 ## Timing side channel leak ## {#privacy-side-channel-leak}
-If third party cookies are enabled it is possible for an attacker to leak
-whether or not a user is authenticated by measuring how long the request takes
-as the refresh is quite slow, partially due to the latency of TPM operations. 
+If third party cookies are enabled, it is possible for an attacker to determine
+whether or not a user is authenticated by measuring how long the request takes.
+This is because the refresh is quite slow, partially due to the latency of TPM
+operations.
 
 This is mitigated by the `allowed_refresh_initiators` field in session
 configuration, which can be used to strictly limit the sites that can trigger
@@ -189,7 +189,7 @@ compromised the device, we trust that the private key is stored securely. But
 sharing keys across sites has complex privacy properties. In order to mitigate
 the privacy risks of sharing a high-entropy identifier, we require that the RP
 already know the public key and session identifier for the SP's session. The RP
-will include the SP URL, session id, and key in the
+will include the SP URL, session id, and public key in the
 [:Secure-Session-Registration:] header. If the key is correct, the user agent
 will create a session on the RP with the same key as the SP.
 
@@ -216,7 +216,7 @@ they browse the web.
 
 <div class="example" id="federated-sessions-example">
 Suppose the owners of `example.com` also run `example.co.uk`. Login always
-happens on `example.com`, and is propagated to `example.co.uk` through link
+happens on `example.com` and is propagated to `example.co.uk` through link
 decoration. In order to protect both sites with a DBSC session, `example.com`
 should continue to use its existing [:Secure-Session-Registration:] header:
 
@@ -225,16 +225,18 @@ Secure-Session-Registration: (ES256);path="/register";challenge="challenge"
 ```
 
 When extending the DBSC session to `example.com.uk`, the site should append new
-parameters to their `Secure-Session-Registration` header:
+parameters to the `Secure-Session-Registration` header:
 
 ```
 Secure-Session-Registration: (ES256);path="/register";challenge="challenge";provider_key="abc";provider_id="example.com id";provider_url="https://example.com"
 ```
 
-Assuming `example.com` has the appropriate .well-known entries, this will cause
-`example.co.uk` to register a new DBSC session using the same key as the session
-on `example.com`. This allows DBSC to protect `example.co.uk` without requiring
-users to reauthenticate on `example.com` at login.  </div>
+Assuming `example.com` and `example.co.uk` have the appropriate .well-known
+entries, this will cause `example.co.uk` to register a new DBSC session using
+the same key as the session on `example.com`. This allows DBSC to protect
+`example.co.uk` without requiring users to reauthenticate on `example.com` at
+login.
+</div>
 
 # Alternatives considered # {#alternatives}
 
@@ -242,7 +244,7 @@ users to reauthenticate on `example.com` at login.  </div>
 
 WebAuthn provides sites with certain key management capabilities, so it may be
 possible to extend it to meet the same goals as DBSC. We do not take this
-approach because WebAuthn's focus on interactive user sign in leads to several
+approach because WebAuthn's focus on interactive user sign-in leads to several
 properties for its API that are contrary to the goals of a feature like
 DBSC. For example, WebAuthn credentials are not tied to specific sessions. They
 are meant to be long-lived and are not cleared along with site data. This does
@@ -251,8 +253,8 @@ keys. Similarly, WebAuthn credentials are designed for use with explicit user
 intent. Extending WebAuthn to subsume the functionality that DBSC provides would
 require WebAuthn to establish a different kind of key that can be used
 silently. This introduces extra complexity for both WebAuthn and DBSC. Instead,
-we take the position that WebAuthn aims to provide secure sign in and DBSC is
-complementary, protecting users after sign in.
+we take the position that WebAuthn aims to provide secure sign-in and DBSC is
+complementary, protecting users after sign-in.
 
 # Server considerations # {#server-considerations}
 
@@ -282,34 +284,35 @@ Browsers may choose to refresh sessions proactively to attempt to minimize the
 latency cost of sites adopting DBSC. Sites should not assume that a refresh will
 only happen when a bound cookie is expired.
 
-The refresh endpoint is likely to directly leak login state if cross-site
-fetches are allowed. Servers can check for a valid [:Sec-Secure-Session-Id:]
-header to ensure that incoming requests are initiated by the user agent and not
-a cross-site request. It's also recommended to set a narrow CORS policy on this
-endpoint and not allow cross-site origins to make requests with credentials. The
-CORS integration for DBSC has been designed to make this possible by implicitly
-including credentials when the deferred request does. For similar reasons, it's
-also recommended that the refresh endpoint refuse to be embedded via the
-`X-Frame-Options` or `Cross-Origin-Resource-Policy` headers.
+The refresh endpoint is likely to directly leak login state via a timing side
+channel if cross-site fetches are allowed. Servers can check for a valid
+[:Sec-Secure-Session-Id:] header to ensure that incoming requests are initiated
+by the user agent and not a cross-site request. It's also recommended to set a
+narrow CORS policy on this endpoint and not allow cross-site origins to make
+requests with credentials. The CORS integration for DBSC has been designed to
+make this possible by implicitly including credentials when the deferred
+request does. For similar reasons, it's also recommended that the refresh
+endpoint refuse to be embedded via the `X-Frame-Options` or
+`Cross-Origin-Resource-Policy` headers.
 
 <div class="example" id="timing-leak-cors">
 Suppose `example.com` has two endpoints:
 - `/authenticated` will return `Access-Control-Allow-Credentials` for any
   requesting origin.
-- `/refresh` is the the DBSC refresh endpoint.
+- `/refresh` is the DBSC refresh endpoint.
 
-The site wants DBSC to protect cross-site requests to `/authenticated`, and
-believes that the risk from timing side channels on this one endpoint are
+The site wants DBSC to protect cross-site requests to `/authenticated` and
+believes that the risks from timing side channels on this one endpoint are
 minimal. If we did not implicitly allow credentials for the refresh request
 triggered by the user agent, then `/refresh` would be required to return
-`Access-Control-Allow-Credentials` for any requesting origin. Now attackers can
-very directly leak login state by fetching `/refresh` directly.
+`Access-Control-Allow-Credentials` for any requesting origin. Then attackers
+could leak login state by fetching `/refresh` directly.
 
-By implicitly allowing credentials, the `/refresh` endpoint can refuse to ever
-return `Access-Control-Allow-Credentials`. It will still receive credentialled
-requests in the context of a DBSC refresh. Other sites will be unable to
-directly fetch the endpoint with credentials, preventing an easy cross-site leak
-of login state.
+Since DBSC's call into `/refresh` implicitly allows credentials, the `/refresh`
+endpoint can refuse to ever return `Access-Control-Allow-Credentials`. It will
+still receive credentialled requests in the context of a DBSC refresh. Other
+sites will be unable to directly fetch the endpoint with credentials,
+preventing an easy cross-site leak of login state.
 </div>
 
 Sites using federated login with DBSC (see [[#federated-sessions]]) should
@@ -334,11 +337,11 @@ concepts used in its algorithms and prose [[!INFRA]].
 
 ## Session store ## {#framework-session-store}
 The user agent maintains a <dfn>session store</dfn>. It is an [=ordered map=]
-from [=host/registrable domain=] to [=session by id=]. Sessions should persist
+from [=host/registrable domain=] to [=sessions by id map=]. Sessions should persist
 across user agent restarts.
 
 ## Sessions by id ## {#framework-sessions-id}
-A <dfn>session by id</dfn> is an [=ordered map=] from
+A <dfn>sessions by id map</dfn> is an [=ordered map=] from
 [=device bound session/session identifier=] to [=device bound session=] for a
 given [=host/registrable domain=].
 
@@ -347,7 +350,7 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
 [=struct/items=]:
 <dl dfn-for="device bound session">
   : <dfn>session identifier</dfn>
-  :: a [=string=] that is a unique identifier of a session on an
+  :: a [=string=] that is a unique identifier of a session on a
     [=host/registrable domain=]
   : <dfn>refresh URL</dfn>
   :: a [=string=] that is representing the [=URL=] to be used to refresh the
@@ -357,46 +360,45 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
   : <dfn>session scope</dfn>
   :: a [=/session scope=] defining which [=URLs=] are in scope for this session
   : <dfn>session credentials</dfn>
-  :: a [=list=] of [=/session credentials=] used by the session, derived from
+  :: a [=list=] of [=/session credential=]s used by the session, derived from
     [=JSON session credentials=]
   : <dfn>expiration timestamp</dfn>
-  :: a [=moment=] when this session should be removed.
+  :: a [=moment=] when this session should be removed
   : <dfn>session key</dfn>
   :: a key pair used by the session. The private key
-    should be stored in a secure manner, see [[#security-considerations]].
+    should be stored in a secure manner (see [[#security-considerations]]).
   : <dfn>allowed refresh initiators</dfn>
   :: a [=list=] of [=strings=] describing which hosts are allowed to initiate
-    DBSC refreshes due to non-CORS requests. See
-    [[#algo-request-allows-refresh]] for details.
+    DBSC refreshes. See [[#algo-request-allows-refresh]] for details.
 </dl>
 
 ## Session scope ## {#framework-scope}
-The <dfn>session scope</dfn> is a [=struct=] with the following
+A <dfn>session scope</dfn> is a [=struct=] with the following
 [=struct/items=]:
 <dl dfn-for="session scope">
   : <dfn>origin</dfn>
-  :: The [=/origin=] this session was registered for.
+  :: the [=/origin=] this session was registered for
   : <dfn>include site</dfn>
-  :: a [=boolean=] indicating if the session applies to an entire site or just an origin.
+  :: a [=boolean=] indicating if the session applies to an entire site or just an origin
   : <dfn>scope specifications</dfn>
-  :: a [=list=] of [=/scope specifications=] used by the session
+  :: a [=list=] of [=/scope specification=]s used by the session
 </dl>
 
 ## Scope specification ## {#framework-scope-specification}
-The <dfn>scope specification</dfn> is a [=struct=] with the following
+A <dfn>scope specification</dfn> is a [=struct=] with the following
 [=struct/items=]:
 <dl dfn-for="scope specification">
   : <dfn>type</dfn>
   :: a [=string=] to be either "include" or "exclude", defining if the item
     defined in this struct should be added or removed from the scope
   : <dfn>host</dfn>
-  :: a [=string=] defining the domain or domain pattern that must match for this scope specification to apply.
+  :: a [=string=] defining the domain or domain pattern that must match for this scope specification to apply
   : <dfn>path</dfn>
   :: a [=string=] that defines the path part of this scope specification
 </dl>
 
 ## Session credential ## {#framework-session-credential}
-The <dfn>session credential</dfn> is a [=struct=] with the following
+A <dfn>session credential</dfn> is a [=struct=] with the following
 [=struct/items=]:
 <dl dfn-for="session credential">
   : <dfn>name</dfn>
@@ -409,9 +411,9 @@ The <dfn>session credential</dfn> is a [=struct=] with the following
 ## Registrable origin label## {#framework-registrable-origin-label}
 The <dfn>registrable origin label</dfn> of a [=/domain=] is the first
 [=domain label=] of the [=registrable domain=] of a [=/domain=], or null
-if the [=registrable domain=] is null. For example, the [=registrable
-origin label=] of both `example.co.uk` and `www.example.de` is `example`
-if both `co.uk` and `de` are [=public suffixes=].
+if the [=registrable domain=] is null. For example, if both `co.uk` and
+`de` are [=public suffixes=], then the [=registrable origin label=] of
+both `example.co.uk` and `www.example.de` is `example`.
 
 # Algorithms # {#algorithms}
 ## Identify session ## {#algo-identify-session}
@@ -428,22 +430,22 @@ if both `co.uk` and `de` are [=public suffixes=].
 
   1. Let |domain| be the [=host/registrable domain=] of |url|'s [=url/host=].
   1. Let |domain sessions| be the user agent's [=session store=][|domain|] as a
-     [=/session by id=]
-  1. Return |domain sessions|[|session identifier|]
+     [=/sessions by id map=].
+  1. Return |domain sessions|[|session identifier|].
 </div>
 
 ## Identify if a URL is in scope of a session ## {#algo-url-in-scope}
 <div class="algorithm" data-algorithm="url-in-scope">
   This algorithm describes how to determine if a URL is in scope of a
-  device bound session. Given a [=URL=] (|URL|) and [=session=] (|session|), returns
-  "include" if |URL| is in scope, and "exclude" otherwise.
+  device bound session. Given a [=URL=] (|URL|) and [=device bound session=]
+  (|session|), returns "include" if |URL| is in scope, and "exclude" otherwise.
 
   1. Let |scope| be |session|'s [=device bound session/session scope=].
   1. If |scope|'s [=include site=] is true, return "exclude" if |URL|'s
      [=/origin=] is not [=/same site=] with |scope|'s [=session scope/origin=].
   1. If |scope|'s [=include site=] is false, return "exclude" if |URL|'s
      [=/origin=] is not [=same origin=] with |scope|'s [=session scope/origin=].
-  1. If the |URL| matches the |session|'s [=refresh URL=], return "exclude".
+  1. If |URL| matches |session|'s [=refresh URL=], return "exclude".
   1. [=list/For each=] |scope specification| in |scope|'s [=scope specifications=]:
     1. Let |host pattern| be |scope specification|'s [=scope 
        specification/host=], and |path pattern| be |scope
@@ -460,8 +462,8 @@ if both `co.uk` and `de` are [=public suffixes=].
 ## Identify if a request is allowed to refresh ## {#algo-request-allows-refresh}
 <div class="algorithm" data-algorithm="request-allows-refresh">
   This algorithm describes how to determine if a request is allowed to
-  be refreshed by a device bound session. Given a [=request=]
-  (|request|) and [=session=] (|session|), returns "allowed" if
+  trigger refresh for a device bound session. Given a [=request=]
+  (|request|) and [=device bound session=] (|session|), returns "allowed" if
   |request| can trigger a refresh, and "disallowed" otherwise.
 
   1. If |session|'s [=device bound session/session scope=]'s [=include
@@ -506,49 +508,45 @@ if both `co.uk` and `de` are [=public suffixes=].
   Given a [=request=] (|request|), this algorithm describes how to identify
   which session, if any, should block |request| from proceeding.
 
-  1. Let |domain| be the [=host/registrable domain=] of the |request|'s
+  1. Let |domain| be the [=host/registrable domain=] of |request|'s
      [=request/url=]'s [=url/host=].
-  1. Let |domain sessions| be the user agent's [=session store=][|domain|] as
-     [=/session by id=]
-  1. [=list/For each=] |session| of |domain sessions|
+  1. Let |domain sessions| be the user agent's [=session store=][|domain|] as a
+     [=/sessions by id map=].
+  1. [=list/For each=] |session| of |domain sessions|:
     1. If |session|'s [=expiration timestamp=] is before the present, remove
       |session| from |domain sessions| and [=iteration/continue=].
     1. Let |id| be |session|'s [=device bound session/session identifier=].
     1. If the [=tuple=] (|domain|, |id|) is in |request|'s
       [=deferred device bound session ids=], [=iteration/continue=].
     1. Run the steps in [[#algo-url-in-scope]] on |request|'s [=request/URL=]
-       and |session|.
-    1. If the result does not indicate the request is in scope,
-      [=iteration/continue=].
+       and |session|. If the result is not "include", [=iteration/continue=].
     1. Run the steps in [[#algo-request-allows-refresh]] on |request| and
-      |session|.
-    1. If the result is not "allowed", [=iteration/continue=].
-    1. If the result of running
-      [[#algo-identify-missing-session-credential]] on |request| and
-      |session|'s [=device bound session/session credentials=] is false,
-      [=iteration/continue=].
+      |session|. If the result is not "allowed", [=iteration/continue=].
+    1. Run the steps in [[#algo-identify-if-missing-session-credential]] on
+      |request| and |session|'s [=device bound session/session credentials=].
+      If the result is false, [=iteration/continue=].
     1. Add (|domain|, |id|) to |request|'s [=deferred device bound session ids=].
     1. Set |session|'s [=expiration timestamp=] set to a future timestamp. The
        exact choice of expiration timestamp is left up to the user agent. It is
        recommended to align with the maximum cookie lifetime.
     1. Return |session|.
-  1. If no session has been identified, return null.
+  1. Return null.
 </div>
 
-## Identify missing session credential ## {#algo-identify-missing-session-credential}
-<div class="algorithm" data-algorithm="identify-missing-session-credential">
-  Given a [=request=] (|request|) and a [=/list=] of [=/session credentials=]
+## Identify if missing session credential ## {#algo-identify-if-missing-session-credential}
+<div class="algorithm" data-algorithm="identify-if-missing-session-credential">
+  Given a [=request=] (|request|) and a [=/list=] of [=/session credential=]s
   (|credentials|), returns a [=boolean=] indicating whether any |credential| in
   |credentials| is missing on |request|.
   
-  1. [=list/For each=] |credential| in |credentials|
+  1. [=list/For each=] |credential| in |credentials|:
     1. If a cookie with |credential|'s [=session credential/attributes=] would
        not be attached to |request| (see <a
        href=https://httpwg.org/specs/rfc6265.html#cookie>section 5.4</a> of
        [[!COOKIES]]), [=iteration/continue=].
     1. If |request|'s [=request/header list=] contains a |cookie| that
        satisfies all of the following conditions, [=iteration/continue=]:
-      1. |cookie|'s name matches |credential|'s [=session credential/name=]
+      1. |cookie|'s name matches |credential|'s [=session credential/name=].
       1. All of the following attributes of |cookie| match those in
          |credential|'s [=session credential/attributes=]: Domain, Path,
          Secure, HttpOnly, SameSite.
@@ -657,10 +655,10 @@ if both `co.uk` and `de` are [=public suffixes=].
   1. Parse |response|'s [=response/body=] according to
      [[#format-session-instructions]]. If parsing fails, |terminate the
      session| and return.
-  1. Let |session identifier| be the value of key "session_identifier".
-  1. If the |response| JSON contains the key "continue", with value "false",
+  1. If the |response| JSON contains the key "continue" and its value is false,
      |terminate the session| and return.
-  1. Otherwise, perform the following validations. If any fail,
+  1. Let |session identifier| be the value of key "session_identifier".
+  1. Perform the following validations. If any fail,
      |terminate the session| and return.
     1. |session identifier| must be non-empty.
     1. If |session id| is non-null, it must match |session identifier|.
@@ -680,7 +678,7 @@ if both `co.uk` and `de` are [=public suffixes=].
      session| and return.
     1. |origin|'s [=origin/domain=] must be equal to |destination domain|.
     1. If |destination domain| is equal to the [=url/host=] of
-        |destination|, skip all remaining validations.
+        |destination|, skip all remaining validations within this step.
     1. Otherwise, let |well known URL| be a copy of |destination|, with the
        [=url/host=] replaced with |destination domain|, and the [=url/path=]
        replaced with "/.well-known/device-bound-sessions".
@@ -732,19 +730,19 @@ To <dfn export id="create-session">create a new session</dfn> due to the
     1. If |params|["path"] does not exist, or is not of type <a>sf-string</a>,
       [=iteration/continue=].
     1. Let |path| be |params|["path"].
-    1. Let |challenge| be null, and Let |authorization| be null.
-    1. If |params|["challenge"] exists and is of type <a>sf-string</a>
-      Set |challenge| to |params|["challenge"].
-    1. If |params|["authorization"] exists and is a string Set |authorization|
+    1. Let |challenge| be null, and let |authorization| be null.
+    1. If |params|["challenge"] exists and is of type <a>sf-string</a>,
+      set |challenge| to |params|["challenge"].
+    1. If |params|["authorization"] exists and is a string, set |authorization|
       to |params|["authorization"].
-    1. Let |endpoint| be the result of resolving |path| relative to the
+    1. Let |endpoint| be the result of resolving |path| relative to
        |response|'s URL.
     1. Let |key pair| be the result of running
        [[#algo-create-session-key]] on |registration entry|,
        |params|, and |endpoint|.
     1. If |key pair| is null, return.
-    1. Call [[#algo-session-request]] with |request|, |key pair|, |endpoint|, null
-       session identifier, |challenge| and |authorization|.
+    1. Call [[#algo-session-request]] with |request|, |key pair|, |endpoint|,
+       session identifier as null, |challenge|, and |authorization|.
 </div>
 
 ## Create session key ## {#algo-create-session-key}
@@ -752,16 +750,16 @@ To <dfn export id="create-session">create a new session</dfn> due to the
 
 This algorithm describes how to <dfn export id="create-session-key">create a
 session key</dfn>, including key sharing between a Relying Party and Session
-Provider. It takes as input the |registration entry| and |params| of a
-[:Secure-Session-Registration:] header, and the [=URL=] (|registration URL|) of
+Provider. It takes as inputs the |registration entry| and |params| of a
+[:Secure-Session-Registration:] header and the [=URL=] (|registration URL|) of
 the registration endpoint. It returns a key pair for use in the session or null
 if no key is possible.
 
   1. Let |algorithm list| be an empty [=list=].
-  1. [=list/For each=] |algorithm| → |registration entry|
+  1. [=list/For each=] |algorithm| → |registration entry|:
     1. If |algorithm| is not an <a>sf-token</a>, [=iteration/continue=].
     1. If |algorithm| represents a crypto algorithm supported in
-       [:Secure-Session-Registration:], and is supported on this client,
+       [:Secure-Session-Registration:] and is supported on this client,
        add |algorithm| to |algorithm list|.
   1. If |algorithm list| is empty, return null.
   1. If any of |params|["provider_key"], |params|["provider_id"], or
@@ -799,7 +797,7 @@ if no key is possible.
       1. The value of the key "relying_origins" does not include the
          [=url/origin=] of |registration URL|.
     1. User agents SHOULD place an upper limit on the number of
-       [=registrable origin labels=] in "relying_origins" to prevent
+       [=registrable origin label=]s in "relying_origins" to prevent
        abuse.
     1. Let |relying well known URL| be a copy of |registration URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
@@ -812,7 +810,7 @@ if no key is possible.
          "relying_origins".
       1. |relying well known response|'s [=response/body=] does not include the
          key "provider_origin".
-      1. The value of the key "provider origin" is not the
+      1. The value of the key "provider_origin" is not the
          [=url/origin=] of |provider URL|.
     1. Return |provider session|'s [=session key=].
   1. Return a new key pair created for |algorithm list|.
@@ -857,8 +855,8 @@ Only these two values are currently supported.
 The following <a>sf-parameter</a>s are defined:
 - An <a>sf-parameter</a> whose key is "path", and whose value is an
   <a>sf-string</a>, conveying the path to the registration endpoint. This may be
-  relative to the current [=URL=], or a full [=URL=]. Entries without this
-  parameter will be ignored in [[#algo-create-session]].
+  relative to the current [=URL=], or it may be a full [=URL=]. Entries without
+  this parameter will be ignored in [[#algo-create-session]].
 - An <a>sf-parameter</a> whose key is "challenge", and whose value is an
   <a>sf-string</a>, conveying the challenge to be used in the session
   registration.
@@ -873,7 +871,7 @@ The following <a>sf-parameter</a>s are defined:
   with a session with the given session identifier.
 - An <a>sf-parameter</a> whose key is "provider_url", and whose value
   is an <a>sf-string</a>, conveying that this session should share keys
-  with a session on that site.
+  with a session on the corresponding site.
 
 <div class="example" id="secure-session-registration-example">
   Some examples of [:Secure-Session-Registration:] from
@@ -904,7 +902,7 @@ The following <a>sf-parameter</a>s are defined:
 
 </div>
 
-## \``Secure-Session-Challenge`\` HTTP Header Field ## {#header-secure-session-challenge}
+## \``Secure-Session-Challenge`\` HTTP header field ## {#header-secure-session-challenge}
 The <dfn export http-header id="secure-session-challenge-header">
 <code>\`Secure-Session-Challenge\`</code></dfn> header field can be used in a
 [=response=] by the server to send a challenge to the client that it expects to
@@ -924,13 +922,13 @@ The [:Secure-Session-Challenge:] is represented as a Structured Field.[[!RFC9651
 
 In this representation, a challenge is represented by a string.
 
-Challenges MAY have an <a>sf-parameter</a> named `"id"`, whose value MUST be a String
+Challenges MAY have an <a>sf-parameter</a> named `"id"`, whose value MUST be a string
 representing a [=device bound session/session identifier=]. Any other
 <a>sf-parameter</a>s SHOULD be ignored.
 
 Note: The server might need to use this header to request the [=DBSC proof=] to
 be signed with a new challenge before a session id has been assigned. In this
-case the session ID is optional.
+case the session id is optional.
 
 <div class="example" id="secure-session-challenge-example">
   Some examples of [:Secure-Session-Challenge:] from
@@ -959,14 +957,14 @@ case the session ID is optional.
   ```
 </div>
 
-## \``Secure-Session-Response`\` HTTP Header Field ## {#header-secure-session-response}
+## \``Secure-Session-Response`\` HTTP header field ## {#header-secure-session-response}
 The <dfn export http-header id="secure-session-response-header">
 <code>\`Secure-Session-Response\`</code></dfn> header field can be used in the
 [=request=] by the user agent to send a [=DBSC proof=] to the server to prove
 that the client is still in possession of the private key of the session key.
 
 <a http-header><code>\`Secure-Session-Response\`</code></a> is a structured
-header. Its value must be a string. It's ABNF is:
+header. Its value must be a string. Its ABNF is:
 <pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
 This string MUST only contain the [=DBSC proof=] JWT. Any <a>sf-parameter</a>s SHOULD be
 ignored.
@@ -978,14 +976,14 @@ ignored.
   ```
 </div>  
 
-## \``Sec-Secure-Session-Id`\` HTTP Header Field ## {#header-sec-secure-session-id}
+## \``Sec-Secure-Session-Id`\` HTTP header field ## {#header-sec-secure-session-id}
 The <dfn export http-header id="sec-secure-session-id-header">
 <code>\`Sec-Secure-Session-Id\`</code></dfn> header field can be used in the
-[=request=] by the user agent to request the current session is refreshed, 
+[=request=] by the user agent to request the current session be refreshed,
 with the current session identifier as a string argument.
 
 [:Sec-Secure-Session-Id:] is a structured header.
-Its value must be a string. It's ABNF is:
+Its value must be a string. Its ABNF is:
 <pre class="abnf">SecSessionIdentifier = <a>sf-string</a></pre>
 This string MUST only contain the session identifier. Any parameters SHOULD be
 ignored.
@@ -1008,7 +1006,7 @@ is:
 
 <pre class="abnf">Secure-Session-Skipped = <a>sf-list</a></pre>
 
-Each item in the list must be MUST be an <a>sf-token</a> representing a
+Each item in the list MUST be an <a>sf-token</a> representing a
 coarse-grained reason for skipping cookie refresh. The only supported values
 are: "unreachable", "server_error", and "quota_exceeded".
 
@@ -1032,25 +1030,25 @@ contains session instructions, it MUST be in JSON format.
 At the root of the JSON object, the following keys can exist:
   : session identifier
   :: a [=string=] representing a [=device bound session/session identifier=].
-    If this [=JSON session instructions=] is sent during a refresh request this MUST be
+    If this [=JSON session instructions=] is sent during a refresh request, this MUST be
     the [=device bound session/session identifier=] for the current session. If
-    not these instructions SHOULD be ignored.
-    If this [=JSON session instructions=] is sent during a registration it MUST either
-    be a unique identifier for this [=host/registrable domain=], or it will
-    overwrite the current [=device bound session=] with this identifier for the
-    current [=host/registrable domain=].
+    not, these instructions SHOULD be ignored.
+    If this [=JSON session instructions=] is sent during a registration, either it MUST
+    be a unique identifier for a session under the corresponding [=host/registrable domain=],
+    or the instructions will overwrite the current [=device bound session=] with this
+    identifier for the [=host/registrable domain=].
     This key MUST be present.
 
   : refresh_url
   :: a [=string=] representing the [=URL=] used for future refresh requests.
-    This can be a full [=URL=], or relative to the current [=request=].
-    This key is OPTIONAL; if not present the registration URL will be used for
+    This can be a full [=URL=], or it can be relative to the current [=request=].
+    This key is OPTIONAL; if not present, the registration URL will be used for
     future refresh requests.
 
   : continue
   :: a [=boolean=] indicating if the session should continue to apply.
     Registration and refresh endpoints can set this to false to terminate a session.
-    This key is OPTIONAL, and if not present, the default value will be true.
+    This key is OPTIONAL; if not present, the default value will be true.
     
   : scope
   :: a [=JSON session scope=] describing the request destinations covered by
@@ -1062,8 +1060,7 @@ At the root of the JSON object, the following keys can exist:
 
   : allowed_refresh_initiators
   :: a [=list=] of [=strings=] describing which hosts are allowed to initiate
-    DBSC refreshes due to non-CORS requests. See
-    [[#algo-request-allows-refresh]] for details.
+    DBSC refreshes. See [[#algo-request-allows-refresh]] for details.
 
 <div class="example" id="secure-session-instruction-example">
   ```json
@@ -1119,16 +1116,16 @@ At the root of the JSON object, the following keys can exist:
   : include_site
   :: a [=boolean=] indicating if the session is origin-scoped (false) or
     site-scoped (true). This key is MANDATORY. Note that this takes precedence
-    over any [=JSON session scope rules=] in [=scope specification=] (see
+    over any [=JSON session scope rule=]s in [=scope specification=] (see
     [[#algo-url-in-scope]]).
     
   : scope_specification
-  :: a [=list=] of [=JSON session scope rules=] describing modifications to the
+  :: a [=list=] of [=JSON session scope rule=]s describing modifications to the
     default scope (the entire origin or site). This key is OPTIONAL; if not
     present, an empty list will be used.
 
 ## JSON Session Scope Rule Format ## {#format-session-scope-rule}
-The server sends <dfn>JSON session scope rules</dfn> in the [=JSON session scope=]
+The server sends <dfn>JSON session scope rule</dfn>s in the [=JSON session scope=]
 during registration and optionally during session refresh.
 
 At the root of each [=JSON session scope rule=], the following keys can exist:
@@ -1137,9 +1134,9 @@ At the root of each [=JSON session scope rule=], the following keys can exist:
     This key MUST be present, and the value MUST be "include" or "exclude".
     
   : domain
-  :: a [=string=] indicating the domains that should match the rule. This key
-    is OPTIONAL; if not present, it will be '*', matching all domains. This can
-    include wildcards (see [[#algo-url-in-scope]]).
+  :: a [=string=] indicating the domains that should match the rule. This can
+    include wildcards (see [[#algo-url-in-scope]]). This key is OPTIONAL; if
+    not present, it will be '*', matching all domains.
     
   : path
   :: a [=string=] indicating the path-prefixes that should match the rule. This
@@ -1160,45 +1157,46 @@ At the root of the JSON object, the following keys can exist:
     
   : attributes
   :: a [=string=] containing the expected attributes of the protected cookie.
-    See [[#algo-identify-missing-session-credential]] for details on how this
+    See [[#algo-identify-if-missing-session-credential]] for details on how this
     is used. 
 
 ## DBSC Proof JWT Syntax ## {#format-jwt}
 A <dfn>DBSC proof</dfn> proof is a JWT that is signed (using JSON Web Signature
-(JWS)), with a private key chosen by the client. The header of a [=DBSC proof=]
-MUST contain at least the following <a>sf-parameter</a>s:
+(JWS)), with a private key chosen by the client.
+
+The header of a [=DBSC proof=] MUST contain at least the following <a>sf-parameter</a>s:
   : typ
-  :: a [=string=] MUST be "dbsc+jwt"
+  :: a [=string=]. This MUST be "dbsc+jwt".
   : alg
   :: a [=string=] defining the algorithm used to sign this JWT. It MUST be
     either "RS256" or "ES256" from [IANA.JOSE.ALGS].
 
 The payload of [=DBSC proof=] MUST contain at least the following claims:
   : aud
-  :: a [=string=], MUST be the [=URL=] this JWT was originally sent to.
-    Example: "https://example.com/refresh.html"
+  :: a [=string=]. This MUST be the [=URL=] this JWT was originally sent to.
+    Example: "https://example.com/refresh.html".
   : jti
-  :: a [=string=], a copy of the challenge value sent in the registration
+  :: a [=string=]. This is a copy of the challenge value sent in the registration
     header.
   : iat
-  :: a [=string=], this claim identifies the time at which the JWT was
-    issued.  This claim can be used to determine the age of the JWT.  Its
-    value MUST be a number containing a NumericDate value.
+  :: a [=string=] identifying the time the JWT was issued. It can be used to
+    determine the age of the JWT. Its value MUST be a number containing a
+    NumericDate value.
   : key
   :: a [=string=] defining a JWK as specified in [rfc7517].
 
-In addition the following claims MUST be present if present in
-[:Secure-Session-Registration:]:
+In addition, the following claim MUST be present if present in the
+[:Secure-Session-Registration:] header field:
   : authorization
-  :: a [=string=], direct copy of the string from
-    [:Secure-Session-Registration:], if set there. Note that this string is
-    OPTIONAL to include in the header, but if it is present it is
+  :: a [=string=]. This is a direct copy of the string from the
+    [:Secure-Session-Registration:] header field if set there. Note that this
+    string is OPTIONAL to include in the header, but if it is present, it is
     MANDATORY for clients to add the claim in the [=DBSC proof=].
 
 If the DBSC proof is for a refresh request, the following claim MUST be
 present:
   : sub
-  :: the [=device bound session/session identifier=], a [=string=].
+  :: a [=string=] specifying the [=device bound session/session identifier=].
 
 <div class="example" id="dbsc-proof-example">
   An example [=DBSC proof=] sent to https://example.com/reg:
@@ -1224,12 +1222,12 @@ present:
   }
   ```
 
-  Based on this response header from the server:
+  Based on a response to ```http://example.com/page.html``` having this
+  response header from the server:
   ```html
   HTTP/1.1 200 OK
   Secure-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
   ```
-  received on a response from ```http://example.com/page.html```
 </div>
 
 # Changes to other specifications # {#changes-to-other-specifications}
@@ -1242,7 +1240,9 @@ fetch</a> algorithm. A [=request=] has a <dfn for="request">deferred device
 bound session ids</dfn>, a [=list=] of [=tuples=] consisting of:
   - a domain (a [=host/registrable domain=]).
   - a session id (a [=string=]). 
-This list is initially empty. After computing cookies in step 8.21, run
+This list is initially empty.
+
+After computing cookies in step 8.21, run
 [[#algo-identify-session-needing-refresh]]. If the resulting
 |session| is non-null:
   1. Run [[#algo-session-request]] with the returned |session|'s
@@ -1255,7 +1255,7 @@ This list is initially empty. After computing cookies in step 8.21, run
 ## Changes to the Clear Site Data specification ## {#changes-to-clear-site-data}
 
 This specification requires that the Clear Site Data specification
-sections 4.2.5 "Clear DOM-accessible storage for origin" clear all
+section 4.2.5 "Clear DOM-accessible storage for origin" clear all
 device bound sessions whose scope matches origin. It also requires an
 update to 4.2.4 to clear device bound sessions for the site matching the
 registered domain.
