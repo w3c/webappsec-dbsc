@@ -45,6 +45,8 @@ let g_session_registration_timeout_sec = 60;
 let g_pending_sessions = {};
 let g_session_id = 1;
 
+let g_ot_token = "AiI/4WLmjyjhdfpU9qMdvoHgic0Wu1hO4S9q/XfmRZ48njVna0ljcPeG5Fjyru3gjq4No76ENU6YF7szchas4QYAAAB2eyJvcmlnaW4iOiJodHRwczovL2Ric2MtcHJvdG90eXBlLXNlcnZlci5nbGl0Y2gubWU6NDQzIiwiZmVhdHVyZSI6IkRldmljZUJvdW5kU2Vzc2lvbkNyZWRlbnRpYWxzIiwiZXhwaXJ5IjoxNzYwNDAwMDAwfQ==";
+    
 handlebars.registerHelper('hasCookieEverRefreshed', function (expires, expiresAtStartSession) {
   return expires > expiresAtStartSession;
 })
@@ -178,7 +180,7 @@ fastify.get("/", function (request, reply) {
   let params = {};
   params.sessions = Object.values(g_sessions);
 
-  return reply.view("/src/pages/index.hbs", params);
+  return reply.header("Origin-Trial",g_ot_token).view("/src/pages/index.hbs", params);
 });
 
 fastify.post("/internal/StartSessionForm", function (request, reply) {
@@ -314,7 +316,9 @@ fastify.post("/internal/RefreshSession", function (request, reply) {
   if (!jwt) {
     sessionInfo.challengeKey = getChallengeKey();
     console.log("Provided challenge");
-    return reply.code(401).header('Sec-Session-Challenge', `"${g_challenges[sessionInfo.challengeKey]}"`).send();
+    return reply.code(401)
+      .header('Sec-Session-Challenge', `"${g_challenges[sessionInfo.challengeKey]}"`)
+      .send();
   }
 
   let decoded;
