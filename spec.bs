@@ -189,7 +189,7 @@ compromised the device, we trust that the private key is stored securely. But
 sharing keys across sites has complex privacy properties. In order to mitigate
 the privacy risks of sharing a high-entropy identifier, we require that the RP
 already know the public key and session identifier for the SP's session. The RP
-will include the SP URL, session id, and public key in the
+will include the SP URL, session identifier, and public key in the
 [:Secure-Session-Registration:] header. If the key is correct, the user agent
 will create a session on the RP with the same key as the SP.
 
@@ -263,8 +263,8 @@ the registration endpoint and the refresh endpoint.
 
 The registration endpoint is contacted asynchronously after the browser receives
 the [:Secure-Session-Registration:] header. This endpoint should:
-- Serve the session config, including a new session id.
-- Persist and associate the request's public key with the session id.
+- Serve the session config, including a new session identifier.
+- Persist and associate the request's public key with the session identifier.
 
 The refresh endpoint is much more sensitive. This endpoint is contacted every
 time a request is made with an expired bound cookie, and its response blocks
@@ -272,7 +272,7 @@ the original request. Failure to respond or restore the bound cookie may
 cause browser agents to begin denial-of-service prevention mechanisms, or even
 terminate the session. Both could lead to future requests without bound
 cookies. The expected behavior of this endpoint is:
-- Look up the public key and recent challenges for the session by id.
+- Look up the public key and recent challenges for the session by identifier.
 - Validate the [:Secure-Session-Response:] header has signed a recent challenge with
   the correct key. Note that due to network latency and race conditions, it's
   possible to receive a signature for an old challenge after issuing a new
@@ -360,7 +360,7 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
   : <dfn>session scope</dfn>
   :: a [=/session scope=] defining which [=URLs=] are in scope for this session
   : <dfn>session credentials</dfn>
-  :: a [=list=] of [=/session credential=]s used by the session, derived from
+  :: a [=list=] of [=/session credentials=] used by the session, derived from
     [=JSON session credentials=]
   : <dfn>expiration timestamp</dfn>
   :: a [=moment=] when this session should be removed
@@ -381,7 +381,7 @@ A <dfn>session scope</dfn> is a [=struct=] with the following
   : <dfn>include site</dfn>
   :: a [=boolean=] indicating if the session applies to an entire site or just an origin
   : <dfn>scope specifications</dfn>
-  :: a [=list=] of [=/scope specification=]s used by the session
+  :: a [=list=] of [=/scope specifications=] used by the session
 </dl>
 
 ## Scope specification ## {#framework-scope-specification}
@@ -535,7 +535,7 @@ both `example.co.uk` and `www.example.de` is `example`.
 
 ## Identify if missing session credential ## {#algo-identify-if-missing-session-credential}
 <div class="algorithm" data-algorithm="identify-if-missing-session-credential">
-  Given a [=request=] (|request|) and a [=/list=] of [=/session credential=]s
+  Given a [=request=] (|request|) and a [=/list=] of [=/session credentials=]
   (|credentials|), returns a [=boolean=] indicating whether any |credential| in
   |credentials| is missing on |request|.
   
@@ -797,7 +797,7 @@ if no key is possible.
       1. The value of the key "relying_origins" does not include the
          [=url/origin=] of |registration URL|.
     1. User agents SHOULD place an upper limit on the number of
-       [=registrable origin label=]s in "relying_origins" to prevent
+       [=registrable origin labels=] in "relying_origins" to prevent
        abuse.
     1. Let |relying well known URL| be a copy of |registration URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
@@ -927,8 +927,8 @@ representing a [=device bound session/session identifier=]. Any other
 <a>sf-parameter</a>s SHOULD be ignored.
 
 Note: The server might need to use this header to request the [=DBSC proof=] to
-be signed with a new challenge before a session id has been assigned. In this
-case the session id is optional.
+be signed with a new challenge before a session identifier has been assigned. In this
+case the session identifier is optional.
 
 <div class="example" id="secure-session-challenge-example">
   Some examples of [:Secure-Session-Challenge:] from
@@ -1116,16 +1116,16 @@ At the root of the JSON object, the following keys can exist:
   : include_site
   :: a [=boolean=] indicating if the session is origin-scoped (false) or
     site-scoped (true). This key is MANDATORY. Note that this takes precedence
-    over any [=JSON session scope rule=]s in [=scope specification=] (see
+    over any [=JSON session scope rules=] in [=scope specification=] (see
     [[#algo-url-in-scope]]).
     
   : scope_specification
-  :: a [=list=] of [=JSON session scope rule=]s describing modifications to the
+  :: a [=list=] of [=JSON session scope rules=] describing modifications to the
     default scope (the entire origin or site). This key is OPTIONAL; if not
     present, an empty list will be used.
 
 ## JSON Session Scope Rule Format ## {#format-session-scope-rule}
-The server sends <dfn>JSON session scope rule</dfn>s in the [=JSON session scope=]
+The server sends <dfn>JSON session scope rules</dfn> in the [=JSON session scope=]
 during registration and optionally during session refresh.
 
 At the root of each [=JSON session scope rule=], the following keys can exist:
@@ -1239,7 +1239,7 @@ href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-o
 fetch</a> algorithm. A [=request=] has a <dfn for="request">deferred device
 bound session ids</dfn>, a [=list=] of [=tuples=] consisting of:
   - a domain (a [=host/registrable domain=]).
-  - a session id (a [=string=]). 
+  - a session identifier (a [=string=]). 
 This list is initially empty.
 
 After computing cookies in step 8.21, run
