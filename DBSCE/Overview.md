@@ -72,7 +72,7 @@ Note: While DBSC(E) hardens security against temporary malware attacks, if the m
 
 ## How does it integrate with DBSC?
 
-DBSC(E) is not intended to be a separate proposal from DBSC, it is rather building on existing DBSC, and adds the binding specific details to the protocol. It is expected that the DBSC(E) proposal will be integrated into the DBSC proposal in the specification. In the high-level design, we have folded the DBSC proposal into the end to end flow. Please read the [DBSC proposal](https://githuub.com/wicg/dbsc) before you proceed.
+DBSC(E) is not intended to be a separate proposal from DBSC, it is rather building on existing DBSC, and adds the binding specific details to the protocol. It is expected that the DBSC(E) proposal will be integrated into the DBSC proposal in the specification. In the high-level design, we have folded the DBSC proposal into the end to end flow. Please read the [DBSC proposal](https://github.com/wicg/dbsc) before you proceed.
 
 Before we get into the specifics, we will introduce the terminology and design specifics for the key generation and validation below.
 
@@ -84,11 +84,11 @@ In this document, "Browser" refers to the functionality in a web browser that is
 
 ### Relying Party (RP)
 
-A web application that uses DBSC(E) protocol for cookie binding. This is referred to as `server` in the original [DBSC design](https://githuub.com/wicg/dbsc).
+A web application that uses DBSC(E) protocol for cookie binding. This is referred to as `server` in the original [DBSC design](https://github.com/wicg/dbsc).
 
 ### Identity Provider (IdP)
 
-IdP is an authentication server that can be either external to the Relying Party or part of the Relying Party. Eg: Office.com authenticating with Microsoft Entra ID (external IDP) or google.com authenticating with google (no separate IDP). Note: The protocol doesn't change if the IDP is part of the Relying Party, except that some redirects between the IdP and the RP can be skipped or implemented by other means. In the original [DBSC design](https://githuub.com/wicg/dbsc), IDP and RP are the same entity, and referred to as `server`.
+IdP is an authentication server that can be either external to the Relying Party or part of the Relying Party. Eg: Office.com authenticating with Microsoft Entra ID (external IDP) or google.com authenticating with google (no separate IDP). Note: The protocol doesn't change if the IDP is part of the Relying Party, except that some redirects between the IdP and the RP can be skipped or implemented by other means. In the original [DBSC design](https://github.com/wicg/dbsc), IDP and RP are the same entity, and referred to as `server`.
 
 ### Device Registration Client
 
