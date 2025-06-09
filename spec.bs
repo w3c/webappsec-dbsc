@@ -323,6 +323,18 @@ register a session on the Relying Party (RP) with new keys. Therefore RPs should
 only accept sessions registered with the appropriate public keys they received
 from the SP.
 
+# User agent considerations # {#user-agent-considerations}
+
+DBSC provides a lot of flexibility for browsers to schedule cookie
+refreshes. This can mitigate the latency of DBSC and lower the load on
+TPMs and servers. We recommend that user agents schedule cookie
+refreshes in the following way:
+- If a session already has a pending DBSC refresh, do not start another
+  one. This reduces TPM load and allows for simpler server
+  implementations
+- If a session credential will expire soon, and an in-scope document is
+  active, the user agent can refresh proactively to eliminate latency on
+  an upcoming request.
 
 # Framework # {#framework}
 This document uses ABNF grammar to specify syntax, as defined in [[!RFC5234]]
