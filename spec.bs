@@ -364,7 +364,7 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
     [=JSON session credentials=]
   : <dfn>expiration timestamp</dfn>
   :: a [=moment=] when this session should be removed
-  : <dfn>session key</dfn>
+  : <dfn>session key pair</dfn>
   :: a key pair used by the session. The private key
     should be stored in a secure manner (see [[#security-considerations]]).
   : <dfn>allowed refresh initiators</dfn>
@@ -698,7 +698,7 @@ both `example.co.uk` and `www.example.de` is `example`.
        "scope.scope_specification".
     1. [=device bound session/session credentials=] the value of the key
        "credentials".
-    1. [=session key=] set to |key pair|.
+    1. [=session key pair=] set to |key pair|.
     1. [=allowed refresh initiators=] the value of the key
        "allowed_refresh_initiators".
     1. [=expiration timestamp=] set to a future timestamp. The exact choice of
@@ -781,7 +781,7 @@ if no key is possible.
     1. If |provider session|'s [=device bound session/session scope=]
        [=session scope/origin=] is not [=/same origin=] with |provider
        origin|, return null.
-    1. If |provider session|'s [=session key=] does not match
+    1. If |provider session|'s [=session key pair=] does not match
        |params|["provider_key"], return null.
     1. Let |provider well known URL| be a copy of |provider URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
@@ -812,7 +812,7 @@ if no key is possible.
          key "provider_origin".
       1. The value of the key "provider_origin" is not the
          [=url/origin=] of |provider URL|.
-    1. Return |provider session|'s [=session key=].
+    1. Return |provider session|'s [=session key pair=].
   1. Return a new key pair created for |algorithm list|.
 </div>
  
@@ -1246,7 +1246,7 @@ After computing cookies in step 8.21, run
 [[#algo-identify-session-needing-refresh]]. If the resulting
 |session| is non-null:
   1. Run [[#algo-session-request]] with the returned |session|'s
-    [=session key=], [=refresh URL=], [=device bound session/session
+    [=session key pair=], [=refresh URL=], [=device bound session/session
     identifier=], [=cached challenge=], and an empty authorization.
   2. Restart <a
     href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
