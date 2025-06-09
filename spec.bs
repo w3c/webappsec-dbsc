@@ -190,7 +190,7 @@ sharing keys across sites has complex privacy properties. In order to mitigate
 the privacy risks of sharing a high-entropy identifier, we require that the RP
 already know the public key and session identifier for the SP's session. The RP
 will include the SP URL, session identifier, and public key in the
-[:Secure-Session-Registration:] header. If the key is correct, the user agent
+[:`Secure-Session-Registration`:] header. If the key is correct, the user agent
 will create a session on the RP with the same key as the SP.
 
 There is also a potential risk of malicious RPs and SPs collaborating to try to
@@ -218,7 +218,7 @@ they browse the web.
 Suppose the owners of `example.com` also run `example.co.uk`. Login always
 happens on `example.com` and is propagated to `example.co.uk` through link
 decoration. In order to protect both sites with a DBSC session, `example.com`
-should continue to use its existing [:Secure-Session-Registration:] header:
+should continue to use its existing [:`Secure-Session-Registration`:] header:
 
 ```
 Secure-Session-Registration: (ES256);path="/register";challenge="challenge"
@@ -262,7 +262,7 @@ In order to use DBSC, site owners need to establish two new endpoints:
 the registration endpoint and the refresh endpoint.
 
 The registration endpoint is contacted asynchronously after the browser receives
-the [:Secure-Session-Registration:] header. This endpoint should:
+the [:`Secure-Session-Registration`:] header. This endpoint should:
 - Serve the session config, including a new session identifier.
 - Persist and associate the request's public key with the session identifier.
 
@@ -273,7 +273,7 @@ cause browser agents to begin denial-of-service prevention mechanisms, or even
 terminate the session. Both could lead to future requests without bound
 cookies. The expected behavior of this endpoint is:
 - Look up the public key and recent challenges for the session by identifier.
-- Validate the [:Secure-Session-Response:] header has signed a recent challenge with
+- Validate the [:`Secure-Session-Response`:] header has signed a recent challenge with
   the correct key. Note that due to network latency and race conditions, it's
   possible to receive a signature for an old challenge after issuing a new
   challenge.
@@ -286,7 +286,7 @@ only happen when a bound cookie is expired.
 
 The refresh endpoint is likely to directly leak login state via a timing side
 channel if cross-site fetches are allowed. Servers can check for a valid
-[:Sec-Secure-Session-Id:] header to ensure that incoming requests are initiated
+[:`Sec-Secure-Session-Id`:] header to ensure that incoming requests are initiated
 by the user agent and not a cross-site request. It's also recommended to set a
 narrow CORS policy on this endpoint and not allow cross-site origins to make
 requests with credentials. The CORS integration for DBSC has been designed to
@@ -604,8 +604,8 @@ both `example.co.uk` and `www.example.de` is `example`.
 <div algorithm>
   This algorithm describes how to <dfn export dfn-for="algorithms">send
   a request</dfn> for a device bound session registration or refresh. It
-  takes as input an |originating request|, |key pair|, |destination|,
-  and optional |session id|, |challenge|, and |authorization|.
+  takes as input a [=request=] (|originating request|), |key pair|, [=URL=] (|destination|),
+  and optional [=strings=] |session id|, |challenge|, and |authorization|.
 
   User agents will perform these steps whenever a bound credential is missing,
   but MAY do this at any time. Sending a request proactively before the bound
@@ -641,6 +641,8 @@ both `example.co.uk` and `www.example.de` is `example`.
      ("Authorization", |authorization|) to |request|'s [=request/header list=].
   1. Set |request|'s [=request/initiator=] to |originating request|'s
      [=request/initiator=].
+  1. Set |request|'s [=request/origin=] to |originating request|'s
+     [=request/origin=].
   1. Let |response| be the result of running <a
      href="https://fetch.spec.whatwg.org/#http-fetch">HTTP fetch</a> for |request|.
   1. If |response| is a [=network error=], or |response|'s
@@ -762,7 +764,7 @@ To <dfn export id="create-session">create a new session</dfn> due to the
 This algorithm describes how to <dfn export id="create-session-key">create a
 session key</dfn>, including key sharing between a Relying Party and Session
 Provider. It takes as inputs the |registration entry| and |params| of a
-[:Secure-Session-Registration:] header and the [=URL=] (|registration URL|) of
+[:`Secure-Session-Registration`:] header and the [=URL=] (|registration URL|) of
 the registration endpoint. It returns a key pair for use in the session or null
 if no key is possible.
 
@@ -770,7 +772,7 @@ if no key is possible.
   1. [=list/For each=] |algorithm| → |registration entry|:
     1. If |algorithm| is not an <a>sf-token</a>, [=iteration/continue=].
     1. If |algorithm| represents a crypto algorithm supported in
-       [:Secure-Session-Registration:] and is supported on this client,
+       [:`Secure-Session-Registration`:] and is supported on this client,
        add |algorithm| to |algorithm list|.
   1. If |algorithm list| is empty, return null.
   1. If any of |params|["provider_key"], |params|["provider_id"], or
@@ -854,7 +856,7 @@ The <dfn export http-header id="secure-session-registration-header">
 [=response=] by the server to start a new [=/device bound session=] on the
 client.
 
-[:Secure-Session-Registration:] is a List Structured Header [[RFC9651]]. Its ABNF
+[:`Secure-Session-Registration`:] is a List Structured Header [[RFC9651]]. Its ABNF
 is:
 
 <pre class="abnf">Secure-Session-Registration = <a>sf-list</a></pre>
@@ -885,7 +887,7 @@ The following <a>sf-parameter</a>s are defined:
   with a session on the corresponding site.
 
 <div class="example" id="secure-session-registration-example">
-  Some examples of [:Secure-Session-Registration:] from
+  Some examples of [:`Secure-Session-Registration`:] from
   https://example.com/login.html:
 
   ```html
@@ -921,15 +923,15 @@ be used in future Secure-Session-Response headers inside the [=DBSC proof=], or 
 request a newly signed [=DBSC proof=] right away if the [=response/status=]
 is 403.
 
-[:Secure-Session-Challenge:] is a structured header. Its value must be a string.
+[:`Secure-Session-Challenge`:] is a structured header. Its value must be a string.
 Its ABNF is: <pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
 The semantics of the item are defined in
 [[#challenge-structured-header-serialization]].
 
 The processing steps are defined in [[#algo-process-challenge]].
 
-### [:Secure-Session-Challenge:] structured header serialization ### {#challenge-structured-header-serialization}
-The [:Secure-Session-Challenge:] is represented as a Structured Field.[[!RFC9651]]
+### [:`Secure-Session-Challenge`:] structured header serialization ### {#challenge-structured-header-serialization}
+The [:`Secure-Session-Challenge`:] is represented as a Structured Field.[[!RFC9651]]
 
 In this representation, a challenge is represented by a string.
 
@@ -942,7 +944,7 @@ be signed with a new challenge before a session identifier has been assigned. In
 case the session identifier is optional.
 
 <div class="example" id="secure-session-challenge-example">
-  Some examples of [:Secure-Session-Challenge:] from
+  Some examples of [:`Secure-Session-Challenge`:] from
   https://example.com/login.html:
 
   ```html
@@ -993,7 +995,7 @@ The <dfn export http-header id="sec-secure-session-id-header">
 [=request=] by the user agent to request the current session be refreshed,
 with the current session identifier as a string argument.
 
-[:Sec-Secure-Session-Id:] is a structured header.
+[:`Sec-Secure-Session-Id`:] is a structured header.
 Its value must be a string. Its ABNF is:
 <pre class="abnf">SecSessionIdentifier = <a>sf-string</a></pre>
 This string MUST only contain the session identifier. Any parameters SHOULD be
@@ -1012,7 +1014,7 @@ The <dfn export http-header id="secure-session-skipped-header">
 [=request=] to indicate that the request is intentionally missing bound
 credentials due to user agent policy.
 
-[:Secure-Session-Skipped:] is a List Structured Header [[RFC9651]]. Its ABNF
+[:`Secure-Session-Skipped`:] is a List Structured Header [[RFC9651]]. Its ABNF
 is:
 
 <pre class="abnf">Secure-Session-Skipped = <a>sf-list</a></pre>
@@ -1197,10 +1199,10 @@ The payload of [=DBSC proof=] MUST contain at least the following claims:
   :: a [=string=] defining a JWK as specified in [rfc7517].
 
 In addition, the following claim MUST be present if present in the
-[:Secure-Session-Registration:] header field:
+[:`Secure-Session-Registration`:] header field:
   : authorization
   :: a [=string=]. This is a direct copy of the string from the
-    [:Secure-Session-Registration:] header field if set there. Note that this
+    [:`Secure-Session-Registration`:] header field if set there. Note that this
     string is OPTIONAL to include in the header, but if it is present, it is
     MANDATORY for clients to add the claim in the [=DBSC proof=].
 
