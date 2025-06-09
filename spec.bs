@@ -1264,7 +1264,13 @@ After computing cookies in step 8.21, run
   2. Restart <a
     href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
     fetch</a> with the original inputs.
-    
+
+This specification also requires two new calls to process the new
+headers. After step 14 in the current <a
+href="https://fetch.spec.whatwg.org/#http-network-fetch">HTTP-network 
+fetch</a>, execute the following step:
+  15. Run [[#algo-create-session]] and [[#algo-process-challenge]].
+
 ## Changes to the Clear Site Data specification ## {#changes-to-clear-site-data}
 
 This specification requires that the Clear Site Data specification
