@@ -1020,8 +1020,15 @@ is:
 <pre class="abnf">Secure-Session-Skipped = <a>sf-list</a></pre>
 
 Each item in the list MUST be an <a>sf-token</a> representing a
-coarse-grained reason for skipping cookie refresh. The only supported values
-are: "unreachable", "server_error", and "quota_exceeded".
+coarse-grained reason for skipping cookie refresh. The only supported
+values are: "unreachable", "server_error", and "quota_exceeded". These
+tokens should be used in the following situations:
+- "server_error" indicates that the session refresh failed due to the
+  response from the server (e.g. a 500 status code).
+- "unreachable" indicates that the session refresh failed due to an
+  inability to reach the server.
+- "quota_exceeded" covers all places where the user agent chooses not to
+  refresh (e.g. excessive recent TPM operations).
 
 One <a>sf-parameter</a> is defined:
 - An <a>sf-parameter</a> whose key is "session_identifier", and whose value is an
