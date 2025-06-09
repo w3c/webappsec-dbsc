@@ -554,7 +554,6 @@ both `example.co.uk` and `www.example.de` is `example`.
       1. All of the following attributes of |cookie| match those in
          |credential|'s [=session credential/attributes=]: Domain, Path,
          Secure, HttpOnly, SameSite.
-      1. |cookie|'s partition key matches that of |credential|.
     1. Return true.
   1. Return false.
 </div>
@@ -676,6 +675,7 @@ both `example.co.uk` and `www.example.de` is `example`.
        of the key "refresh_url".
     1. |refresh URL| must have scheme HTTPS or be localhost.
     1. |refresh URL|'s [=/origin=] must be [=/same site=] with |destination|'s [=/origin=].
+    1. None of the [=JSON session credentials=] have the attribute "Partitioned".
   1. Let |destination domain| be the [=host/registrable domain=] of |destination|'s [=url/host=].
   1. If the value of the key "scope.include_site" in |response| is true,
      perform the following validations. If any fail, |terminate the
