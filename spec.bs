@@ -429,9 +429,11 @@ both `example.co.uk` and `www.example.de` is `example`.
   null if no such session exists.
 
   1. Let |domain| be the [=host/registrable domain=] of |url|'s [=url/host=].
+  1. If the user agent's [=session store=] does not [=map/contain=] |domain|,
+     return null.
   1. Let |domain sessions| be the user agent's [=session store=][|domain|] as a
      [=/sessions by id map=].
-  1. Return |domain sessions|[|session identifier|].
+  1. Return |domain sessions|[|session identifier|] [=with default=] null.
 </div>
 
 ## Identify if a URL is in scope of a session ## {#algo-url-in-scope}
@@ -510,6 +512,8 @@ both `example.co.uk` and `www.example.de` is `example`.
 
   1. Let |domain| be the [=host/registrable domain=] of |request|'s
      [=request/url=]'s [=url/host=].
+  1. If the user agent's [=session store=] does not [=map/contain=] |domain|,
+     return null.
   1. Let |domain sessions| be the user agent's [=session store=][|domain|] as a
      [=/sessions by id map=].
   1. [=list/For each=] |session| of |domain sessions|:
