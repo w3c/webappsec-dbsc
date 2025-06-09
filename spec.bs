@@ -417,7 +417,7 @@ both `example.co.uk` and `www.example.de` is `example`.
 
 # Algorithms # {#algorithms}
 ## Identify session ## {#algo-identify-session}
-<div class="algorithm" data-algorithm="identify-session">
+<div algorithm>
   This algorithm describes how to
   <dfn export dfn-for="algorithms">identify a session</dfn> out of all the
   sessions that exist on a user agent. The
@@ -437,10 +437,11 @@ both `example.co.uk` and `www.example.de` is `example`.
 </div>
 
 ## Identify if a URL is in scope of a session ## {#algo-url-in-scope}
-<div class="algorithm" data-algorithm="url-in-scope">
-  This algorithm describes how to determine if a URL is in scope of a
-  device bound session. Given a [=URL=] (|URL|) and [=device bound session=]
-  (|session|), returns "include" if |URL| is in scope, and "exclude" otherwise.
+<div algorithm>
+  This algorithm describes how to <dfn export dfn-for="algorithms">determine if a
+  URL is in scope</dfn> of a device bound session. Given a [=URL=] (|URL|) and
+  [=device bound session=] (|session|), returns "include" if |URL| is in scope,
+  and "exclude" otherwise.
 
   1. Let |scope| be |session|'s [=device bound session/session scope=].
   1. If |scope|'s [=include site=] is true, return "exclude" if |URL|'s
@@ -462,11 +463,12 @@ both `example.co.uk` and `www.example.de` is `example`.
 </div>
 
 ## Identify if a request is allowed to refresh ## {#algo-request-allows-refresh}
-<div class="algorithm" data-algorithm="request-allows-refresh">
-  This algorithm describes how to determine if a request is allowed to
-  trigger refresh for a device bound session. Given a [=request=]
-  (|request|) and [=device bound session=] (|session|), returns "allowed" if
-  |request| can trigger a refresh, and "disallowed" otherwise.
+<div algorithm>
+  This algorithm describes how to <dfn export dfn-for="algorithms">determine if
+  a request is allowed to trigger refresh</dfn> for a device bound
+  session. Given a [=request=] (|request|) and [=device bound session=]
+  (|session|), returns "allowed" if |request| can trigger a refresh, and
+  "disallowed" otherwise.
 
   1. If |session|'s [=device bound session/session scope=]'s [=include
      site=] is true, and |request|'s [=request/origin=] is [=/same
@@ -482,11 +484,13 @@ both `example.co.uk` and `www.example.de` is `example`.
        [=request/origin=]'s [=origin/host=] and |initiator pattern|
        returns true, return "allowed".
   1. Return "disallowed".
+</div>
 
 ## Identify if a host matches a pattern ## {#algo-host-pattern-matches}
-<div class="algorithm" data-algorithm="host-pattern-matches">
-  This algorithm describes how to determine if a [=url/host=] (|host|)
-  matches a |pattern|. It returns true if |pattern| covers |host|.
+<div algorithm>
+  This algorithm describes how to <dfn export dfn-for="algorithms">determine if
+  a host matches a pattern</dfn>. It takes as input a [=url/host=] (|host|) and
+  a [=string=] (|pattern|). It returns true if |pattern| covers |host|.
 
   1. If |pattern| equals '*', return true.
   1. If |pattern| starts with '*':
@@ -506,9 +510,10 @@ both `example.co.uk` and `www.example.de` is `example`.
 </div>
 
 ## Identify session needing refresh ## {#algo-identify-session-needing-refresh}
-<div class="algorithm" data-algorithm="identify-session-needing-refresh">
-  Given a [=request=] (|request|), this algorithm describes how to identify
-  which session, if any, should block |request| from proceeding.
+<div algorithm>
+  Given a [=request=] (|request|), this algorithm describes how to <dfn export
+  dfn-for="algorithms">identify session needing refresh</dfn>. If any such
+  session exists, it should block |request| from proceeding.
 
   1. Let |domain| be the [=host/registrable domain=] of |request|'s
      [=request/url=]'s [=url/host=].
@@ -538,10 +543,12 @@ both `example.co.uk` and `www.example.de` is `example`.
 </div>
 
 ## Identify if missing session credential ## {#algo-identify-if-missing-session-credential}
-<div class="algorithm" data-algorithm="identify-if-missing-session-credential">
-  Given a [=request=] (|request|) and a [=/list=] of [=/session credentials=]
-  (|credentials|), returns a [=boolean=] indicating whether any |credential| in
-  |credentials| is missing on |request|.
+<div algorithm>
+  This algorithm describes how to <dfn export dfn-for="algorithms">identify if a
+  request is missing a session credential</dfn>. Given a [=request=] (|request|)
+  and a [=/list=] of [=/session credentials=] (|credentials|), returns a
+  [=boolean=] indicating whether any |credential| in |credentials| is missing on
+  |request|.
   
   1. [=list/For each=] |credential| in |credentials|:
     1. If a cookie with |credential|'s [=session credential/attributes=] would
@@ -559,7 +566,7 @@ both `example.co.uk` and `www.example.de` is `example`.
 </div>
 
 ## Cache challenge ## {#algo-process-challenge}
-<div class="algorithm" data-algorithm="process-challenge">
+<div algorithm>
   This algorithm describes how to
   <dfn export dfn-for="algorithms">process a challenge</dfn> received in an HTTP
   header.
@@ -594,7 +601,7 @@ both `example.co.uk` and `www.example.de` is `example`.
 </div>
 
 ## Send request ## {#algo-session-request}
-<div class="algorithm" data-algorithm="session-request">
+<div algorithm>
   This algorithm describes how to <dfn export dfn-for="algorithms">send
   a request</dfn> for a device bound session registration or refresh. It
   takes as input an |originating request|, |key pair|, |destination|,
@@ -718,9 +725,10 @@ both `example.co.uk` and `www.example.de` is `example`.
     1. Set the user agent's [=session store=][|destination
        domain|][|session identifier|] to |session|.
     1. [=iteration/Break=].
+</div>
 
 ## Create session ## {#algo-create-session}
-<div class="algorithm" data-algorithm="process-registration">
+<div algorithm>
 To <dfn export id="create-session">create a new session</dfn> due to the
 [=response=] (|response|) to a [=request=] (|request|), do the following steps:
   1. Let |header name| be "<code>Secure-Session-Registration</code>".
@@ -750,8 +758,7 @@ To <dfn export id="create-session">create a new session</dfn> due to the
 </div>
 
 ## Create session key ## {#algo-create-session-key}
-<div class="algorithm" data-algorithm="create-session-key">
-
+<div algorithm>
 This algorithm describes how to <dfn export id="create-session-key">create a
 session key</dfn>, including key sharing between a Relying Party and Session
 Provider. It takes as inputs the |registration entry| and |params| of a
@@ -822,7 +829,7 @@ if no key is possible.
  
 
 ## Add debug header ## {#algo-add-debug-header}
-<div class="algorithm" data-algorithm="add-debug-header">
+<div algorithm>
 In order for sites to understand when the user agent chooses not to
 apply a session, user agents should <dfn export
 id="add-debug-header">add the debug header</dfn> to a [=request=]
