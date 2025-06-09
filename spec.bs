@@ -664,6 +664,20 @@ both `example.co.uk` and `www.example.de` is `example`.
      temporary outage on the refresh endpoint.
   1. If |session id| is non-null, and |response|'s [=response/body=] is
      empty, return.
+  1. Call [[#algo-create-session]] on |response|, |destination|,
+     |session id|, and |key pair|.
+</div>
+
+## Create session ## {#algo-create-session}
+<div algorithm>
+To <dfn export id="create-session">create a session</dfn> due to the |response|
+(a [=response=]) to a registration request to |destination| (a [=URL=]) for
+|session id| (a [=string=]) with a |key pair|, perform the following steps:
+  1. Let |terminate the session| be an algorithm with the following steps:
+    1. If |session id| is null, return.
+    1. Remove the session with domain |destination|'s [=url/host=]'s
+       [=host/registrable domain=] and identifier |session id| from the
+       user agent's [=session store=], if such a session if found.
   1. Parse |response|'s [=response/body=] according to
      [[#format-session-instructions]]. If parsing fails, |terminate the
      session| and return.
@@ -729,10 +743,11 @@ both `example.co.uk` and `www.example.de` is `example`.
     1. [=iteration/Break=].
 </div>
 
-## Create session ## {#algo-create-session}
+## Process session regsitration ## {#algo-process-session-registration}
 <div algorithm>
-To <dfn export id="create-session">create a new session</dfn> due to the
-[=response=] (|response|) to a [=request=] (|request|), do the following steps:
+To <dfn export id="process-session-registration">process a session
+registration</dfn> due to the [=response=] (|response|) to a [=request=]
+(|request|), do the following steps:
   1. Let |header name| be "<code>Secure-Session-Registration</code>".
   1. Let |registration list| be the result of executing <a>get a structured
     field value</a> given |header name| and "list" from |response|’s
@@ -869,7 +884,7 @@ The following <a>sf-parameter</a>s are defined:
 - An <a>sf-parameter</a> whose key is "path", and whose value is an
   <a>sf-string</a>, conveying the path to the registration endpoint. This may be
   relative to the current [=URL=], or it may be a full [=URL=]. Entries without
-  this parameter will be ignored in [[#algo-create-session]].
+  this parameter will be ignored in [[#algo-process-session-registration]].
 - An <a>sf-parameter</a> whose key is "challenge", and whose value is an
   <a>sf-string</a>, conveying the challenge to be used in the session
   registration.
@@ -1276,7 +1291,7 @@ This specification also requires two new calls to process the new
 headers. After step 14 in the current <a
 href="https://fetch.spec.whatwg.org/#http-network-fetch">HTTP-network 
 fetch</a>, execute the following step:
-  15. Run [[#algo-create-session]] and [[#algo-process-challenge]].
+  15. Run [[#algo-process-session-registration]] and [[#algo-process-challenge]].
 
 ## Changes to the Clear Site Data specification ## {#changes-to-clear-site-data}
 
