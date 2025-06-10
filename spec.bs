@@ -905,7 +905,7 @@ client.
 [:Secure-Session-Registration:] is a List Structured Header [[RFC9651]]. Its ABNF
 is:
 
-<pre class="abnf">Secure-Session-Registration = <a>sf-list</a></pre>
+<pre class="abnf">SecureSessionRegistration = <a>sf-list</a></pre>
 
 Each item in the list must be an inner list, and each item in the inner list
 MUST be an <a>sf-token</a> representing a supported algorithm (ES256, RS256).
@@ -970,7 +970,7 @@ or to request a newly signed [=DBSC proof=] immediately during a cookie refresh
 if the [=response/status=] is 403.
 
 [:Secure-Session-Challenge:] is a structured header. Its value must be a string.
-Its ABNF is: <pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
+Its ABNF is: <pre class="abnf">SecureSessionChallenge = <a>sf-string</a></pre>
 The semantics of the item are defined in
 [[#challenge-structured-header-serialization]].
 
@@ -1025,7 +1025,7 @@ pair.
 
 <a http-header><code>Secure-Session-Response</code></a> is a structured
 header. Its value must be a string. Its ABNF is:
-<pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
+<pre class="abnf">SecureSessionResponse = <a>sf-string</a></pre>
 This string MUST only contain the [=DBSC proof=] JWT. Any <a>sf-parameter</a>s SHOULD be
 ignored.
 
@@ -1044,7 +1044,7 @@ with the current session identifier as a string argument.
 
 [:Sec-Secure-Session-Id:] is a structured header.
 Its value must be a string. Its ABNF is:
-<pre class="abnf">SecSessionIdentifier = <a>sf-string</a></pre>
+<pre class="abnf">SecSecureSessionIdentifier = <a>sf-string</a></pre>
 This string MUST only contain the session identifier. Any parameters SHOULD be
 ignored.
 
@@ -1064,7 +1064,7 @@ credentials due to user agent policy.
 [:Secure-Session-Skipped:] is a List Structured Header [[RFC9651]]. Its ABNF
 is:
 
-<pre class="abnf">Secure-Session-Skipped = <a>sf-list</a></pre>
+<pre class="abnf">SecureSessionSkipped = <a>sf-list</a></pre>
 
 Each item in the list MUST be an <a>sf-token</a> representing a
 coarse-grained reason for skipping cookie refresh. The only supported
