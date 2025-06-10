@@ -184,14 +184,14 @@ in the target use case we expect the SP and IdP to be the same party.
 
 In order to protect the RP's sessions, we need to link the RP and SP session in
 some way. The simplest way to do this is for the SP and RP to use the same
-session key. Since we assume the SP's session was established before the malware
-compromised the device, we trust that the private key is stored securely. But
-sharing keys across sites has complex privacy properties. In order to mitigate
-the privacy risks of sharing a high-entropy identifier, we require that the RP
-already know the public key and session identifier for the SP's session. The RP
-will include the SP URL, session identifier, and public key in the
-[:Secure-Session-Registration:] header. If the key is correct, the user agent
-will create a session on the RP with the same key as the SP.
+session key pair. Since we assume the SP's session was established before the
+malware compromised the device, we trust that the private key is stored
+securely. But sharing keys across sites has complex privacy properties. In order
+to mitigate the privacy risks of sharing a high-entropy identifier, we require
+that the RP already know the public key and session identifier for the SP's
+session. The RP will include the SP URL, session identifier, and public key in
+the [:Secure-Session-Registration:] header. If the key is correct, the user
+agent will create a session on the RP with the same key as the SP.
 
 There is also a potential risk of malicious RPs and SPs collaborating to try to
 identify users in cases where the RP and SP can't already share information
@@ -225,7 +225,7 @@ Secure-Session-Registration: (ES256);path="/register";challenge="challenge"
 ```
 
 When extending the DBSC session to `example.com.uk`, the site should append new
-parameters to the `Secure-Session-Registration` header:
+parameters to the [:Secure-Session-Registration:] header:
 
 ```
 Secure-Session-Registration: (ES256);path="/register";challenge="challenge";provider_key="abc";provider_id="example.com id";provider_url="https://example.com"
@@ -376,7 +376,7 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
     [=JSON session credentials=]
   : <dfn>expiration timestamp</dfn>
   :: a [=moment=] when this session should be removed
-  : <dfn>session key</dfn>
+  : <dfn>session key pair</dfn>
   :: a key pair used by the session. The private key
     should be stored in a secure manner (see [[#security-considerations]]).
   : <dfn>allowed refresh initiators</dfn>
@@ -429,7 +429,7 @@ both `example.co.uk` and `www.example.de` is `example`.
 
 # Algorithms # {#algorithms}
 ## Identify session ## {#algo-identify-session}
-<div class="algorithm" data-algorithm="identify-session">
+<div algorithm>
   This algorithm describes how to
   <dfn export dfn-for="algorithms">identify a session</dfn> out of all the
   sessions that exist on a user agent. The
@@ -441,16 +441,19 @@ both `example.co.uk` and `www.example.de` is `example`.
   null if no such session exists.
 
   1. Let |domain| be the [=host/registrable domain=] of |url|'s [=url/host=].
+  1. If the user agent's [=session store=] does not [=map/contain=] |domain|,
+     return null.
   1. Let |domain sessions| be the user agent's [=session store=][|domain|] as a
      [=/sessions by id map=].
-  1. Return |domain sessions|[|session identifier|].
+  1. Return |domain sessions|[|session identifier|] [=with default=] null.
 </div>
 
 ## Identify if a URL is in scope of a session ## {#algo-url-in-scope}
-<div class="algorithm" data-algorithm="url-in-scope">
-  This algorithm describes how to determine if a URL is in scope of a
-  device bound session. Given a [=URL=] (|URL|) and [=device bound session=]
-  (|session|), returns "include" if |URL| is in scope, and "exclude" otherwise.
+<div algorithm>
+  This algorithm describes how to <dfn export dfn-for="algorithms">determine if a
+  URL is in scope</dfn> of a device bound session. Given a [=URL=] (|URL|) and
+  [=device bound session=] (|session|), returns "include" if |URL| is in scope,
+  and "exclude" otherwise.
 
   1. Let |scope| be |session|'s [=device bound session/session scope=].
   1. If |scope|'s [=include site=] is true, return "exclude" if |URL|'s
@@ -472,11 +475,12 @@ both `example.co.uk` and `www.example.de` is `example`.
 </div>
 
 ## Identify if a request is allowed to refresh ## {#algo-request-allows-refresh}
-<div class="algorithm" data-algorithm="request-allows-refresh">
-  This algorithm describes how to determine if a request is allowed to
-  trigger refresh for a device bound session. Given a [=request=]
-  (|request|) and [=device bound session=] (|session|), returns "allowed" if
-  |request| can trigger a refresh, and "disallowed" otherwise.
+<div algorithm>
+  This algorithm describes how to <dfn export dfn-for="algorithms">determine if
+  a request is allowed to trigger refresh</dfn> for a device bound
+  session. Given a [=request=] (|request|) and [=device bound session=]
+  (|session|), returns "allowed" if |request| can trigger a refresh, and
+  "disallowed" otherwise.
 
   1. If |session|'s [=device bound session/session scope=]'s [=include
      site=] is true, and |request|'s [=request/origin=] is [=/same
@@ -492,11 +496,13 @@ both `example.co.uk` and `www.example.de` is `example`.
        [=request/origin=]'s [=origin/host=] and |initiator pattern|
        returns true, return "allowed".
   1. Return "disallowed".
+</div>
 
 ## Identify if a host matches a pattern ## {#algo-host-pattern-matches}
-<div class="algorithm" data-algorithm="host-pattern-matches">
-  This algorithm describes how to determine if a [=url/host=] (|host|)
-  matches a |pattern|. It returns true if |pattern| covers |host|.
+<div algorithm>
+  This algorithm describes how to <dfn export dfn-for="algorithms">determine if
+  a host matches a pattern</dfn>. It takes as input a [=url/host=] (|host|) and
+  a [=string=] (|pattern|). It returns true if |pattern| covers |host|.
 
   1. If |pattern| equals '*', return true.
   1. If |pattern| starts with '*':
@@ -516,12 +522,15 @@ both `example.co.uk` and `www.example.de` is `example`.
 </div>
 
 ## Identify session needing refresh ## {#algo-identify-session-needing-refresh}
-<div class="algorithm" data-algorithm="identify-session-needing-refresh">
-  Given a [=request=] (|request|), this algorithm describes how to identify
-  which session, if any, should block |request| from proceeding.
+<div algorithm>
+  Given a [=request=] (|request|), this algorithm describes how to <dfn export
+  dfn-for="algorithms">identify a session needing refresh</dfn>. If any such
+  session exists, it should block |request| from proceeding.
 
   1. Let |domain| be the [=host/registrable domain=] of |request|'s
      [=request/url=]'s [=url/host=].
+  1. If the user agent's [=session store=] does not [=map/contain=] |domain|,
+     return null.
   1. Let |domain sessions| be the user agent's [=session store=][|domain|] as a
      [=/sessions by id map=].
   1. [=list/For each=] |session| of |domain sessions|:
@@ -546,10 +555,12 @@ both `example.co.uk` and `www.example.de` is `example`.
 </div>
 
 ## Identify if missing session credential ## {#algo-identify-if-missing-session-credential}
-<div class="algorithm" data-algorithm="identify-if-missing-session-credential">
-  Given a [=request=] (|request|) and a [=/list=] of [=/session credentials=]
-  (|credentials|), returns a [=boolean=] indicating whether any |credential| in
-  |credentials| is missing on |request|.
+<div algorithm>
+  This algorithm describes how to <dfn export dfn-for="algorithms">identify if a
+  request is missing a session credential</dfn>. Given a [=request=] (|request|)
+  and a [=/list=] of [=/session credentials=] (|credentials|), returns a
+  [=boolean=] indicating whether any |credential| in |credentials| is missing on
+  |request|.
   
   1. [=list/For each=] |credential| in |credentials|:
     1. If a cookie with |credential|'s [=session credential/attributes=] would
@@ -562,13 +573,12 @@ both `example.co.uk` and `www.example.de` is `example`.
       1. All of the following attributes of |cookie| match those in
          |credential|'s [=session credential/attributes=]: Domain, Path,
          Secure, HttpOnly, SameSite.
-      1. |cookie|'s partition key matches that of |credential|.
     1. Return true.
   1. Return false.
 </div>
 
 ## Cache challenge ## {#algo-process-challenge}
-<div class="algorithm" data-algorithm="process-challenge">
+<div algorithm>
   This algorithm describes how to
   <dfn export dfn-for="algorithms">process a challenge</dfn> received in an HTTP
   header.
@@ -603,11 +613,11 @@ both `example.co.uk` and `www.example.de` is `example`.
 </div>
 
 ## Send request ## {#algo-session-request}
-<div class="algorithm" data-algorithm="session-request">
+<div algorithm>
   This algorithm describes how to <dfn export dfn-for="algorithms">send
   a request</dfn> for a device bound session registration or refresh. It
-  takes as input an |originating request|, |key pair|, |destination|,
-  and optional |session id|, |challenge|, and |authorization|.
+  takes as input a [=request=] (|originating request|), |key pair|, [=URL=] (|destination|),
+  and optional [=strings=] |session id|, |challenge|, and |authorization|.
 
   User agents will perform these steps whenever a bound credential is missing,
   but MAY do this at any time. Sending a request proactively before the bound
@@ -643,6 +653,8 @@ both `example.co.uk` and `www.example.de` is `example`.
      ("Authorization", |authorization|) to |request|'s [=request/header list=].
   1. Set |request|'s [=request/initiator=] to |originating request|'s
      [=request/initiator=].
+  1. Set |request|'s [=request/origin=] to |originating request|'s
+     [=request/origin=].
   1. Let |response| be the result of running <a
      href="https://fetch.spec.whatwg.org/#http-fetch">HTTP fetch</a> for |request|.
   1. If |response| is a [=network error=], or |response|'s
@@ -664,6 +676,20 @@ both `example.co.uk` and `www.example.de` is `example`.
      temporary outage on the refresh endpoint.
   1. If |session id| is non-null, and |response|'s [=response/body=] is
      empty, return.
+  1. Call [[#algo-create-session]] on |response|, |destination|,
+     |session id|, and |key pair|.
+</div>
+
+## Create session ## {#algo-create-session}
+<div algorithm>
+To <dfn export id="create-session">create a session</dfn> due to the |response|
+(a [=response=]) to a registration request to |destination| (a [=URL=]) for
+|session id| (a [=string=]) with a |key pair|, perform the following steps:
+  1. Let |terminate the session| be an algorithm with the following steps:
+    1. If |session id| is null, return.
+    1. Remove the session with domain |destination|'s [=url/host=]'s
+       [=host/registrable domain=] and identifier |session id| from the
+       user agent's [=session store=], if such a session if found.
   1. Parse |response|'s [=response/body=] according to
      [[#format-session-instructions]]. If parsing fails, |terminate the
      session| and return.
@@ -684,6 +710,7 @@ both `example.co.uk` and `www.example.de` is `example`.
        of the key "refresh_url".
     1. |refresh URL| must have scheme HTTPS or be localhost.
     1. |refresh URL|'s [=/origin=] must be [=/same site=] with |destination|'s [=/origin=].
+    1. All of the [=JSON session credentials=] must not have the attribute "Partitioned".
   1. Let |destination domain| be the [=host/registrable domain=] of |destination|'s [=url/host=].
   1. If the value of the key "scope.include_site" in |response| is true,
      perform the following validations. If any fail, |terminate the
@@ -710,7 +737,7 @@ both `example.co.uk` and `www.example.de` is `example`.
        "scope.scope_specification".
     1. [=device bound session/session credentials=] the value of the key
        "credentials".
-    1. [=session key=] set to |key pair|.
+    1. [=session key pair=] set to |key pair|.
     1. [=allowed refresh initiators=] the value of the key
        "allowed_refresh_initiators".
     1. [=expiration timestamp=] set to a future timestamp. The exact choice of
@@ -726,11 +753,13 @@ both `example.co.uk` and `www.example.de` is `example`.
     1. Set the user agent's [=session store=][|destination
        domain|][|session identifier|] to |session|.
     1. [=iteration/Break=].
+</div>
 
-## Create session ## {#algo-create-session}
-<div class="algorithm" data-algorithm="process-registration">
-To <dfn export id="create-session">create a new session</dfn> due to the
-[=response=] (|response|) to a [=request=] (|request|), do the following steps:
+## Process session registration ## {#algo-process-session-registration}
+<div algorithm>
+To <dfn export id="process-session-registration">process a session
+registration</dfn> due to the [=response=] (|response|) to a [=request=]
+(|request|), do the following steps:
   1. Let |header name| be "<code>Secure-Session-Registration</code>".
   1. Let |registration list| be the result of executing <a>get a structured
     field value</a> given |header name| and "list" from |response|’s
@@ -750,19 +779,18 @@ To <dfn export id="create-session">create a new session</dfn> due to the
     1. Let |endpoint| be the result of resolving |path| relative to
        |response|'s URL.
     1. Let |key pair| be the result of running
-       [[#algo-create-session-key]] on |registration entry|,
+       [[#algo-create-session-key-pair]] on |registration entry|,
        |params|, and |endpoint|.
     1. If |key pair| is null, return.
     1. Call [[#algo-session-request]] with |request|, |key pair|, |endpoint|,
        session identifier as null, |challenge|, and |authorization|.
 </div>
 
-## Create session key ## {#algo-create-session-key}
-<div class="algorithm" data-algorithm="create-session-key">
-
-This algorithm describes how to <dfn export id="create-session-key">create a
-session key</dfn>, including key sharing between a Relying Party and Session
-Provider. It takes as inputs the |registration entry| and |params| of a
+## Create session key pair ## {#algo-create-session-key-pair}
+<div algorithm>
+This algorithm describes how to <dfn export id="create-session-key-pair">create
+a session key pair</dfn>, including key sharing between a Relying Party and
+Session Provider. It takes as inputs the |registration entry| and |params| of a
 [:Secure-Session-Registration:] header and the [=URL=] (|registration URL|) of
 the registration endpoint. It returns a key pair for use in the session or null
 if no key is possible.
@@ -793,7 +821,7 @@ if no key is possible.
     1. If |provider session|'s [=device bound session/session scope=]
        [=session scope/origin=] is not [=/same origin=] with |provider
        origin|, return null.
-    1. If |provider session|'s [=session key=] does not match
+    1. If |provider session|'s [=session key pair=] does not match
        |params|["provider_key"], return null.
     1. Let |provider well known URL| be a copy of |provider URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
@@ -824,13 +852,13 @@ if no key is possible.
          key "provider_origin".
       1. The value of the key "provider_origin" is not the
          [=url/origin=] of |provider URL|.
-    1. Return |provider session|'s [=session key=].
+    1. Return |provider session|'s [=session key pair=].
   1. Return a new key pair created for |algorithm list|.
 </div>
  
 
 ## Add debug header ## {#algo-add-debug-header}
-<div class="algorithm" data-algorithm="add-debug-header">
+<div algorithm>
 In order for sites to understand when the user agent chooses not to
 apply a session, user agents should <dfn export
 id="add-debug-header">add the debug header</dfn> to a [=request=]
@@ -849,9 +877,9 @@ id="add-debug-header">add the debug header</dfn> to a [=request=]
 </div>
 
 # DBSC Formats # {#format}
-## \``Secure-Session-Registration`\` HTTP header field ## {#header-secure-session-registration}
+## [:Secure-Session-Registration:] HTTP header field ## {#header-secure-session-registration}
 The <dfn export http-header id="secure-session-registration-header">
-<code>\`Secure-Session-Registration\`</code></dfn> header field can be used in a
+<code>Secure-Session-Registration</code></dfn> header field can be used in a
 [=response=] by the server to start a new [=/device bound session=] on the
 client.
 
@@ -868,7 +896,7 @@ The following <a>sf-parameter</a>s are defined:
 - An <a>sf-parameter</a> whose key is "path", and whose value is an
   <a>sf-string</a>, conveying the path to the registration endpoint. This may be
   relative to the current [=URL=], or it may be a full [=URL=]. Entries without
-  this parameter will be ignored in [[#algo-create-session]].
+  this parameter will be ignored in [[#algo-process-session-registration]].
 - An <a>sf-parameter</a> whose key is "challenge", and whose value is an
   <a>sf-string</a>, conveying the challenge to be used in the session
   registration.
@@ -914,11 +942,11 @@ The following <a>sf-parameter</a>s are defined:
 
 </div>
 
-## \``Secure-Session-Challenge`\` HTTP header field ## {#header-secure-session-challenge}
+## [:Secure-Session-Challenge:] HTTP header field ## {#header-secure-session-challenge}
 The <dfn export http-header id="secure-session-challenge-header">
-<code>\`Secure-Session-Challenge\`</code></dfn> header field can be used in a
+<code>Secure-Session-Challenge</code></dfn> header field can be used in a
 [=response=] by the server to send a challenge to the client that it expects to
-be used in future Secure-Session-Response headers inside the [=DBSC proof=], or to
+be used in future [:Secure-Session-Response:] headers inside the [=DBSC proof=], or to
 request a newly signed [=DBSC proof=] right away if the [=response/status=]
 is 403.
 
@@ -969,13 +997,14 @@ case the session identifier is optional.
   ```
 </div>
 
-## \``Secure-Session-Response`\` HTTP header field ## {#header-secure-session-response}
+## [:Secure-Session-Response:] HTTP header field ## {#header-secure-session-response}
 The <dfn export http-header id="secure-session-response-header">
-<code>\`Secure-Session-Response\`</code></dfn> header field can be used in the
+<code>Secure-Session-Response</code></dfn> header field can be used in the
 [=request=] by the user agent to send a [=DBSC proof=] to the server to prove
-that the client is still in possession of the private key of the session key.
+that the client is still in possession of the private key of the session key
+pair.
 
-<a http-header><code>\`Secure-Session-Response\`</code></a> is a structured
+<a http-header><code>Secure-Session-Response</code></a> is a structured
 header. Its value must be a string. Its ABNF is:
 <pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
 This string MUST only contain the [=DBSC proof=] JWT. Any <a>sf-parameter</a>s SHOULD be
@@ -988,9 +1017,9 @@ ignored.
   ```
 </div>  
 
-## \``Sec-Secure-Session-Id`\` HTTP header field ## {#header-sec-secure-session-id}
+## [:Sec-Secure-Session-Id:] HTTP header field ## {#header-sec-secure-session-id}
 The <dfn export http-header id="sec-secure-session-id-header">
-<code>\`Sec-Secure-Session-Id\`</code></dfn> header field can be used in the
+<code>Sec-Secure-Session-Id</code></dfn> header field can be used in the
 [=request=] by the user agent to request the current session be refreshed,
 with the current session identifier as a string argument.
 
@@ -1007,9 +1036,9 @@ ignored.
   ```
 </div>
 
-## \``Secure-Session-Skipped`\` HTTP header field ## {#header-secure-session-skipped}
+## [:Secure-Session-Skipped:] HTTP header field ## {#header-secure-session-skipped}
 The <dfn export http-header id="secure-session-skipped-header">
-<code>\`Secure-Session-Skipped\`</code></dfn> header field can be used in a
+<code>Secure-Session-Skipped</code></dfn> header field can be used in a
 [=request=] to indicate that the request is intentionally missing bound
 credentials due to user agent policy.
 
@@ -1019,8 +1048,15 @@ is:
 <pre class="abnf">Secure-Session-Skipped = <a>sf-list</a></pre>
 
 Each item in the list MUST be an <a>sf-token</a> representing a
-coarse-grained reason for skipping cookie refresh. The only supported values
-are: "unreachable", "server_error", and "quota_exceeded".
+coarse-grained reason for skipping cookie refresh. The only supported
+values are: "unreachable", "server_error", and "quota_exceeded". These
+tokens should be used in the following situations:
+- "server_error" indicates that the session refresh failed due to the
+  response from the server (e.g. a 500 status code).
+- "unreachable" indicates that the session refresh failed due to an
+  inability to reach the server.
+- "quota_exceeded" covers all places where the user agent chooses not to
+  refresh (e.g. excessive recent TPM operations).
 
 One <a>sf-parameter</a> is defined:
 - An <a>sf-parameter</a> whose key is "session_identifier", and whose value is an
@@ -1258,12 +1294,18 @@ After computing cookies in step 8.21, run
 [[#algo-identify-session-needing-refresh]]. If the resulting
 |session| is non-null:
   1. Run [[#algo-session-request]] with the returned |session|'s
-    [=session key=], [=refresh URL=], [=device bound session/session
+    [=session key pair=], [=refresh URL=], [=device bound session/session
     identifier=], [=cached challenge=], and an empty authorization.
   2. Restart <a
     href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
     fetch</a> with the original inputs.
-    
+
+This specification also requires two new calls to process the new
+headers. After step 14 in the current <a
+href="https://fetch.spec.whatwg.org/#http-network-fetch">HTTP-network 
+fetch</a>, execute the following step:
+  15. Run [[#algo-process-session-registration]] and [[#algo-process-challenge]].
+
 ## Changes to the Clear Site Data specification ## {#changes-to-clear-site-data}
 
 This specification requires that the Clear Site Data specification
