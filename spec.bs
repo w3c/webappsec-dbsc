@@ -1315,9 +1315,10 @@ This list is initially empty.
 After computing cookies in step 8.21, run
 [[#algo-identify-session-needing-refresh]]. If the resulting
 |session| is non-null:
-  1. Run [[#algo-session-request]] with the returned |session|'s
-    [=session key pair=], [=refresh URL=], [=device bound session/session
-    identifier=], [=cached challenge=], and an empty authorization.
+  1. Run [[#algo-session-request]] with <var ignore=''>httpRequest</var>, the
+    returned |session|'s [=session key pair=], [=refresh URL=], [=device bound
+    session/session identifier=], [=cached challenge=], and an empty
+    authorization.
   2. Restart <a
     href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
     fetch</a> with the original inputs.
