@@ -605,7 +605,7 @@ both `example.co.uk` and `www.example.de` is `example`.
        session/session credentials=]:
        1. If a cookie with |credential|'s [=session credential/attributes=] could
           not be set by |response| (see <a
-          href=https://httpwg.org/specs/rfc6265.html#storage-model>section 5.3</a> of
+          href=https://httpwg.org/specs/rfc6265.html#storage-model>section 5.4</a> of
           [[!COOKIES]]), [=iteration/continue=].
        1. Store |challenge| as |session|'s [=cached challenge=] to be used next
          time a [=DBSC proof=] is to be sent from this [=device bound session=].
@@ -696,19 +696,19 @@ To <dfn export id="create-session">create a session</dfn> due to the |response|
   1. If the |response| JSON contains the key "continue" and its value is false,
      |terminate the session| and return.
   1. Let |session identifier| be the value of key "session_identifier".
+  1. Let |origin| be an [=/origin=] constructed from the value of the key
+     "scope.origin", if present, or the origin of |destination| if
+     not.
+  1. If the key "refresh_url" does not have a value, let |refresh URL| be
+     |destination|.
+  1. Otherwise let |refresh URL| be the result of resolving |destination| with
+     the value of the key "refresh_url".
   1. Perform the following validations. If any fail,
      |terminate the session| and return.
     1. |session identifier| must be non-empty.
     1. If |session id| is non-null, it must match |session identifier|.
-    1. Let |origin| be an [=/origin=] constructed from the value of the key
-       "scope.origin", if present, or the origin of |destination| if
-       not.
     1. |origin| must be a valid non-opaque origin.
     1. |origin| must be [=/same site=] with |destination|'s [=/origin=].
-    1. If the key "refresh_url" does not have a value, let |refresh URL| be
-       |destination|.
-    1. Otherwise let |refresh URL| be the result of resolving |destination| with
-       the value of the key "refresh_url".
     1. |refresh URL| must have scheme HTTPS or be localhost.
     1. |refresh URL|'s [=/origin=] must be [=/same site=] with |destination|'s [=/origin=].
     1. All of the [=JSON session credentials=] must not have the attribute "Partitioned".
@@ -716,7 +716,7 @@ To <dfn export id="create-session">create a session</dfn> due to the |response|
   1. If the value of the key "scope.include_site" in |response| is true,
      perform the following validations. If any fail, |terminate the
      session| and return.
-    1. |origin|'s [=origin/domain=] must be equal to |destination domain|.
+    1. |origin|'s [=origin/host=] must be equal to |destination domain|.
     1. If |destination domain| is equal to the [=url/host=] of
         |destination|, skip all remaining validations within this step.
     1. Otherwise, let |well known URL| be a copy of |destination|, with the
@@ -729,26 +729,44 @@ To <dfn export id="create-session">create a session</dfn> due to the |response|
     1. |well known response|'s [=response/body=] must include the key "registering_origins".
     1. The value of the key "registering_origins" must include the origin of
        |destination|.
-  1. Let |session| be a new session with:
-    1. [=device bound session/session identifier=] set to |session identifier|.
-    1. [=refresh URL=] set to |refresh URL|.
-    1. [=device bound session/session scope=] a new scope with [=session
-       scope/origin=] |origin|, [=include site=] the value of the key
-       "scope.include_site", and [=scope specifications=] the value of the key
-       "scope.scope_specification".
-    1. [=device bound session/session credentials=] the value of the key
-       "credentials".
-    1. [=session key pair=] set to |key pair|.
-    1. [=allowed refresh initiators=] the value of the key
-       "allowed_refresh_initiators".
-    1. [=expiration timestamp=] set to a future timestamp. The exact choice of
-       expiration timestamp is left up to the user agent. It is recommended to
-       align with the maximum cookie lifetime.
+  1. Let |session| be a new session.
+  1. Set |session|'s [=device bound session/session identifier=] to |session
+     identifier|.
+  1. Set |session|'s [=refresh URL=] to |refresh URL|.
+  1. Set |session|'s [=device bound session/session scope=] to a new scope with
+     [=session scope/origin=] |origin|, and [=include site=] the value of the
+     key "scope.include_site".
+  1. [=list/For each=] |JSON scope rule| in the value of the key
+     "scope.scope_specification":
+     1. Let |scope rule| be a new [=scope specification=].
+     1. Set |scope rule|'s [=scope specification/type=] to the value of the key
+        "type" in |JSON scope rule|.
+     1. Set |scope rule|'s [=scope specification/host=] to the value of the key
+        "domain" in |JSON scope rule|.
+     1. Set |scope rule|'s [=scope specification/path=] to the value of the key
+        "path" in |JSON scope rule|.
+     1. Append |scope rule| to |session|'s [=device bound session/session
+        scope=]'s [=scope specifications=].
+  1. [=list/For each=] |JSON session credential| in the value of the key
+     "credentials":
+     1. Let |session credential| be a new [=session credential=].
+     1. Set |session credential|'s [=session credential/name=] be the value of
+        the key "name" in |JSON session credential|.
+     1. Set |session credential|'s [=session credential/attributes=] be the value of
+        the key "attributes" in |JSON session credential|.
+     1. Append |session credential| to |session|'s [=device bound
+        session/session credentials=].
+  1. Set |session|'s [=session key pair=] to |key pair|.
+  1. Set |session|'s [=allowed refresh initiators=] to the value of the key
+     "allowed_refresh_initiators".
+  1. Set |session|'s [=expiration timestamp=] to a future timestamp. The
+     exact choice of expiration timestamp is left up to the user agent. It is
+     recommended to align with the maximum cookie lifetime.
   1. [=list/For each=] |credential| in |session|'s [=device bound
      session/session credentials=]:
     1. If a cookie with |credential|'s [=session credential/attributes=] could
        not be set by |response| (see <a
-       href=https://httpwg.org/specs/rfc6265.html#cookie>section 5.3</a> of
+       href=https://httpwg.org/specs/rfc6265.html#cookie>section 5.4</a> of
        [[!COOKIES]]), [=iteration/continue=].
     1. Call |terminate the session| to remove the existing session.
     1. Set the user agent's [=session store=][|destination
