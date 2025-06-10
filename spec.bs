@@ -533,7 +533,7 @@ both `example.co.uk` and `www.example.de` is `example`.
      return null.
   1. Let |domain sessions| be the user agent's [=session store=][|domain|] as a
      [=/sessions by id map=].
-  1. [=list/For each=] |session| of |domain sessions|:
+  1. [=list/For each=] |session| in |domain sessions|:
     1. If |session|'s [=expiration timestamp=] is before the present, remove
       |session| from |domain sessions| and [=iteration/continue=].
     1. Let |id| be |session|'s [=device bound session/session identifier=].
@@ -591,7 +591,7 @@ both `example.co.uk` and `www.example.de` is `example`.
     field value</a> given |header name| and "list" from |response|’s
     [=response/header list=].
   1. If |challenge list| is null, return.
-  1. [=list/For each=] (|challenge|, |params|) of |challenge list|:
+  1. [=list/For each=] (|challenge|, |params|) in |challenge list|:
     1. If the type of |challenge| is not an <a>sf-string</a>,
       [=iteration/continue=].
     1. Let |session id| be null.
@@ -784,7 +784,7 @@ registration</dfn> due to the [=response=] (|response|) to a [=request=]
     field value</a> given |header name| and "list" from |response|’s
     [=response/header list=].
   1. If |registration list| is null, return.
-  1. [=list/For each=] |registration entry|, |params| → |registration list|:
+  1. [=list/For each=] |registration entry|, |params| in |registration list|:
     1. If |registration entry| is not an <a>sf-inner-list</a>,
       [=iteration/continue=].
     1. If |params|["path"] does not exist, or is not of type <a>sf-string</a>,
@@ -815,7 +815,7 @@ the registration endpoint. It returns a key pair for use in the session or null
 if no key is possible.
 
   1. Let |algorithm list| be an empty [=list=].
-  1. [=list/For each=] |algorithm| → |registration entry|:
+  1. [=list/For each=] |algorithm| in |registration entry|:
     1. If |algorithm| is not an <a>sf-token</a>, [=iteration/continue=].
     1. If |algorithm| represents a crypto algorithm supported in
        [:Secure-Session-Registration:] and is supported on this client,
