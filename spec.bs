@@ -965,9 +965,9 @@ The following <a>sf-parameter</a>s are defined:
 The <dfn export http-header id="secure-session-challenge-header">
 <code>Secure-Session-Challenge</code></dfn> header field can be used in a
 [=response=] by the server to send a challenge to the client that it expects to
-be used in future [:Secure-Session-Response:] headers inside the [=DBSC proof=], or to
-request a newly signed [=DBSC proof=] right away if the [=response/status=]
-is 403.
+be used in future [:Secure-Session-Response:] headers inside the [=DBSC proof=],
+or to request a newly signed [=DBSC proof=] immediately during a cookie refresh
+if the [=response/status=] is 403.
 
 [:Secure-Session-Challenge:] is a structured header. Its value must be a string.
 Its ABNF is: <pre class="abnf">SecSessionChallenge = <a>sf-string</a></pre>
