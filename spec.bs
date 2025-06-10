@@ -1185,7 +1185,7 @@ At the root of the JSON object, the following keys can exist:
   : include_site
   :: a [=boolean=] indicating if the session is origin-scoped (false) or
     site-scoped (true). This key is MANDATORY. Note that this takes precedence
-    over any [=JSON session scope rules=] in [=scope specification=] (see
+    over any [=JSON session scope rules=] in the "scope_specification" (see
     [[#algo-url-in-scope]]).
     
   : scope_specification
@@ -1194,8 +1194,8 @@ At the root of the JSON object, the following keys can exist:
     present, an empty list will be used.
 
 ## JSON Session Scope Rule Format ## {#format-session-scope-rule}
-The server sends <dfn>JSON session scope rules</dfn> in the [=JSON session scope=]
-during registration and optionally during session refresh.
+The server sends a list of <dfn>JSON session scope rules</dfn> in the [=JSON
+session scope=] during registration and optionally during session refresh.
 
 At the root of each [=JSON session scope rule=], the following keys can exist:
   : type
@@ -1213,8 +1213,9 @@ At the root of each [=JSON session scope rule=], the following keys can exist:
     [[#algo-url-in-scope]] for the detailed semantics.
 
 ## JSON Session Credentials Format ## {#format-session-credentials}
-The server sends <dfn>JSON session credentials</dfn> in the [=JSON session
-instructions=] during registration and optionally during session refresh.
+The server sends a list of <dfn>JSON session credentials</dfn> in the [=JSON
+session instructions=] during registration and optionally during session
+refresh.
 
 At the root of the JSON object, the following keys can exist:
   : type
