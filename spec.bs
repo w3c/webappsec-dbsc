@@ -184,14 +184,14 @@ in the target use case we expect the SP and IdP to be the same party.
 
 In order to protect the RP's sessions, we need to link the RP and SP session in
 some way. The simplest way to do this is for the SP and RP to use the same
-session key. Since we assume the SP's session was established before the malware
-compromised the device, we trust that the private key is stored securely. But
-sharing keys across sites has complex privacy properties. In order to mitigate
-the privacy risks of sharing a high-entropy identifier, we require that the RP
-already know the public key and session identifier for the SP's session. The RP
-will include the SP URL, session identifier, and public key in the
-[:`Secure-Session-Registration`:] header. If the key is correct, the user agent
-will create a session on the RP with the same key as the SP.
+session key pair. Since we assume the SP's session was established before the
+malware compromised the device, we trust that the private key is stored
+securely. But sharing keys across sites has complex privacy properties. In order
+to mitigate the privacy risks of sharing a high-entropy identifier, we require
+that the RP already know the public key and session identifier for the SP's
+session. The RP will include the SP URL, session identifier, and public key in
+the [:`Secure-Session-Registration`:] header. If the key is correct, the user
+agent will create a session on the RP with the same key as the SP.
 
 There is also a potential risk of malicious RPs and SPs collaborating to try to
 identify users in cases where the RP and SP can't already share information
@@ -767,18 +767,18 @@ registration</dfn> due to the [=response=] (|response|) to a [=request=]
     1. Let |endpoint| be the result of resolving |path| relative to
        |response|'s URL.
     1. Let |key pair| be the result of running
-       [[#algo-create-session-key]] on |registration entry|,
+       [[#algo-create-session-key-pair]] on |registration entry|,
        |params|, and |endpoint|.
     1. If |key pair| is null, return.
     1. Call [[#algo-session-request]] with |request|, |key pair|, |endpoint|,
        session identifier as null, |challenge|, and |authorization|.
 </div>
 
-## Create session key ## {#algo-create-session-key}
+## Create session key pair ## {#algo-create-session-key-pair}
 <div algorithm>
-This algorithm describes how to <dfn export id="create-session-key">create a
-session key</dfn>, including key sharing between a Relying Party and Session
-Provider. It takes as inputs the |registration entry| and |params| of a
+This algorithm describes how to <dfn export id="create-session-key-pair">create
+a session key pair</dfn>, including key sharing between a Relying Party and
+Session Provider. It takes as inputs the |registration entry| and |params| of a
 [:`Secure-Session-Registration`:] header and the [=URL=] (|registration URL|) of
 the registration endpoint. It returns a key pair for use in the session or null
 if no key is possible.
@@ -989,7 +989,8 @@ case the session identifier is optional.
 The <dfn export http-header id="secure-session-response-header">
 <code>\`Secure-Session-Response\`</code></dfn> header field can be used in the
 [=request=] by the user agent to send a [=DBSC proof=] to the server to prove
-that the client is still in possession of the private key of the session key.
+that the client is still in possession of the private key of the session key
+pair.
 
 <a http-header><code>\`Secure-Session-Response\`</code></a> is a structured
 header. Its value must be a string. Its ABNF is:
