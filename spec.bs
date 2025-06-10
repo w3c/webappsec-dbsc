@@ -700,14 +700,15 @@ To <dfn export id="create-session">create a session</dfn> due to the |response|
      |terminate the session| and return.
     1. |session identifier| must be non-empty.
     1. If |session id| is non-null, it must match |session identifier|.
-    1. The value of the key "refresh_url" must be non-empty.
     1. Let |origin| be an [=/origin=] constructed from the value of the key
        "scope.origin", if present, or the origin of |destination| if
        not.
     1. |origin| must be a valid non-opaque origin.
     1. |origin| must be [=/same site=] with |destination|'s [=/origin=].
-    1. Let |refresh URL| be the result of resolving |destination| with the value
-       of the key "refresh_url".
+    1. If the key "refresh_url" does not have a value, let |refresh URL| be
+       |destination|.
+    1. Otherwise let |refresh URL| be the result of resolving |destination| with
+       the value of the key "refresh_url".
     1. |refresh URL| must have scheme HTTPS or be localhost.
     1. |refresh URL|'s [=/origin=] must be [=/same site=] with |destination|'s [=/origin=].
     1. All of the [=JSON session credentials=] must not have the attribute "Partitioned".
