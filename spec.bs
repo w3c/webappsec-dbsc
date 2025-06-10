@@ -649,6 +649,9 @@ both `example.co.uk` and `www.example.de` is `example`.
   1. If |signed challenge| is non-null, [=header list/append=] the header
      ("Secure-Session-Response", |signed challenge|) to |request|'s
      [=request/header list=].
+  1. If |session id| is non-null, [=header list/append=] the header
+     ("Sec-Secure-Session-Id", |session id|) to |request|'s
+     [=request/header list=].
   1. If |authorization| is non-null, [=header list/append=] the header
      ("Authorization", |authorization|) to |request|'s [=request/header list=].
   1. Set |request|'s [=request/initiator=] to |originating request|'s
