@@ -1098,16 +1098,11 @@ registration and optionally during session refresh. If the response
 contains session instructions, it MUST be in JSON format.
 
 At the root of the JSON object, the following keys can exist:
-  : session identifier
+  : session_identifier
   :: a [=string=] representing a [=device bound session/session identifier=].
-    If this [=JSON session instructions=] is sent during a refresh request, this MUST be
-    the [=device bound session/session identifier=] for the current session. If
-    not, these instructions SHOULD be ignored.
-    If this [=JSON session instructions=] is sent during a registration, either it MUST
-    be a unique identifier for a session under the corresponding [=host/registrable domain=],
-    or the instructions will overwrite the current [=device bound session=] with this
-    identifier for the [=host/registrable domain=].
-    This key MUST be present.
+    During registration, this is the identifier for the newly created session.
+    During refresh, this MUST be the identifier for the current session. See
+    [[#algo-create-session]]. This key MUST be present.
 
   : refresh_url
   :: a [=string=] representing the [=URL=] used for future refresh requests.
@@ -1121,7 +1116,7 @@ At the root of the JSON object, the following keys can exist:
     This key is OPTIONAL; if not present, the default value will be true.
     
   : scope
-  :: a [=JSON session scope=] describing the request destinations covered by
+  :: a [=JSON session scope=] describing the resources covered by
     the session. This field MUST be present.
 
   : credentials
@@ -1167,7 +1162,11 @@ At the root of the JSON object, the following keys can exist:
       // Attributes Max-Age and Expires are ignored
     }],
     
-    "allowed_refresh_initiators": [ "example.com", "*.example.com" ]
+    "allowed_refresh_initiators": [
+      "example.com", 
+      "*.example.com",
+      "site-embedding-example.com"
+    ]
   }
   ```
 </div>
