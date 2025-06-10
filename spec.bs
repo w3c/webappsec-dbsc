@@ -368,7 +368,7 @@ A <dfn>device bound session</dfn> is a [=struct=] with the following
   :: a [=string=] that is representing the [=URL=] to be used to refresh the
     session
   : <dfn>cached challenge</dfn>
-  :: a [=string=] that is to be used as the next challenge for this session
+  :: a [=string=] or null that is to be used as the next challenge for this session
   : <dfn>session scope</dfn>
   :: a [=/session scope=] defining which [=URLs=] are in scope for this session
   : <dfn>session credentials</dfn>
