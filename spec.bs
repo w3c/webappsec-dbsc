@@ -1331,11 +1331,12 @@ fetch</a>, execute the following step:
 
 ## Changes to the Clear Site Data specification ## {#changes-to-clear-site-data}
 
-This specification requires that the Clear Site Data specification
-section 4.2.5 "Clear DOM-accessible storage for origin" clear all
-device bound sessions whose scope matches origin. It also requires an
-update to 4.2.4 to clear device bound sessions for the site matching the
-registered domain.
+This specification requires that the Clear Site Data specification section 4.2.5
+<a href="https://www.w3.org/TR/clear-site-data/#clear-dom">Clear DOM-accessible
+storage for origin</a> clear all device bound sessions whose scope matches
+origin. It also requires an update to <a
+href="https://www.w3.org/TR/clear-site-data/#clear-cookies">section 4.2.4</a> to
+clear device bound sessions for the site matching the registered domain.
 
 # IANA Considerations # {#iana-considerations}
 
