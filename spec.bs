@@ -1106,9 +1106,9 @@ At the root of the JSON object, the following keys can exist:
 
   : refresh_url
   :: a [=string=] representing the [=URL=] used for future refresh requests.
-    This can be a full [=URL=], or it can be relative to the current [=request=].
-    This key is OPTIONAL; if not present, the registration URL will be used for
-    future refresh requests.
+    This can be a full [=URL=], or it can be relative to the [=request=] serving
+    these instructions. This key is OPTIONAL; if not present, the registration URL
+    will be used for future refresh requests.
 
   : continue
   :: a [=boolean=] indicating if the session should continue to apply.
