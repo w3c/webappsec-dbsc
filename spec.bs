@@ -687,7 +687,8 @@ both `example.co.uk` and `www.example.de` is `example`.
 <div algorithm>
 To <dfn export id="create-session">create a session</dfn> due to the |response|
 (a [=response=]) to a registration request to |destination| (a [=URL=]) for
-|session id| (a [=string=]) with a |key pair|, perform the following steps:
+|session id| (a [=string=] or null) with a |key pair|, perform the following
+steps:
   1. Let |terminate the session| be an algorithm with the following steps:
     1. If |session id| is null, return.
     1. Remove the session with domain |destination|'s [=url/host=]'s
@@ -996,10 +997,6 @@ case the session identifier is optional.
   Some examples of [:Secure-Session-Challenge:] from
   https://example.com/login.html:
 
-  ```html
-  HTTP/1.1 403 Forbidden
-  Secure-Session-Challenge: "new challenge"
-  ```
   ```html
   HTTP/1.1 403 Forbidden
   Secure-Session-Challenge: "new challenge";id="my session"
