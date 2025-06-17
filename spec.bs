@@ -1194,8 +1194,9 @@ At the root of the JSON object, the following keys can exist:
     present, an empty list will be used.
 
 ## JSON Session Scope Rule Format ## {#format-session-scope-rule}
-The server sends a list of <dfn>JSON session scope rules</dfn> in the [=JSON
-session scope=] during registration and optionally during session refresh.
+The server sends a list of <dfn>JSON session scope rule</dfn> objects in the
+[=JSON session scope=] during registration and optionally during session
+refresh.
 
 At the root of each [=JSON session scope rule=], the following keys can exist:
   : type
@@ -1213,8 +1214,8 @@ At the root of each [=JSON session scope rule=], the following keys can exist:
     [[#algo-url-in-scope]] for the detailed semantics.
 
 ## JSON Session Credentials Format ## {#format-session-credentials}
-The server sends a list of <dfn>JSON session credentials</dfn> in the [=JSON
-session instructions=] during registration and optionally during session
+The server sends a list of <dfn>JSON session credential</dfn> objects in the
+[=JSON session instructions=] during registration and optionally during session
 refresh.
 
 At the root of the JSON object, the following keys can exist:
