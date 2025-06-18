@@ -791,17 +791,18 @@ registration</dfn> due to the [=response=] (|response|) to a [=request=]
     field value</a> given |header name| and "list" from |response|’s
     [=response/header list=].
   1. If |registration list| is null, return.
-  1. [=list/For each=] |registration entry|, |params| in |registration list|:
+  1. [=list/For each=] (|registration entry|, |params|) in |registration list|:
     1. If |registration entry| is not an <a>sf-inner-list</a>,
       [=iteration/continue=].
     1. If |params|["path"] does not exist, or is not of type <a>sf-string</a>,
       [=iteration/continue=].
     1. Let |path| be |params|["path"].
     1. Let |challenge| be null, and let |authorization| be null.
-    1. If |params|["challenge"] exists and is of type <a>sf-string</a>,
-      set |challenge| to |params|["challenge"].
-    1. If |params|["authorization"] exists and is a string, set |authorization|
-      to |params|["authorization"].
+    1. If either of |params|["challenge"] or |params|["authorization"] exist but
+       are not of type <a>sf-string</a>, [=iteration/continue=].
+    1. If |params|["challenge"] exists set |challenge| to |params|["challenge"].
+    1. If |params|["authorization"] exists set |authorization| to
+       |params|["authorization"].
     1. Let |endpoint| be the result of resolving |path| relative to
        |response|'s URL.
     1. Let |key pair| be the result of running
