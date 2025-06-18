@@ -1260,8 +1260,8 @@ In addition, the following claim MUST be present if present in the
   : authorization
   :: a [=string=]. This is a direct copy of the string from the
     [:Secure-Session-Registration:] header field if set there. Note that this
-    string is OPTIONAL to include in the header, but if it is present, client
-    MUST add it to the claim in the [=DBSC proof=].
+    string is OPTIONAL to include in the header, but if it is present, the
+	client MUST add it to the claim in the [=DBSC proof=].
 
 If the DBSC proof is for a refresh request, the following claim MUST be
 present:
