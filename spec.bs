@@ -694,19 +694,21 @@ steps:
     1. Remove the session with domain |destination|'s [=url/host=]'s
        [=host/registrable domain=] and identifier |session id| from the
        user agent's [=session store=], if such a session if found.
-  1. Parse |response|'s [=response/body=] according to
-     [[#format-session-instructions]]. If parsing fails, |terminate the
+  1. Let |JSON session| be the result of parsing |response|'s [=response/body=]
+     as a [=JSON session instructions=]. If parsing fails, |terminate the
      session| and return.
-  1. If the |response| JSON contains the key "continue" and its value is false,
+  1. If |JSON session|'s [=JSON session instructions/continue=] is false,
      |terminate the session| and return.
-  1. Let |session identifier| be the value of key "session_identifier".
-  1. Let |origin| be an [=/origin=] constructed from the value of the key
-     "scope.origin", if present, or the origin of |destination| if
-     not.
-  1. If the key "refresh_url" does not have a value, let |refresh URL| be
-     |destination|.
+  1. Let |session identifier| be |JSON session|'s [=JSON session
+     instructions/session_identifier=].
+  1. Let |JSON scope| be |JSON session|'s [=JSON session instructions/scope=].
+  1. Let |origin| be an [=/origin=] constructed from |JSON scope|'s [=JSON
+     session scope/origin=], if present, or the origin of |destination| if not.
+  1. If |JSON session|'s [=JSON session instructions/refresh_url=] does
+     not have a value, let |refresh URL| be |destination|.
   1. Otherwise let |refresh URL| be the result of resolving |destination| with
-     the value of the key "refresh_url".
+     the value of |JSON session|'s [=JSON session
+     instructions/refresh_url=].
   1. Perform the following validations. If any fail,
      |terminate the session| and return.
     1. |session identifier| must be non-empty.
@@ -717,9 +719,8 @@ steps:
     1. |refresh URL|'s [=/origin=] must be [=/same site=] with |destination|'s [=/origin=].
     1. All of the [=JSON session credentials=] must not have the attribute "Partitioned".
   1. Let |destination domain| be the [=host/registrable domain=] of |destination|'s [=url/host=].
-  1. If the value of the key "scope.include_site" in |response| is true,
-     perform the following validations. If any fail, |terminate the
-     session| and return.
+  1. If the |JSON scope|'s [=JSON session scope/include_site=] is true, perform
+     the following validations. If any fail, |terminate the session| and return.
     1. |origin|'s [=origin/host=] must be equal to |destination domain|.
     1. If |destination domain| is equal to the [=url/host=] of
         |destination|, skip all remaining validations within this step.
@@ -738,33 +739,33 @@ steps:
      identifier|.
   1. Set |session|'s [=refresh URL=] to |refresh URL|.
   1. Set |session|'s [=device bound session/session scope=] to a new scope with
-     [=session scope/origin=] |origin|, and [=include site=] the value of the
-     key "scope.include_site".
-  1. [=list/For each=] |JSON scope rule| in the value of the key
-     "scope.scope_specification":
+     [=session scope/origin=] |origin|, and [=include site=] the value of |JSON
+     scope|'s [=JSON session scope/include_site=].
+  1. [=list/For each=] |JSON scope rule| in |JSON scope|'s [=JSON session
+     scope/scope_specification=]:
      1. Let |scope rule| be a new [=scope specification=].
-     1. Set |scope rule|'s [=scope specification/type=] to the value of the key
-        "type" in |JSON scope rule|.
-     1. Set |scope rule|'s [=scope specification/host=] to the value of the key
-        "domain" in |JSON scope rule|.
-     1. Set |scope rule|'s [=scope specification/path=] to the value of the key
-        "path" in |JSON scope rule|.
+     1. Set |scope rule|'s [=scope specification/type=] to |JSON scope rule|'s
+        [=JSON session scope rule/type=].
+     1. Set |scope rule|'s [=scope specification/host=] to |JSON scope rule|'s
+        [=JSON session scope rule/domain=].
+     1. Set |scope rule|'s [=scope specification/path=] to |JSON scope rule|'s
+        [=JSON session scope rule/path=].
      1. Append |scope rule| to |session|'s [=device bound session/session
         scope=]'s [=scope specifications=].
-  1. [=list/For each=] |JSON session credential| in the value of the key
-     "credentials":
+  1. [=list/For each=] |JSON session credential| in |JSON session|'s [=JSON
+     session instructions/credentials=]:
      1. Let |session credential| be a new [=session credential=].
-     1. If the value of the key "type" is not "cookie", |terminate the session|
-        and return.
-     1. Set |session credential|'s [=session credential/name=] be the value of
-        the key "name" in |JSON session credential|.
-     1. Set |session credential|'s [=session credential/attributes=] be the value of
-        the key "attributes" in |JSON session credential|.
+     1. If |JSON session credential|'s [=JSON session credential/type=] is not
+        "cookie", |terminate the session| and return.
+     1. Set |session credential|'s [=session credential/name=] be |JSON session
+        credential|'s [=JSON session credential/name=].
+     1. Set |session credential|'s [=session credential/attributes=] be |JSON
+        session credential|'s [=JSON session credential/attributes=].
      1. Append |session credential| to |session|'s [=device bound
         session/session credentials=].
   1. Set |session|'s [=session key pair=] to |key pair|.
-  1. Set |session|'s [=allowed refresh initiators=] to the value of the key
-     "allowed_refresh_initiators".
+  1. Set |session|'s [=allowed refresh initiators=] to |JSON session|'s [=JSON
+     session instructions/allowed_refresh_initiators=].
   1. Set |session|'s [=expiration timestamp=] to a future timestamp. The
      exact choice of expiration timestamp is left up to the user agent. It is
      recommended to align with the maximum cookie lifetime.
@@ -1097,34 +1098,36 @@ registration and optionally during session refresh. If the response
 contains session instructions, it MUST be in JSON format.
 
 At the root of the JSON object, the following keys can exist:
-  : session_identifier
+<dl dfn-for="JSON session instructions">
+  : <dfn>session_identifier</dfn>
   :: a [=string=] representing a [=device bound session/session identifier=].
     During registration, this is the identifier for the newly created session.
     During refresh, this MUST be the identifier for the current session. See
     [[#algo-create-session]]. This key MUST be present.
 
-  : refresh_url
+  : <dfn>refresh_url</dfn>
   :: a [=string=] representing the [=URL=] used for future refresh requests.
     This can be a full [=URL=], or it can be relative to the [=request=] serving
     these instructions. This key is OPTIONAL; if not present, the [=request=]
     [=request/url=] will be used for future refresh requests.
 
-  : continue
+  : <dfn>continue</dfn>
   :: a [=boolean=] indicating if the session should continue to apply.
     Registration and refresh endpoints can set this to false to terminate a session.
     This key is OPTIONAL; if not present, the default value will be true.
     
-  : scope
+  : <dfn>scope</dfn>
   :: a [=JSON session scope=] describing the resources covered by
     the session. This key MUST be present.
 
-  : credentials
+  : <dfn>credentials</dfn>
   :: a [=list=] of [=JSON session credentials=] describing the cookies protected by
     this session. This key MUST be present.
 
-  : allowed_refresh_initiators
+  : <dfn>allowed_refresh_initiators</dfn>
   :: a [=list=] of [=strings=] describing which hosts are allowed to initiate
     DBSC refreshes. See [[#algo-request-allows-refresh]] for details.
+</dl>
 
 <div class="example" id="secure-session-instruction-example">
   ```json
@@ -1175,22 +1178,24 @@ The server sends a <dfn>JSON session scope</dfn> in the [=JSON session
 instructions=] during registration and optionally during session refresh.
 
 At the root of the JSON object, the following keys can exist:
-  : origin
+<dl dfn-for="JSON session scope">
+  : <dfn>origin</dfn>
   :: a [=string=] indicating the origin or site that the session applies to.
     This key is OPTIONAL; if not present, the origin of the URL serving the
     instructions will be used. This is the registration URL during registration
     and the refresh URL during refresh.
     
-  : include_site
+  : <dfn>include_site</dfn>
   :: a [=boolean=] indicating if the session is origin-scoped (false) or
     site-scoped (true). This key MUST be present. Note that this takes precedence
     over any [=JSON session scope rules=] in the "scope_specification" (see
     [[#algo-url-in-scope]]).
     
-  : scope_specification
+  : <dfn>scope_specification</dfn>
   :: a [=list=] of [=JSON session scope rules=] describing modifications to the
     default scope (the entire origin or site). This key is OPTIONAL; if not
     present, an empty list will be used.
+</dl>
 
 ## JSON Session Scope Rule Format ## {#format-session-scope-rule}
 The server sends a list of <dfn>JSON session scope rule</dfn> objects in the
@@ -1198,19 +1203,21 @@ The server sends a list of <dfn>JSON session scope rule</dfn> objects in the
 refresh.
 
 At the root of each [=JSON session scope rule=], the following keys can exist:
-  : type
+<dl dfn-for="JSON session scope rule">
+  : <dfn>type</dfn>
   :: a [=string=] indicating whether the rule includes or excludes destinations.
     This key MUST be present, and the value MUST be "include" or "exclude".
     
-  : domain
+  : <dfn>domain</dfn>
   :: a [=string=] indicating the domains that should match the rule. This can
     include wildcards (see [[#algo-url-in-scope]]). This key is OPTIONAL; if
     not present, it will be '*', matching all domains.
     
-  : path
+  : <dfn>path</dfn>
   :: a [=string=] indicating the path-prefixes that should match the rule. This
     key is OPTIONAL; if not present, it will be '/', matching all paths. See
     [[#algo-url-in-scope]] for the detailed semantics.
+</dl>
 
 ## JSON Session Credentials Format ## {#format-session-credentials}
 The server sends a list of <dfn>JSON session credential</dfn> objects in the
@@ -1218,17 +1225,19 @@ The server sends a list of <dfn>JSON session credential</dfn> objects in the
 refresh.
 
 At the root of the JSON object, the following keys can exist:
-  : type
+<dl dfn-for="JSON session credential">
+  : <dfn>type</dfn>
   :: a [=string=] indicating the kind of credential protected by this session.
     This key MUST be present, and the value MUST be "cookie".
     
-  : name
+  : <dfn>name</dfn>
   :: a [=string=] indicating the name of the bound cookie.
     
-  : attributes
+  : <dfn>attributes</dfn>
   :: a [=string=] containing the expected attributes of the protected cookie.
     See [[#algo-identify-if-missing-session-credential]] for details on how this
     is used. 
+</dl>
 
 ## DBSC Proof JWT Syntax ## {#format-jwt}
 A <dfn>DBSC proof</dfn> proof is a JWT that is signed (using JSON Web Signature
