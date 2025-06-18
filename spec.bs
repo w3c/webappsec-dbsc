@@ -754,6 +754,8 @@ steps:
   1. [=list/For each=] |JSON session credential| in the value of the key
      "credentials":
      1. Let |session credential| be a new [=session credential=].
+     1. If the value of the key "type" is not "cookie", |terminate the session|
+        and return.
      1. Set |session credential|'s [=session credential/name=] be the value of
         the key "name" in |JSON session credential|.
      1. Set |session credential|'s [=session credential/attributes=] be the value of
