@@ -158,7 +158,7 @@ whether or not a user is authenticated by measuring how long the request takes.
 This is because the refresh is quite slow, partially due to the latency of TPM
 operations.
 
-This is mitigated by the `allowed_refresh_initiators` field in session
+This is mitigated by the `allowed_refresh_initiators` key in session
 configuration, which can be used to strictly limit the sites that can trigger
 DBSC refreshes. This cannot be replaced by existing solutions
 (e.g. X-Frame-Options) because the existing solutions only apply after the
@@ -1116,11 +1116,11 @@ At the root of the JSON object, the following keys can exist:
     
   : scope
   :: a [=JSON session scope=] describing the resources covered by
-    the session. This field MUST be present.
+    the session. This key MUST be present.
 
   : credentials
   :: a [=list=] of [=JSON session credentials=] describing the cookies protected by
-    this session. This field MUST be present.
+    this session. This key MUST be present.
 
   : allowed_refresh_initiators
   :: a [=list=] of [=strings=] describing which hosts are allowed to initiate
