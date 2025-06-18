@@ -1046,7 +1046,7 @@ with the current session identifier as a string argument.
 
 [:Sec-Secure-Session-Id:] is a structured header.
 Its value must be a string. Its ABNF is:
-<pre class="abnf">SecSecureSessionIdentifier = <a>sf-string</a></pre>
+<pre class="abnf">SecSecureSessionId = <a>sf-string</a></pre>
 This string MUST only contain the session identifier. Any parameters SHOULD be
 ignored.
 
