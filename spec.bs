@@ -696,7 +696,8 @@ steps:
        user agent's [=session store=], if such a session if found.
   1. Let |JSON session| be the result of parsing |response|'s [=response/body=]
      as a [=JSON session instructions=]. If parsing fails, |terminate the
-     session| and return.
+     session| and return. This includes validating all required keys are
+     present.
   1. If |JSON session|'s [=JSON session instructions/continue=] is false,
      |terminate the session| and return.
   1. Let |session identifier| be |JSON session|'s [=JSON session
@@ -706,12 +707,10 @@ steps:
      session scope/origin=], if present, or the origin of |destination| if not.
   1. If |JSON session|'s [=JSON session instructions/refresh_url=] does
      not have a value, let |refresh URL| be |destination|.
-  1. Otherwise let |refresh URL| be the result of resolving |destination| with
-     the value of |JSON session|'s [=JSON session
-     instructions/refresh_url=].
+  1. Otherwise, let |refresh URL| be the result of resolving |destination| with
+     the value of |JSON session|'s [=JSON session instructions/refresh_url=].
   1. Perform the following validations. If any fail,
      |terminate the session| and return.
-    1. |session identifier| must be non-empty.
     1. If |session id| is non-null, it must match |session identifier|.
     1. |origin| must be a valid non-opaque origin.
     1. |origin| must be [=/same site=] with |destination|'s [=/origin=].
@@ -800,8 +799,9 @@ registration</dfn> due to the [=response=] (|response|) to a [=request=]
     1. Let |challenge| be null, and let |authorization| be null.
     1. If either of |params|["challenge"] or |params|["authorization"] exist but
        are not of type <a>sf-string</a>, [=iteration/continue=].
-    1. If |params|["challenge"] exists set |challenge| to |params|["challenge"].
-    1. If |params|["authorization"] exists set |authorization| to
+    1. If |params|["challenge"] exists, set |challenge| to
+       |params|["challenge"].
+    1. If |params|["authorization"] exists, set |authorization| to
        |params|["authorization"].
     1. Let |endpoint| be the result of resolving |path| relative to
        |response|'s URL.
