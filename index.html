@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 275834c42, updated Wed Jun 11 14:18:15 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="c8a3952a82d1bfae1df117efd32a3d1f8a019c2c" name="revision">
+  <meta content="ede2bbd8d1df9f87f36f7634b9d2da6eb55eced1" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2025-06-18">18 June 2025</time></p>
+    <time class="dt-updated" datetime="2025-06-20">20 June 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1735,30 +1735,29 @@ steps:
  user agent’s <a data-link-type="dfn" href="#session-store" id="ref-for-session-store⑤">session store</a>, if such a session if found.</p>
       </ol>
      <li data-md>
-      <p>Parse <var>response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-body" id="ref-for-concept-response-body①">body</a> according to
- <a href="#format-session-instructions">§ 9.6 JSON Session Instruction Format</a>. If parsing fails, <var>terminate the
- session</var> and return.</p>
+      <p>Let <var>JSON session</var> be the result of parsing <var>response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-body" id="ref-for-concept-response-body①">body</a>
+ as a <a data-link-type="dfn" href="#json-session-instructions" id="ref-for-json-session-instructions">JSON session instructions</a>. If parsing fails, <var>terminate the
+ session</var> and return. This includes validating all required keys are
+ present.</p>
      <li data-md>
-      <p>If the <var>response</var> JSON contains the key "continue" and its value is false,
+      <p>If <var>JSON session</var>’s <a data-link-type="dfn" href="#json-session-instructions-continue" id="ref-for-json-session-instructions-continue">continue</a> is false,
  <var>terminate the session</var> and return.</p>
      <li data-md>
-      <p>Let <var>session identifier</var> be the value of key "session_identifier".</p>
+      <p>Let <var>session identifier</var> be <var>JSON session</var>’s <a data-link-type="dfn" href="#json-session-instructions-session_identifier" id="ref-for-json-session-instructions-session_identifier">session_identifier</a>.</p>
      <li data-md>
-      <p>Let <var>origin</var> be an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑤">origin</a> constructed from the value of the key
- "scope.origin", if present, or the origin of <var>destination</var> if
- not.</p>
+      <p>Let <var>JSON scope</var> be <var>JSON session</var>’s <a data-link-type="dfn" href="#json-session-instructions-scope" id="ref-for-json-session-instructions-scope">scope</a>.</p>
      <li data-md>
-      <p>If the key "refresh_url" does not have a value, let <var>refresh URL</var> be
- <var>destination</var>.</p>
+      <p>Let <var>origin</var> be an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑤">origin</a> constructed from <var>JSON scope</var>’s <a data-link-type="dfn" href="#json-session-scope-origin" id="ref-for-json-session-scope-origin">origin</a>, if present, or the origin of <var>destination</var> if not.</p>
      <li data-md>
-      <p>Otherwise let <var>refresh URL</var> be the result of resolving <var>destination</var> with
- the value of the key "refresh_url".</p>
+      <p>If <var>JSON session</var>’s <a data-link-type="dfn" href="#json-session-instructions-refresh_url" id="ref-for-json-session-instructions-refresh_url">refresh_url</a> does
+ not have a value, let <var>refresh URL</var> be <var>destination</var>.</p>
+     <li data-md>
+      <p>Otherwise, let <var>refresh URL</var> be the result of resolving <var>destination</var> with
+ the value of <var>JSON session</var>’s <a data-link-type="dfn" href="#json-session-instructions-refresh_url" id="ref-for-json-session-instructions-refresh_url①">refresh_url</a>.</p>
      <li data-md>
       <p>Perform the following validations. If any fail,
  <var>terminate the session</var> and return.</p>
       <ol>
-       <li data-md>
-        <p><var>session identifier</var> must be non-empty.</p>
        <li data-md>
         <p>If <var>session id</var> is non-null, it must match <var>session identifier</var>.</p>
        <li data-md>
@@ -1775,9 +1774,8 @@ steps:
      <li data-md>
       <p>Let <var>destination domain</var> be the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#host-registrable-domain" id="ref-for-host-registrable-domain①⓪">registrable domain</a> of <var>destination</var>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host⑥">host</a>.</p>
      <li data-md>
-      <p>If the value of the key "scope.include_site" in <var>response</var> is true,
- perform the following validations. If any fail, <var>terminate the
- session</var> and return.</p>
+      <p>If the <var>JSON scope</var>’s <a data-link-type="dfn" href="#json-session-scope-include_site" id="ref-for-json-session-scope-include_site">include_site</a> is true, perform
+ the following validations. If any fail, <var>terminate the session</var> and return.</p>
       <ol>
        <li data-md>
         <p><var>origin</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-host" id="ref-for-concept-origin-host①">host</a> must be equal to <var>destination domain</var>.</p>
@@ -1810,49 +1808,46 @@ steps:
       <p>Set <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-refresh-url" id="ref-for-device-bound-session-refresh-url①">refresh URL</a> to <var>refresh URL</var>.</p>
      <li data-md>
       <p>Set <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-scope" id="ref-for-device-bound-session-session-scope⑤">session scope</a> to a new scope with
- <a data-link-type="dfn" href="#session-scope-origin" id="ref-for-session-scope-origin④">origin</a> <var>origin</var>, and <a data-link-type="dfn" href="#session-scope-include-site" id="ref-for-session-scope-include-site④">include site</a> the value of the
- key "scope.include_site".</p>
+ <a data-link-type="dfn" href="#session-scope-origin" id="ref-for-session-scope-origin④">origin</a> <var>origin</var>, and <a data-link-type="dfn" href="#session-scope-include-site" id="ref-for-session-scope-include-site④">include site</a> the value of <var>JSON
+ scope</var>’s <a data-link-type="dfn" href="#json-session-scope-include_site" id="ref-for-json-session-scope-include_site①">include_site</a>.</p>
      <li data-md>
-      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑥">For each</a> <var>JSON scope rule</var> in the value of the key
- "scope.scope_specification":</p>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑥">For each</a> <var>JSON scope rule</var> in <var>JSON scope</var>’s <a data-link-type="dfn" href="#json-session-scope-scope_specification" id="ref-for-json-session-scope-scope_specification">scope_specification</a>:</p>
       <ol>
        <li data-md>
         <p>Let <var>scope rule</var> be a new <a data-link-type="dfn" href="#scope-specification" id="ref-for-scope-specification①">scope specification</a>.</p>
        <li data-md>
-        <p>Set <var>scope rule</var>’s <a data-link-type="dfn" href="#scope-specification-type" id="ref-for-scope-specification-type①">type</a> to the value of the key
-  "type" in <var>JSON scope rule</var>.</p>
+        <p>Set <var>scope rule</var>’s <a data-link-type="dfn" href="#scope-specification-type" id="ref-for-scope-specification-type①">type</a> to <var>JSON scope rule</var>’s
+  <a data-link-type="dfn" href="#json-session-scope-rule-type" id="ref-for-json-session-scope-rule-type">type</a>.</p>
        <li data-md>
-        <p>Set <var>scope rule</var>’s <a data-link-type="dfn" href="#scope-specification-host" id="ref-for-scope-specification-host①">host</a> to the value of the key
-  "domain" in <var>JSON scope rule</var>.</p>
+        <p>Set <var>scope rule</var>’s <a data-link-type="dfn" href="#scope-specification-host" id="ref-for-scope-specification-host①">host</a> to <var>JSON scope rule</var>’s
+  <a data-link-type="dfn" href="#json-session-scope-rule-domain" id="ref-for-json-session-scope-rule-domain">domain</a>.</p>
        <li data-md>
-        <p>Set <var>scope rule</var>’s <a data-link-type="dfn" href="#scope-specification-path" id="ref-for-scope-specification-path①">path</a> to the value of the key
-  "path" in <var>JSON scope rule</var>.</p>
+        <p>Set <var>scope rule</var>’s <a data-link-type="dfn" href="#scope-specification-path" id="ref-for-scope-specification-path①">path</a> to <var>JSON scope rule</var>’s
+  <a data-link-type="dfn" href="#json-session-scope-rule-path" id="ref-for-json-session-scope-rule-path">path</a>.</p>
        <li data-md>
         <p>Append <var>scope rule</var> to <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-scope" id="ref-for-device-bound-session-session-scope⑥">session scope</a>’s <a data-link-type="dfn" href="#session-scope-scope-specifications" id="ref-for-session-scope-scope-specifications①">scope specifications</a>.</p>
       </ol>
      <li data-md>
-      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑦">For each</a> <var>JSON session credential</var> in the value of the key
- "credentials":</p>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑦">For each</a> <var>JSON session credential</var> in <var>JSON session</var>’s <a data-link-type="dfn" href="#json-session-instructions-credentials" id="ref-for-json-session-instructions-credentials">credentials</a>:</p>
       <ol>
        <li data-md>
         <p>Let <var>session credential</var> be a new <a data-link-type="dfn" href="#session-credential" id="ref-for-session-credential②">session credential</a>.</p>
        <li data-md>
-        <p>If the value of the key "type" is not "cookie", <var>terminate the session</var>
-  and return.</p>
+        <p>If <var>JSON session credential</var>’s <a data-link-type="dfn" href="#json-session-credential-type" id="ref-for-json-session-credential-type">type</a> is not
+  "cookie", <var>terminate the session</var> and return.</p>
        <li data-md>
-        <p>Set <var>session credential</var>’s <a data-link-type="dfn" href="#session-credential-name" id="ref-for-session-credential-name①">name</a> be the value of
-  the key "name" in <var>JSON session credential</var>.</p>
+        <p>Set <var>session credential</var>’s <a data-link-type="dfn" href="#session-credential-name" id="ref-for-session-credential-name①">name</a> be <var>JSON session
+  credential</var>’s <a data-link-type="dfn" href="#json-session-credential-name" id="ref-for-json-session-credential-name">name</a>.</p>
        <li data-md>
-        <p>Set <var>session credential</var>’s <a data-link-type="dfn" href="#session-credential-attributes" id="ref-for-session-credential-attributes③">attributes</a> be the value of
-  the key "attributes" in <var>JSON session credential</var>.</p>
+        <p>Set <var>session credential</var>’s <a data-link-type="dfn" href="#session-credential-attributes" id="ref-for-session-credential-attributes③">attributes</a> be <var>JSON
+  session credential</var>’s <a data-link-type="dfn" href="#json-session-credential-attributes" id="ref-for-json-session-credential-attributes">attributes</a>.</p>
        <li data-md>
         <p>Append <var>session credential</var> to <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-credentials" id="ref-for-device-bound-session-session-credentials②">session credentials</a>.</p>
       </ol>
      <li data-md>
       <p>Set <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair">session key pair</a> to <var>key pair</var>.</p>
      <li data-md>
-      <p>Set <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-allowed-refresh-initiators" id="ref-for-device-bound-session-allowed-refresh-initiators①">allowed refresh initiators</a> to the value of the key
- "allowed_refresh_initiators".</p>
+      <p>Set <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-allowed-refresh-initiators" id="ref-for-device-bound-session-allowed-refresh-initiators①">allowed refresh initiators</a> to <var>JSON session</var>’s <a data-link-type="dfn" href="#json-session-instructions-allowed_refresh_initiators" id="ref-for-json-session-instructions-allowed_refresh_initiators">allowed_refresh_initiators</a>.</p>
      <li data-md>
       <p>Set <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-expiration-timestamp" id="ref-for-device-bound-session-expiration-timestamp②">expiration timestamp</a> to a future timestamp. The
  exact choice of expiration timestamp is left up to the user agent. It is
@@ -1891,7 +1886,7 @@ field value</a> given <var>header name</var> and "list" from <var>response</var>
      <li data-md>
       <p>If <var>registration list</var> is null, return.</p>
      <li data-md>
-      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑨">For each</a> <var>registration entry</var>, <var>params</var> in <var>registration list</var>:</p>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑨">For each</a> (<var>registration entry</var>, <var>params</var>) in <var>registration list</var>:</p>
       <ol>
        <li data-md>
         <p>If <var>registration entry</var> is not an <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#inner-list" id="ref-for-inner-list">sf-inner-list</a>,
@@ -1904,11 +1899,14 @@ field value</a> given <var>header name</var> and "list" from <var>response</var>
        <li data-md>
         <p>Let <var>challenge</var> be null, and let <var>authorization</var> be null.</p>
        <li data-md>
-        <p>If <var>params</var>["challenge"] exists and is of type <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#string" id="ref-for-string①⑤">sf-string</a>,
-set <var>challenge</var> to <var>params</var>["challenge"].</p>
+        <p>If either of <var>params</var>["challenge"] or <var>params</var>["authorization"] exist but
+ are not of type <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#string" id="ref-for-string①⑤">sf-string</a>, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue①⑤">continue</a>.</p>
        <li data-md>
-        <p>If <var>params</var>["authorization"] exists and is a string, set <var>authorization</var>
-to <var>params</var>["authorization"].</p>
+        <p>If <var>params</var>["challenge"] exists, set <var>challenge</var> to
+ <var>params</var>["challenge"].</p>
+       <li data-md>
+        <p>If <var>params</var>["authorization"] exists, set <var>authorization</var> to
+ <var>params</var>["authorization"].</p>
        <li data-md>
         <p>Let <var>endpoint</var> be the result of resolving <var>path</var> relative to
  <var>response</var>’s URL.</p>
@@ -1942,7 +1940,7 @@ if no key is possible.
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate①⓪">For each</a> <var>algorithm</var> in <var>registration entry</var>:</p>
       <ol>
        <li data-md>
-        <p>If <var>algorithm</var> is not an <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#token" id="ref-for-token">sf-token</a>, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue①⑤">continue</a>.</p>
+        <p>If <var>algorithm</var> is not an <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#token" id="ref-for-token">sf-token</a>, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue①⑥">continue</a>.</p>
        <li data-md>
         <p>If <var>algorithm</var> represents a crypto algorithm supported in
  `<code><a data-link-type="http-header" href="#secure-session-registration-header" id="ref-for-secure-session-registration-header⑤">Secure-Session-Registration</a></code>` and is supported on this client,
@@ -2270,32 +2268,32 @@ contains session instructions, it MUST be in JSON format.
 
    <p>At the root of the JSON object, the following keys can exist:</p>
    <dl>
-    <dt data-md>session_identifier
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session instructions" data-dfn-type="dfn" data-noexport id="json-session-instructions-session_identifier">session_identifier</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②⑦">string</a> representing a <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier⑥">session identifier</a>.
 During registration, this is the identifier for the newly created session.
 During refresh, this MUST be the identifier for the current session. See
 <a href="#algo-create-session">§ 8.9 Create session</a>. This key MUST be present.</p>
-    <dt data-md>refresh_url
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session instructions" data-dfn-type="dfn" data-noexport id="json-session-instructions-refresh_url">refresh_url</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②⑧">string</a> representing the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url①⓪">URL</a> used for future refresh requests.
 This can be a full <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url①①">URL</a>, or it can be relative to the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request⑨">request</a> serving
 these instructions. This key is OPTIONAL; if not present, the <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request①⓪">request</a>
 <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url④">url</a> will be used for future refresh requests.</p>
-    <dt data-md>continue
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session instructions" data-dfn-type="dfn" data-noexport id="json-session-instructions-continue">continue</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean②">boolean</a> indicating if the session should continue to apply.
 Registration and refresh endpoints can set this to false to terminate a session.
 This key is OPTIONAL; if not present, the default value will be true.</p>
-    <dt data-md>scope
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session instructions" data-dfn-type="dfn" data-noexport id="json-session-instructions-scope">scope</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="#json-session-scope" id="ref-for-json-session-scope">JSON session scope</a> describing the resources covered by
 the session. This key MUST be present.</p>
-    <dt data-md>credentials
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session instructions" data-dfn-type="dfn" data-noexport id="json-session-instructions-credentials">credentials</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑧">list</a> of <a data-link-type="dfn" href="#json-session-credential" id="ref-for-json-session-credential②">JSON session credentials</a> describing the cookies protected by
 this session. This key MUST be present.</p>
-    <dt data-md>allowed_refresh_initiators
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session instructions" data-dfn-type="dfn" data-noexport id="json-session-instructions-allowed_refresh_initiators">allowed_refresh_initiators</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑨">list</a> of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②⑨">strings</a> describing which hosts are allowed to initiate
 DBSC refreshes. See <a href="#algo-request-allows-refresh">§ 8.3 Identify if a request is allowed to refresh</a> for details.</p>
@@ -2346,24 +2344,24 @@ DBSC refreshes. See <a href="#algo-request-allows-refresh">§ 8.3 Identify if 
    </div>
    <h3 class="heading settled" data-level="9.7" id="format-session-scope-instructions"><span class="secno">9.7. </span><span class="content">JSON Session Scope Instruction Format</span><a class="self-link" href="#format-session-scope-instructions"></a></h3>
    
-The server sends a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="json-session-scope">JSON session scope</dfn> in the <a data-link-type="dfn" href="#json-session-instructions" id="ref-for-json-session-instructions">JSON session instructions</a> during registration and optionally during session refresh.
+The server sends a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="json-session-scope">JSON session scope</dfn> in the <a data-link-type="dfn" href="#json-session-instructions" id="ref-for-json-session-instructions①">JSON session instructions</a> during registration and optionally during session refresh.
 
 
    <p>At the root of the JSON object, the following keys can exist:</p>
    <dl>
-    <dt data-md>origin
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session scope" data-dfn-type="dfn" data-noexport id="json-session-scope-origin">origin</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③⓪">string</a> indicating the origin or site that the session applies to.
 This key is OPTIONAL; if not present, the origin of the URL serving the
 instructions will be used. This is the registration URL during registration
 and the refresh URL during refresh.</p>
-    <dt data-md>include_site
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session scope" data-dfn-type="dfn" data-noexport id="json-session-scope-include_site">include_site</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean③">boolean</a> indicating if the session is origin-scoped (false) or
 site-scoped (true). This key MUST be present. Note that this takes precedence
 over any <a data-link-type="dfn" href="#json-session-scope-rule" id="ref-for-json-session-scope-rule">JSON session scope rules</a> in the "scope_specification" (see
 <a href="#algo-url-in-scope">§ 8.2 Identify if a URL is in scope of a session</a>).</p>
-    <dt data-md>scope_specification
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session scope" data-dfn-type="dfn" data-noexport id="json-session-scope-scope_specification">scope_specification</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①⓪">list</a> of <a data-link-type="dfn" href="#json-session-scope-rule" id="ref-for-json-session-scope-rule①">JSON session scope rules</a> describing modifications to the
 default scope (the entire origin or site). This key is OPTIONAL; if not
@@ -2378,16 +2376,16 @@ refresh.
 
    <p>At the root of each <a data-link-type="dfn" href="#json-session-scope-rule" id="ref-for-json-session-scope-rule②">JSON session scope rule</a>, the following keys can exist:</p>
    <dl>
-    <dt data-md>type
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session scope rule" data-dfn-type="dfn" data-noexport id="json-session-scope-rule-type">type</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③①">string</a> indicating whether the rule includes or excludes destinations.
 This key MUST be present, and the value MUST be "include" or "exclude".</p>
-    <dt data-md>domain
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session scope rule" data-dfn-type="dfn" data-noexport id="json-session-scope-rule-domain">domain</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③②">string</a> indicating the domains that should match the rule. This can
 include wildcards (see <a href="#algo-url-in-scope">§ 8.2 Identify if a URL is in scope of a session</a>). This key is OPTIONAL; if
 not present, it will be '*', matching all domains.</p>
-    <dt data-md>path
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session scope rule" data-dfn-type="dfn" data-noexport id="json-session-scope-rule-path">path</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③③">string</a> indicating the path-prefixes that should match the rule. This
 key is OPTIONAL; if not present, it will be '/', matching all paths. See
@@ -2396,20 +2394,20 @@ key is OPTIONAL; if not present, it will be '/', matching all paths. See
    <h3 class="heading settled" data-level="9.9" id="format-session-credentials"><span class="secno">9.9. </span><span class="content">JSON Session Credentials Format</span><a class="self-link" href="#format-session-credentials"></a></h3>
    
 The server sends a list of <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="json-session-credential">JSON session credential</dfn> objects in the
-<a data-link-type="dfn" href="#json-session-instructions" id="ref-for-json-session-instructions①">JSON session instructions</a> during registration and optionally during session
+<a data-link-type="dfn" href="#json-session-instructions" id="ref-for-json-session-instructions②">JSON session instructions</a> during registration and optionally during session
 refresh.
 
 
    <p>At the root of the JSON object, the following keys can exist:</p>
    <dl>
-    <dt data-md>type
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session credential" data-dfn-type="dfn" data-noexport id="json-session-credential-type">type</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③④">string</a> indicating the kind of credential protected by this session.
 This key MUST be present, and the value MUST be "cookie".</p>
-    <dt data-md>name
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session credential" data-dfn-type="dfn" data-noexport id="json-session-credential-name">name</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③⑤">string</a> indicating the name of the bound cookie.</p>
-    <dt data-md>attributes
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session credential" data-dfn-type="dfn" data-noexport id="json-session-credential-attributes">attributes</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③⑥">string</a> containing the expected attributes of the protected cookie.
 See <a href="#algo-identify-if-missing-session-credential">§ 8.6 Identify if missing session credential</a> for details on how this
@@ -2724,34 +2722,62 @@ This is an early draft of the spec.
   <ul class="index">
    <li><a href="#add-debug-header">add the debug header</a><span>, in § 8.12</span>
    <li><a href="#device-bound-session-allowed-refresh-initiators">allowed refresh initiators</a><span>, in § 7.3</span>
-   <li><a href="#session-credential-attributes">attributes</a><span>, in § 7.6</span>
+   <li><a href="#json-session-instructions-allowed_refresh_initiators">allowed_refresh_initiators</a><span>, in § 9.6</span>
+   <li>
+    attributes
+    <ul>
+     <li><a href="#json-session-credential-attributes">dfn for JSON session credential</a><span>, in § 9.9</span>
+     <li><a href="#session-credential-attributes">dfn for session credential</a><span>, in § 7.6</span>
+    </ul>
    <li><a href="#device-bound-session-cached-challenge">cached challenge</a><span>, in § 7.3</span>
+   <li><a href="#json-session-instructions-continue">continue</a><span>, in § 9.6</span>
    <li><a href="#create-session">create a session</a><span>, in § 8.9</span>
    <li><a href="#create-session-key-pair">create a session key pair</a><span>, in § 8.11</span>
+   <li><a href="#json-session-instructions-credentials">credentials</a><span>, in § 9.6</span>
    <li><a href="#dbsc-proof">DBSC proof</a><span>, in § 9.10</span>
    <li><a href="#request-deferred-device-bound-session-ids">deferred device bound session ids</a><span>, in § 10.1</span>
    <li><a href="#algorithms-determine-if-a-host-matches-a-pattern">determine if a host matches a pattern</a><span>, in § 8.4</span>
    <li><a href="#algorithms-determine-if-a-request-is-allowed-to-trigger-refresh">determine if a request is allowed to trigger refresh</a><span>, in § 8.3</span>
    <li><a href="#algorithms-determine-if-a-url-is-in-scope">determine if a URL is in scope</a><span>, in § 8.2</span>
    <li><a href="#device-bound-session">device bound session</a><span>, in § 7.3</span>
+   <li><a href="#json-session-scope-rule-domain">domain</a><span>, in § 9.8</span>
    <li><a href="#device-bound-session-expiration-timestamp">expiration timestamp</a><span>, in § 7.3</span>
    <li><a href="#scope-specification-host">host</a><span>, in § 7.5</span>
    <li><a href="#algorithms-identify-a-session">identify a session</a><span>, in § 8.1</span>
    <li><a href="#algorithms-identify-a-session-needing-refresh">identify a session needing refresh</a><span>, in § 8.5</span>
    <li><a href="#algorithms-identify-if-a-request-is-missing-a-session-credential">identify if a request is missing a session credential</a><span>, in § 8.6</span>
    <li><a href="#session-scope-include-site">include site</a><span>, in § 7.4</span>
+   <li><a href="#json-session-scope-include_site">include_site</a><span>, in § 9.7</span>
    <li><a href="#json-session-credential">JSON session credential</a><span>, in § 9.9</span>
    <li><a href="#json-session-instructions">JSON session instructions</a><span>, in § 9.6</span>
    <li><a href="#json-session-scope">JSON session scope</a><span>, in § 9.7</span>
    <li><a href="#json-session-scope-rule">JSON session scope rule</a><span>, in § 9.8</span>
-   <li><a href="#session-credential-name">name</a><span>, in § 7.6</span>
-   <li><a href="#session-scope-origin">origin</a><span>, in § 7.4</span>
-   <li><a href="#scope-specification-path">path</a><span>, in § 7.5</span>
+   <li>
+    name
+    <ul>
+     <li><a href="#json-session-credential-name">dfn for JSON session credential</a><span>, in § 9.9</span>
+     <li><a href="#session-credential-name">dfn for session credential</a><span>, in § 7.6</span>
+    </ul>
+   <li>
+    origin
+    <ul>
+     <li><a href="#json-session-scope-origin">dfn for JSON session scope</a><span>, in § 9.7</span>
+     <li><a href="#session-scope-origin">dfn for session scope</a><span>, in § 7.4</span>
+    </ul>
+   <li>
+    path
+    <ul>
+     <li><a href="#json-session-scope-rule-path">dfn for JSON session scope rule</a><span>, in § 9.8</span>
+     <li><a href="#scope-specification-path">dfn for scope specification</a><span>, in § 7.5</span>
+    </ul>
    <li><a href="#algorithms-process-a-challenge">process a challenge</a><span>, in § 8.7</span>
    <li><a href="#process-session-registration">process a session registration</a><span>, in § 8.10</span>
    <li><a href="#device-bound-session-refresh-url">refresh URL</a><span>, in § 7.3</span>
+   <li><a href="#json-session-instructions-refresh_url">refresh_url</a><span>, in § 9.6</span>
    <li><a href="#registrable-origin-label">registrable origin label</a><span>, in § 7.7</span>
+   <li><a href="#json-session-instructions-scope">scope</a><span>, in § 9.6</span>
    <li><a href="#scope-specification">scope specification</a><span>, in § 7.5</span>
+   <li><a href="#json-session-scope-scope_specification">scope_specification</a><span>, in § 9.7</span>
    <li><a href="#session-scope-scope-specifications">scope specifications</a><span>, in § 7.4</span>
    <li><a href="#sec-secure-session-id-header">Sec-Secure-Session-Id</a><span>, in § 9.4</span>
    <li><a href="#secure-session-challenge-header">Secure-Session-Challenge</a><span>, in § 9.2</span>
@@ -2762,6 +2788,7 @@ This is an early draft of the spec.
    <li><a href="#session-credential">session credential</a><span>, in § 7.6</span>
    <li><a href="#device-bound-session-session-credentials">session credentials</a><span>, in § 7.3</span>
    <li><a href="#device-bound-session-session-identifier">session identifier</a><span>, in § 7.3</span>
+   <li><a href="#json-session-instructions-session_identifier">session_identifier</a><span>, in § 9.6</span>
    <li><a href="#device-bound-session-session-key-pair">session key pair</a><span>, in § 7.3</span>
    <li><a href="#sessions-by-id-map">sessions by id map</a><span>, in § 7.2</span>
    <li>
@@ -2771,7 +2798,13 @@ This is an early draft of the spec.
      <li><a href="#device-bound-session-session-scope">dfn for device bound session</a><span>, in § 7.3</span>
     </ul>
    <li><a href="#session-store">session store</a><span>, in § 7.1</span>
-   <li><a href="#scope-specification-type">type</a><span>, in § 7.5</span>
+   <li>
+    type
+    <ul>
+     <li><a href="#json-session-credential-type">dfn for JSON session credential</a><span>, in § 9.9</span>
+     <li><a href="#json-session-scope-rule-type">dfn for JSON session scope rule</a><span>, in § 9.8</span>
+     <li><a href="#scope-specification-type">dfn for scope specification</a><span>, in § 7.5</span>
+    </ul>
   </ul>
   <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
@@ -3150,13 +3183,28 @@ let dfnPanelData = {
 "eea18c0d": {"dfnID":"eea18c0d","dfnText":"domain label","external":true,"refSections":[{"refs":[{"id":"ref-for-domain-label"}],"title":"7.7. Registrable origin label"}],"url":"https://url.spec.whatwg.org/#domain-label"},
 "f78d5b5c": {"dfnID":"f78d5b5c","dfnText":"origin","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-request-origin"},{"id":"ref-for-concept-request-origin\u2460"},{"id":"ref-for-concept-request-origin\u2461"}],"title":"8.3. Identify if a request is allowed to refresh"},{"refs":[{"id":"ref-for-concept-request-origin\u2462"},{"id":"ref-for-concept-request-origin\u2463"}],"title":"8.8. Send request"}],"url":"https://fetch.spec.whatwg.org/#concept-request-origin"},
 "f7b00a8b": {"dfnID":"f7b00a8b","dfnText":"header list (for response)","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-response-header-list"}],"title":"8.7. Cache challenge"},{"refs":[{"id":"ref-for-concept-response-header-list\u2460"}],"title":"8.10. Process session registration"}],"url":"https://fetch.spec.whatwg.org/#concept-response-header-list"},
-"f937b7b6": {"dfnID":"f937b7b6","dfnText":"continue","external":true,"refSections":[{"refs":[{"id":"ref-for-iteration-continue"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-iteration-continue\u2460"},{"id":"ref-for-iteration-continue\u2461"},{"id":"ref-for-iteration-continue\u2462"},{"id":"ref-for-iteration-continue\u2463"},{"id":"ref-for-iteration-continue\u2464"}],"title":"8.5. Identify session needing refresh"},{"refs":[{"id":"ref-for-iteration-continue\u2465"},{"id":"ref-for-iteration-continue\u2466"}],"title":"8.6. Identify if missing session credential"},{"refs":[{"id":"ref-for-iteration-continue\u2467"},{"id":"ref-for-iteration-continue\u2468"},{"id":"ref-for-iteration-continue\u2460\u24ea"},{"id":"ref-for-iteration-continue\u2460\u2460"}],"title":"8.7. Cache challenge"},{"refs":[{"id":"ref-for-iteration-continue\u2460\u2461"}],"title":"8.9. Create session"},{"refs":[{"id":"ref-for-iteration-continue\u2460\u2462"},{"id":"ref-for-iteration-continue\u2460\u2463"}],"title":"8.10. Process session registration"},{"refs":[{"id":"ref-for-iteration-continue\u2460\u2464"}],"title":"8.11. Create session key pair"}],"url":"https://infra.spec.whatwg.org/#iteration-continue"},
+"f937b7b6": {"dfnID":"f937b7b6","dfnText":"continue","external":true,"refSections":[{"refs":[{"id":"ref-for-iteration-continue"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-iteration-continue\u2460"},{"id":"ref-for-iteration-continue\u2461"},{"id":"ref-for-iteration-continue\u2462"},{"id":"ref-for-iteration-continue\u2463"},{"id":"ref-for-iteration-continue\u2464"}],"title":"8.5. Identify session needing refresh"},{"refs":[{"id":"ref-for-iteration-continue\u2465"},{"id":"ref-for-iteration-continue\u2466"}],"title":"8.6. Identify if missing session credential"},{"refs":[{"id":"ref-for-iteration-continue\u2467"},{"id":"ref-for-iteration-continue\u2468"},{"id":"ref-for-iteration-continue\u2460\u24ea"},{"id":"ref-for-iteration-continue\u2460\u2460"}],"title":"8.7. Cache challenge"},{"refs":[{"id":"ref-for-iteration-continue\u2460\u2461"}],"title":"8.9. Create session"},{"refs":[{"id":"ref-for-iteration-continue\u2460\u2462"},{"id":"ref-for-iteration-continue\u2460\u2463"},{"id":"ref-for-iteration-continue\u2460\u2464"}],"title":"8.10. Process session registration"},{"refs":[{"id":"ref-for-iteration-continue\u2460\u2465"}],"title":"8.11. Create session key pair"}],"url":"https://infra.spec.whatwg.org/#iteration-continue"},
 "fa4ea124": {"dfnID":"fa4ea124","dfnText":"initiator","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-request-initiator"},{"id":"ref-for-concept-request-initiator\u2460"}],"title":"8.8. Send request"}],"url":"https://fetch.spec.whatwg.org/#concept-request-initiator"},
 "feac4ab3": {"dfnID":"feac4ab3","dfnText":"same site","external":true,"refSections":[{"refs":[{"id":"ref-for-same-site"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-same-site\u2460"}],"title":"8.3. Identify if a request is allowed to refresh"},{"refs":[{"id":"ref-for-same-site\u2461"}],"title":"8.8. Send request"},{"refs":[{"id":"ref-for-same-site\u2462"},{"id":"ref-for-same-site\u2463"}],"title":"8.9. Create session"}],"url":"https://html.spec.whatwg.org/multipage/browsers.html#same-site"},
 "json-session-credential": {"dfnID":"json-session-credential","dfnText":"JSON session credential","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-credential"}],"title":"7.3. Device bound session"},{"refs":[{"id":"ref-for-json-session-credential\u2460"}],"title":"8.9. Create session"},{"refs":[{"id":"ref-for-json-session-credential\u2461"}],"title":"9.6. JSON Session Instruction Format"}],"url":"#json-session-credential"},
-"json-session-instructions": {"dfnID":"json-session-instructions","dfnText":"JSON session instructions","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-instructions"}],"title":"9.7. JSON Session Scope Instruction Format"},{"refs":[{"id":"ref-for-json-session-instructions\u2460"}],"title":"9.9. JSON Session Credentials Format"}],"url":"#json-session-instructions"},
+"json-session-credential-attributes": {"dfnID":"json-session-credential-attributes","dfnText":"attributes","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-credential-attributes"}],"title":"8.9. Create session"}],"url":"#json-session-credential-attributes"},
+"json-session-credential-name": {"dfnID":"json-session-credential-name","dfnText":"name","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-credential-name"}],"title":"8.9. Create session"}],"url":"#json-session-credential-name"},
+"json-session-credential-type": {"dfnID":"json-session-credential-type","dfnText":"type","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-credential-type"}],"title":"8.9. Create session"}],"url":"#json-session-credential-type"},
+"json-session-instructions": {"dfnID":"json-session-instructions","dfnText":"JSON session instructions","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-instructions"}],"title":"8.9. Create session"},{"refs":[{"id":"ref-for-json-session-instructions\u2460"}],"title":"9.7. JSON Session Scope Instruction Format"},{"refs":[{"id":"ref-for-json-session-instructions\u2461"}],"title":"9.9. JSON Session Credentials Format"}],"url":"#json-session-instructions"},
+"json-session-instructions-allowed_refresh_initiators": {"dfnID":"json-session-instructions-allowed_refresh_initiators","dfnText":"allowed_refresh_initiators","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-instructions-allowed_refresh_initiators"}],"title":"8.9. Create session"}],"url":"#json-session-instructions-allowed_refresh_initiators"},
+"json-session-instructions-continue": {"dfnID":"json-session-instructions-continue","dfnText":"continue","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-instructions-continue"}],"title":"8.9. Create session"}],"url":"#json-session-instructions-continue"},
+"json-session-instructions-credentials": {"dfnID":"json-session-instructions-credentials","dfnText":"credentials","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-instructions-credentials"}],"title":"8.9. Create session"}],"url":"#json-session-instructions-credentials"},
+"json-session-instructions-refresh_url": {"dfnID":"json-session-instructions-refresh_url","dfnText":"refresh_url","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-instructions-refresh_url"},{"id":"ref-for-json-session-instructions-refresh_url\u2460"}],"title":"8.9. Create session"}],"url":"#json-session-instructions-refresh_url"},
+"json-session-instructions-scope": {"dfnID":"json-session-instructions-scope","dfnText":"scope","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-instructions-scope"}],"title":"8.9. Create session"}],"url":"#json-session-instructions-scope"},
+"json-session-instructions-session_identifier": {"dfnID":"json-session-instructions-session_identifier","dfnText":"session_identifier","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-instructions-session_identifier"}],"title":"8.9. Create session"}],"url":"#json-session-instructions-session_identifier"},
 "json-session-scope": {"dfnID":"json-session-scope","dfnText":"JSON session scope","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-scope"}],"title":"9.6. JSON Session Instruction Format"},{"refs":[{"id":"ref-for-json-session-scope\u2460"}],"title":"9.8. JSON Session Scope Rule Format"}],"url":"#json-session-scope"},
+"json-session-scope-include_site": {"dfnID":"json-session-scope-include_site","dfnText":"include_site","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-scope-include_site"},{"id":"ref-for-json-session-scope-include_site\u2460"}],"title":"8.9. Create session"}],"url":"#json-session-scope-include_site"},
+"json-session-scope-origin": {"dfnID":"json-session-scope-origin","dfnText":"origin","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-scope-origin"}],"title":"8.9. Create session"}],"url":"#json-session-scope-origin"},
 "json-session-scope-rule": {"dfnID":"json-session-scope-rule","dfnText":"JSON session scope rule","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-scope-rule"},{"id":"ref-for-json-session-scope-rule\u2460"}],"title":"9.7. JSON Session Scope Instruction Format"},{"refs":[{"id":"ref-for-json-session-scope-rule\u2461"}],"title":"9.8. JSON Session Scope Rule Format"}],"url":"#json-session-scope-rule"},
+"json-session-scope-rule-domain": {"dfnID":"json-session-scope-rule-domain","dfnText":"domain","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-scope-rule-domain"}],"title":"8.9. Create session"}],"url":"#json-session-scope-rule-domain"},
+"json-session-scope-rule-path": {"dfnID":"json-session-scope-rule-path","dfnText":"path","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-scope-rule-path"}],"title":"8.9. Create session"}],"url":"#json-session-scope-rule-path"},
+"json-session-scope-rule-type": {"dfnID":"json-session-scope-rule-type","dfnText":"type","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-scope-rule-type"}],"title":"8.9. Create session"}],"url":"#json-session-scope-rule-type"},
+"json-session-scope-scope_specification": {"dfnID":"json-session-scope-scope_specification","dfnText":"scope_specification","external":false,"refSections":[{"refs":[{"id":"ref-for-json-session-scope-scope_specification"}],"title":"8.9. Create session"}],"url":"#json-session-scope-scope_specification"},
 "process-session-registration": {"dfnID":"process-session-registration","dfnText":"process a session\nregistration","external":false,"refSections":[],"url":"#process-session-registration"},
 "registrable-origin-label": {"dfnID":"registrable-origin-label","dfnText":"registrable origin label","external":false,"refSections":[{"refs":[{"id":"ref-for-registrable-origin-label"}],"title":"7.7. Registrable origin label"},{"refs":[{"id":"ref-for-registrable-origin-label\u2460"}],"title":"8.11. Create session key pair"}],"url":"#registrable-origin-label"},
 "request-deferred-device-bound-session-ids": {"dfnID":"request-deferred-device-bound-session-ids","dfnText":"deferred device\nbound session ids","external":false,"refSections":[{"refs":[{"id":"ref-for-request-deferred-device-bound-session-ids"},{"id":"ref-for-request-deferred-device-bound-session-ids\u2460"}],"title":"8.5. Identify session needing refresh"}],"url":"#request-deferred-device-bound-session-ids"},
@@ -3577,9 +3625,24 @@ let refsData = {
 "#device-bound-session-session-key-pair": {"displayText":"session key pair","export":true,"for_":["device bound session"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"session key pair","type":"dfn","url":"#device-bound-session-session-key-pair"},
 "#device-bound-session-session-scope": {"displayText":"session scope","export":true,"for_":["device bound session"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"session scope","type":"dfn","url":"#device-bound-session-session-scope"},
 "#json-session-credential": {"displayText":"json session credential","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"json session credential","type":"dfn","url":"#json-session-credential"},
+"#json-session-credential-attributes": {"displayText":"attributes","export":true,"for_":["JSON session credential"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"attributes","type":"dfn","url":"#json-session-credential-attributes"},
+"#json-session-credential-name": {"displayText":"name","export":true,"for_":["JSON session credential"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"name","type":"dfn","url":"#json-session-credential-name"},
+"#json-session-credential-type": {"displayText":"type","export":true,"for_":["JSON session credential"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"type","type":"dfn","url":"#json-session-credential-type"},
 "#json-session-instructions": {"displayText":"json session instructions","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"json session instructions","type":"dfn","url":"#json-session-instructions"},
+"#json-session-instructions-allowed_refresh_initiators": {"displayText":"allowed_refresh_initiators","export":true,"for_":["JSON session instructions"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"allowed_refresh_initiators","type":"dfn","url":"#json-session-instructions-allowed_refresh_initiators"},
+"#json-session-instructions-continue": {"displayText":"continue","export":true,"for_":["JSON session instructions"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"continue","type":"dfn","url":"#json-session-instructions-continue"},
+"#json-session-instructions-credentials": {"displayText":"credentials","export":true,"for_":["JSON session instructions"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"credentials","type":"dfn","url":"#json-session-instructions-credentials"},
+"#json-session-instructions-refresh_url": {"displayText":"refresh_url","export":true,"for_":["JSON session instructions"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"refresh_url","type":"dfn","url":"#json-session-instructions-refresh_url"},
+"#json-session-instructions-scope": {"displayText":"scope","export":true,"for_":["JSON session instructions"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"scope","type":"dfn","url":"#json-session-instructions-scope"},
+"#json-session-instructions-session_identifier": {"displayText":"session_identifier","export":true,"for_":["JSON session instructions"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"session_identifier","type":"dfn","url":"#json-session-instructions-session_identifier"},
 "#json-session-scope": {"displayText":"json session scope","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"json session scope","type":"dfn","url":"#json-session-scope"},
+"#json-session-scope-include_site": {"displayText":"include_site","export":true,"for_":["JSON session scope"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"include_site","type":"dfn","url":"#json-session-scope-include_site"},
+"#json-session-scope-origin": {"displayText":"origin","export":true,"for_":["JSON session scope"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"origin","type":"dfn","url":"#json-session-scope-origin"},
 "#json-session-scope-rule": {"displayText":"json session scope rule","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"json session scope rule","type":"dfn","url":"#json-session-scope-rule"},
+"#json-session-scope-rule-domain": {"displayText":"domain","export":true,"for_":["JSON session scope rule"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"domain","type":"dfn","url":"#json-session-scope-rule-domain"},
+"#json-session-scope-rule-path": {"displayText":"path","export":true,"for_":["JSON session scope rule"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"path","type":"dfn","url":"#json-session-scope-rule-path"},
+"#json-session-scope-rule-type": {"displayText":"type","export":true,"for_":["JSON session scope rule"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"type","type":"dfn","url":"#json-session-scope-rule-type"},
+"#json-session-scope-scope_specification": {"displayText":"scope_specification","export":true,"for_":["JSON session scope"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"scope_specification","type":"dfn","url":"#json-session-scope-scope_specification"},
 "#registrable-origin-label": {"displayText":"registrable origin label","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"registrable origin label","type":"dfn","url":"#registrable-origin-label"},
 "#request-deferred-device-bound-session-ids": {"displayText":"deferred device bound session ids","export":true,"for_":["request"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"deferred device bound session ids","type":"dfn","url":"#request-deferred-device-bound-session-ids"},
 "#scope-specification": {"displayText":"scope specification","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"scope specification","type":"dfn","url":"#scope-specification"},
