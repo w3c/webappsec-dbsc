@@ -1102,9 +1102,10 @@ At the root of the JSON object, the following keys can exist:
 <dl dfn-for="JSON session instructions">
   : <dfn>session_identifier</dfn>
   :: a [=string=] representing a [=device bound session/session identifier=].
-    During registration, this is the identifier for the newly created session.
-    During refresh, this MUST be the identifier for the current session. See
-    [[#algo-create-session]]. This key MUST be present.
+    During registration, this is the identifier for the newly created
+    session. This key MUST be present, except when the value of the [=continue=]
+    key is false.  During refresh, this MUST be the identifier for the current
+    session. See [[#algo-create-session]].
 
   : <dfn>refresh_url</dfn>
   :: a [=string=] representing the [=URL=] used for future refresh requests.
@@ -1118,16 +1119,19 @@ At the root of the JSON object, the following keys can exist:
     This key is OPTIONAL; if not present, the default value will be true.
     
   : <dfn>scope</dfn>
-  :: a [=JSON session scope=] describing the resources covered by
-    the session. This key MUST be present.
+  :: a [=JSON session scope=] describing the resources covered by the
+    session. This key MUST be present, except when the value of the [=continue=]
+    key is false.
 
   : <dfn>credentials</dfn>
-  :: a [=list=] of [=JSON session credentials=] describing the cookies protected by
-    this session. This key MUST be present.
+  :: a [=list=] of [=JSON session credentials=] describing the cookies protected
+    by this session. This key MUST be present, except when the value of the
+    [=continue=] key is false.
 
   : <dfn>allowed_refresh_initiators</dfn>
   :: a [=list=] of [=strings=] describing which hosts are allowed to initiate
-    DBSC refreshes. See [[#algo-request-allows-refresh]] for details.
+    DBSC refreshes. See [[#algo-request-allows-refresh]] for details. This key
+    is OPTIONAL; if not present, the default value will be an empty list.
 </dl>
 
 <div class="example" id="secure-session-instruction-example">
