@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 618007319, updated Thu Jun 26 17:23:55 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="96813782fa2abfcbaa87da49482bb62732eba618" name="revision">
+  <meta content="374649f4f96edcf0ba884b4fe57697143bc4372a" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2025-06-27">27 June 2025</time></p>
+    <time class="dt-updated" datetime="2025-06-30">30 June 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -812,17 +812,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <nav data-fill-with="table-of-contents" id="toc">
    <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
    <ol class="toc" role="directory">
-    <li>
-     <a href="#intro"><span class="secno">1</span> <span class="content">Introduction</span></a>
-     <ol class="toc">
-      <li>
-       <a href="#examples"><span class="secno">1.1</span> <span class="content">Examples</span></a>
-       <ol class="toc">
-        <li><a href="#example-signin"><span class="secno">1.1.1</span> <span class="content">Signed in session</span></a>
-        <li><a href="#example-device-integrity"><span class="secno">1.1.2</span> <span class="content">Device integrity</span></a>
-        <li><a href="#example-device-reputation"><span class="secno">1.1.3</span> <span class="content">Device reputation</span></a>
-       </ol>
-     </ol>
+    <li><a href="#intro"><span class="secno">1</span> <span class="content">Introduction</span></a>
     <li>
      <a href="#security-considerations"><span class="secno">2</span> <span class="content">Security Considerations</span></a>
      <ol class="toc">
@@ -831,7 +821,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
     <li>
      <a href="#privacy-considerations"><span class="secno">3</span> <span class="content">Privacy Considerations</span></a>
      <ol class="toc">
-      <li><a href="#privacy-cookies"><span class="secno">3.1</span> <span class="content">Cookies considerations</span></a>
+      <li><a href="#privacy-cookies"><span class="secno">3.1</span> <span class="content">Cookie considerations</span></a>
       <li><a href="#privacy-side-channel-leak"><span class="secno">3.2</span> <span class="content">Timing side channel leak</span></a>
       <li><a href="#federated-sessions"><span class="secno">3.3</span> <span class="content">Federated sessions</span></a>
      </ol>
@@ -928,62 +918,46 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
    <h2 class="heading settled" data-level="1" id="intro"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
    <p><em>This section is not normative.</em><br>
 <em>Note this is a very early drafting for writing collaboration only</em></p>
-   <p>The web is built on a stateless protocol. To maintain state for certain functionality,
-web applications store data locally on a user’s device. This storage can last for a
-long time, such as for logged-in user sessions.</p>
-   <p>In general, user agents do not have a secure way of storing this kind of data on
-common operating systems, and actions authenticated by this data may have serious
-consequences, such as transferring money from a bank account.</p>
+   <p>The web is built on a stateless protocol. To maintain state for certain
+functionality, web applications store data locally on a user’s device. This
+storage can last for a long time, and is used for security sensitive data such
+as for credentials for logged-in user sessions.</p>
+   <p>In general, user agents do not have a way of storing this kind of data on common
+operating systems that is secure against software that has equal privilege to
+the user agent itself. At the same time, actions authenticated by this data may
+have serious consequences, such as transferring money from a bank account. A
+common scalable threat to this model is malware that exfiltrates such
+credentials and carries out abuse elsewhere, thus evading detection.</p>
    <p>This document defines a new API, Device Bound Sessions Credentials (DBSC), that
-enables a server to verify that a session has not been exported from a device. A
-server can use commonly available TPMs, or similar APIs, that are designed for this
-purpose.</p>
+enables a server to verify that a session credential has not been exported from
+a device. These credentials are private keys, so user agents can use facilities
+such as TPMs, or similar APIs, to protect them from exfiltration even by equally
+privileged malware.</p>
    <p>The goal is to provide users with a safe and secure experience, while offering
-the use cases users are already used to. At the same time, we want to ensure that
-user privacy is respected, with no new privacy identifiers being leaked by
-this protocol.</p>
-   <h3 class="heading settled" data-level="1.1" id="examples"><span class="secno">1.1. </span><span class="content">Examples</span><a class="self-link" href="#examples"></a></h3>
-   
-Device Bound Session Credentials are designed to make users more secure in
-different situations. Some of the use cases of DBSC are:
-
-
-   <h4 class="heading settled" data-level="1.1.1" id="example-signin"><span class="secno">1.1.1. </span><span class="content">Signed in session</span><a class="self-link" href="#example-signin"></a></h4>
-   <div class="example" id="signin-example"><a class="self-link" href="#signin-example"></a>
-  A user logs in to their social account. To protect the user’s private data, the
-  site protects the logged-in session with a DBSC session. If malware tries to
-  log in with the same cookie file on a different device, the site can detect
-  and refuse this as an unauthorized user.
-</div>
-   <h4 class="heading settled" data-level="1.1.2" id="example-device-integrity"><span class="secno">1.1.2. </span><span class="content">Device integrity</span><a class="self-link" href="#example-device-integrity"></a></h4>
-   <div class="example" id="device-integrity-example"><a class="self-link" href="#device-integrity-example"></a>
-  A commercial site has different ways of detecting unauthorized login attempts.
-  A DBSC session on the device could be used to see which users have logged on to
-  this device before.
-</div>
-   <h4 class="heading settled" data-level="1.1.3" id="example-device-reputation"><span class="secno">1.1.3. </span><span class="content">Device reputation</span><a class="self-link" href="#example-device-reputation"></a></h4>
-   <div class="example" id="device-reputation-example"><a class="self-link" href="#device-reputation-example"></a>
-  A payment company hosted at site <code>payment.example.com</code> could create a session
-  bound to when users visit commercial site <code>shopping.example.com</code>. It could
-  track the reliability of the device over time to decide how likely a
-  transaction is legitimate.
-</div>
+the use cases users are already used to. At the same time, we want to ensure
+that user privacy is respected, with no new privacy identifiers being leaked by
+this protocol. The API takes special care to integrate easily with existing
+server-side auth stacks, providing an incremental path to such protections that
+does not require rewriting large parts of the web software stack.</p>
    <h2 class="heading settled" data-level="2" id="security-considerations"><span class="secno">2. </span><span class="content">Security Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    
 The goals of DBSC are to reduce session theft by offering an alternative to
 long-lived cookie bearer tokens and to allow session authentication to be
-bound to the user’s device. This makes the internet safer for users in that it
-is less likely their identity is abused, as malware is forced to act locally and
-thus becomes easier to detect and mitigate. At the same time, the goal is to
-disrupt the cookie theft ecosystem and force it to adapt to new protections long
-term.
+based on private keys that can be better protected against exfiltration.
+This makes the internet safer for users in that it is less likely their
+identity is abused, as malware is forced to act locally and thus becomes
+easier to detect and mitigate.
 
 
+   <p>User agent implementations are responsible for selecting the best way to protect
+such private keys from exfiltration, taking into account types of malware threats
+that exist on different platforms, and the protection mechanisms that exist. That 
+includes, but is not limited to, secure hardware such as TPMs or secure elements,
+OS provided APIs for secure key generation and management, or process isolation
+mechanisms that provide reasonable protection against locally running malware.</p>
    <p>As long as the session is valid and was registered to an uncompromised device, a
-host can know with cryptographic certainty that it is on the same device as the
-one the session was originally bound to.</p>
-   <p>In order to ensure this, session private keys should be stored in a way
-that cannot be exfiltrated by locally running malware, whenever possible.</p>
+host can thus know with cryptographic certainty that the session key is protected
+against malicious exfiltration to a different device.</p>
    <h3 class="heading settled" data-level="2.1" id="non-goals"><span class="secno">2.1. </span><span class="content">Non-goals</span><a class="self-link" href="#non-goals"></a></h3>
    
 DBSC will not prevent temporary access to the browser session while the attacker
@@ -1015,7 +989,7 @@ clear sessions and keys when clearing other site data (like cookies).</p>
     <li data-md>
      <p>Implementing this API should not meaningfully increase the entropy of
 heuristic device fingerprinting signals. In particular, DBSC
-should not leak any stable TPM-based device identifier.</p>
+should not leak any stable device identifiers.</p>
     <li data-md>
      <p>As this API MAY allow background "pings" for performance, this must not enable
 long-term tracking of a user when they have navigated away from the connected
@@ -1024,7 +998,7 @@ site.</p>
      <p>Each session has a separate new key created, and it should not be possible to
 detect that different sessions are from the same device.</p>
    </ul>
-   <h3 class="heading settled" data-level="3.1" id="privacy-cookies"><span class="secno">3.1. </span><span class="content">Cookies considerations</span><a class="self-link" href="#privacy-cookies"></a></h3>
+   <h3 class="heading settled" data-level="3.1" id="privacy-cookies"><span class="secno">3.1. </span><span class="content">Cookie considerations</span><a class="self-link" href="#privacy-cookies"></a></h3>
    
 It should be impossible for a site to use this API to circumvent the same origin
 policy, 3P cookie policies, etc. Due to the complexity of current and changing
@@ -1040,8 +1014,8 @@ behavior due to implementing DBSC.
    
 If third party cookies are enabled, it is possible for an attacker to determine
 whether or not a user is authenticated by measuring how long the request takes.
-This is because the refresh is quite slow, partially due to the latency of TPM
-operations.
+This is because the refresh may be quite slow, in particular if it depends on slow
+underlying facilities for key protection (e.g. TPMs).
 
 
    <p>This is mitigated by the <code>allowed_refresh_initiators</code> key in session
