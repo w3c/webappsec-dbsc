@@ -588,7 +588,7 @@ both `example.co.uk` and `www.example.de` is `example`.
        session/session credentials=]:
        1. If a cookie with |credential|'s [=session credential/attributes=] could
           not be set by |response| (see <a
-          href=https://httpwg.org/specs/rfc6265.html#storage-model>section 5.4</a> of
+          href=https://httpwg.org/specs/rfc6265.html#storage-model>section 5.3</a> of
           [[!COOKIES]]), [=iteration/continue=].
        1. Store |challenge| as |session|'s [=cached challenge=] to be used next
          time a [=DBSC proof=] is to be sent from this [=device bound session=].
@@ -755,7 +755,7 @@ steps:
      session/session credentials=]:
     1. If a cookie with |credential|'s [=session credential/attributes=] could
        not be set by |response| (see <a
-       href=https://httpwg.org/specs/rfc6265.html#cookie>section 5.4</a> of
+       href=https://httpwg.org/specs/rfc6265.html#storage-model>section 5.3</a> of
        [[!COOKIES]]), [=iteration/continue=].
     1. Call |terminate the session| to remove the existing session.
     1. Set the user agent's [=session store=][|destination
@@ -972,13 +972,9 @@ The [:Secure-Session-Challenge:] is represented as a Structured Field.[[!RFC9651
 
 In this representation, a challenge is represented by a string.
 
-Challenges MAY have an <a>sf-parameter</a> named `"id"`, whose value MUST be a string
+Challenges MUST have an <a>sf-parameter</a> named `"id"`, whose value MUST be a string
 representing a [=device bound session/session identifier=]. Any other
 <a>sf-parameter</a>s SHOULD be ignored.
-
-Note: The server might need to use this header to request the [=DBSC proof=] to
-be signed with a new challenge before a session identifier has been assigned. In this
-case the session identifier is optional.
 
 <div class="example" id="secure-session-challenge-example">
   Some examples of [:Secure-Session-Challenge:] from
