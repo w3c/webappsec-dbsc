@@ -1124,7 +1124,6 @@ At the root of the JSON object, the following keys can exist:
     "refresh_url": "/RefreshEndpoint",
 
     "continue": false,
-    "defer_requests": true, // optional and true by default
 
     "scope": {
       // Origin-scoped by default (i.e. https://example.com)
