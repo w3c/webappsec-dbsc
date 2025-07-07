@@ -976,10 +976,6 @@ Challenges MUST have an <a>sf-parameter</a> named `"id"`, whose value MUST be a 
 representing a [=device bound session/session identifier=]. Any other
 <a>sf-parameter</a>s SHOULD be ignored.
 
-Note: The server might need to use this header to request the [=DBSC proof=] to
-be signed with a new challenge before a session identifier has been assigned. In this
-case the session identifier is optional.
-
 <div class="example" id="secure-session-challenge-example">
   Some examples of [:Secure-Session-Challenge:] from
   https://example.com/login.html:
