@@ -27,6 +27,7 @@ spec:fetch; type:dfn; text:name
 spec:fetch; type:dfn; text:value
 spec:infra; type:dfn; text:list
 spec:infra; type:dfn; text:tuple
+spec:infra; type:dfn; text:string
 spec:permissions; type:dfn; text:feature
 </pre>
 
@@ -1241,11 +1242,11 @@ The payload of [=DBSC proof=] MUST contain at least the following claims:
   :: a [=string=]. This is a copy of the challenge value sent in the registration
     header.
   : iat
-  :: a [=string=] identifying the time the JWT was issued. It can be used to
+  :: a double identifying the time the JWT was issued. It can be used to
     determine the age of the JWT. Its value MUST be a number containing a
-    NumericDate value.
+    NumericDate value, as described in [[!RFC7519]].
   : key
-  :: a [=string=] defining a JWK as specified in [rfc7517].
+  :: a dictionary defining a JWK as specified in [[!RFC7517]].
 
 In addition, the following claim MUST be present if present in the
 [:Secure-Session-Registration:] header field:
@@ -1273,7 +1274,7 @@ present:
   {
     "aud": "https://example.com/reg",
     "jti": "cv",
-    "iat": "1725579055",
+    "iat": 1725579055.0,
     "key": {
       "kty": "EC",
       "crv": "P-256",
