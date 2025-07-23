@@ -834,8 +834,8 @@ if no key is possible.
        [=session scope/origin=] is not [=/same origin=] with |provider
        origin|, return null.
     1. If |provider session|'s [=session key pair=]'s JWK thumbprint (see
-       [[!RFC4648]] and [[!RFC7638]]) does not match |params|["provider_key"]
-       when encoded in base64, return null.
+       [[!RFC7638]]) does not match |params|["provider_key"]
+       when encoded in base64 (see [[!RFC4648]]), return null.
     1. Let |provider well known URL| be a copy of |provider URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
     1. Let |provider well known response| be the result of fetching |provider
