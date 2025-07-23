@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 7a96e07ec, updated Mon Jul 14 11:12:36 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="49b1f646d0014d90df0c42e5daa2b69a0a34ef9b" name="revision">
+  <meta content="8c3e5cc4defa86448aaa2ccb8d6a249519b6ed69" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -1422,16 +1422,18 @@ both <code>example.co.uk</code> and <code>www.example.de</code> is <code>example
      <li data-md>
       <p>If <var>pattern</var> equals '*', return true.</p>
      <li data-md>
-      <p>If <var>pattern</var> starts with '*':</p>
+      <p>Let <var>host string</var> be the serialized <var>host</var>.</p>
+     <li data-md>
+      <p>If <var>pattern</var> starts with '*' and <var>host</var> is a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-domain" id="ref-for-concept-domain②">domain</a>:</p>
       <ol>
        <li data-md>
         <p>If <var>pattern</var> does not start with '*.', return false.</p>
        <li data-md>
-        <p>Return true if <var>host</var> ends with all but the first character
+        <p>Return true if <var>host string</var> ends with all but the first character
  of <var>pattern</var>.</p>
       </ol>
      <li data-md>
-      <p>Return true if <var>host</var> is equal to <var>pattern</var>.</p>
+      <p>Return true if <var>host string</var> is equal to <var>pattern</var>.</p>
     </ol>
     <div class="example" id="host-pattern-matches-example">
      <a class="self-link" href="#host-pattern-matches-example"></a>
@@ -3106,7 +3108,7 @@ let dfnPanelData = {
 "1534f1eb": {"dfnID":"1534f1eb","dfnText":"header name","external":true,"refSections":[{"refs":[{"id":"ref-for-header-name"}],"title":"8.12. Add debug header"}],"url":"https://fetch.spec.whatwg.org/#header-name"},
 "16d07e10": {"dfnID":"16d07e10","dfnText":"for each","external":true,"refSections":[{"refs":[{"id":"ref-for-list-iterate"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-list-iterate\u2460"}],"title":"8.3. Identify if a request is allowed to refresh"},{"refs":[{"id":"ref-for-list-iterate\u2461"}],"title":"8.5. Identify session needing refresh"},{"refs":[{"id":"ref-for-list-iterate\u2462"}],"title":"8.6. Identify if missing session credential"},{"refs":[{"id":"ref-for-list-iterate\u2463"},{"id":"ref-for-list-iterate\u2464"}],"title":"8.7. Cache challenge"},{"refs":[{"id":"ref-for-list-iterate\u2465"},{"id":"ref-for-list-iterate\u2466"},{"id":"ref-for-list-iterate\u2467"}],"title":"8.9. Create session"},{"refs":[{"id":"ref-for-list-iterate\u2468"}],"title":"8.10. Process session registration"},{"refs":[{"id":"ref-for-list-iterate\u2460\u24ea"}],"title":"8.11. Create session key pair"}],"url":"https://infra.spec.whatwg.org/#list-iterate"},
 "1e2edd5b": {"dfnID":"1e2edd5b","dfnText":"moment","external":true,"refSections":[{"refs":[{"id":"ref-for-dfn-moment"}],"title":"7.3. Device bound session"}],"url":"https://w3c.github.io/hr-time/#dfn-moment"},
-"22477314": {"dfnID":"22477314","dfnText":"domain","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-domain"},{"id":"ref-for-concept-domain\u2460"}],"title":"7.7. Registrable origin label"}],"url":"https://url.spec.whatwg.org/#concept-domain"},
+"22477314": {"dfnID":"22477314","dfnText":"domain","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-domain"},{"id":"ref-for-concept-domain\u2460"}],"title":"7.7. Registrable origin label"},{"refs":[{"id":"ref-for-concept-domain\u2461"}],"title":"8.4. Identify if a host matches a pattern"}],"url":"https://url.spec.whatwg.org/#concept-domain"},
 "2cb28cb0": {"dfnID":"2cb28cb0","dfnText":"denied","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-permissionstate-denied"}],"title":"8.11. Create session key pair"}],"url":"https://w3c.github.io/permissions/#dom-permissionstate-denied"},
 "3268a8eb": {"dfnID":"3268a8eb","dfnText":"URL (for response)","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-response-url"}],"title":"8.7. Cache challenge"}],"url":"https://fetch.spec.whatwg.org/#concept-response-url"},
 "35b98f13": {"dfnID":"35b98f13","dfnText":"set a structured field value","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-header-list-set-structured-header"}],"title":"8.12. Add debug header"}],"url":"https://fetch.spec.whatwg.org/#concept-header-list-set-structured-header"},
