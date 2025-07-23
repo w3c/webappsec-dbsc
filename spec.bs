@@ -1103,6 +1103,7 @@ At the root of the JSON object, the following keys can exist:
   :: a [=JSON session scope=] describing the resources covered by the
     session. This key MUST be present, except when the value of the [=continue=]
     key is false.
+
   : <dfn>credentials</dfn>
   :: a [=list=] of [=JSON session credentials=] describing the cookies protected
     by this session. This key MUST be present, except when the value of the
