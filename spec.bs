@@ -490,11 +490,12 @@ both `example.co.uk` and `www.example.de` is `example`.
   a [=string=] (|pattern|). It returns true if |pattern| covers |host|.
 
   1. If |pattern| equals '*', return true.
-  1. If |pattern| starts with '*':
+  1. Let |host string| be the serialized |host|.
+  1. If |pattern| starts with '*' and |host| is a [=/domain=]:
     1. If |pattern| does not start with '*.', return false.
-    1. Return true if |host| ends with all but the first character
+    1. Return true if |host string| ends with all but the first character
        of |pattern|.
-  1. Return true if |host| is equal to |pattern|.
+  1. Return true if |host string| is equal to |pattern|.
   
 <div class="example" id="host-pattern-matches-example">
   Some examples of pattern matches:
