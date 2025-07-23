@@ -173,9 +173,10 @@ malware compromised the device, we trust that the private key is stored
 securely. But sharing keys across sites has complex privacy properties. In order
 to mitigate the privacy risks of sharing a high-entropy identifier, we require
 that the RP already know the public key and session identifier for the SP's
-session. The RP will include the SP URL, session identifier, and public key in
-the [:Secure-Session-Registration:] header. If the key is correct, the user
-agent will create a session on the RP with the same key as the SP.
+session. The RP will include the SP URL, session identifier, and base64-encoded
+JWK thumbprint (see [[!RFC4648]] and [[!RFC7638]]) in the
+[:Secure-Session-Registration:] header. If the key is correct, the user agent
+will create a session on the RP with the same key as the SP.
 
 There is also a potential risk of malicious RPs and SPs collaborating to try to
 identify users in cases where the RP and SP can't already share information
@@ -832,8 +833,9 @@ if no key is possible.
     1. If |provider session|'s [=device bound session/session scope=]
        [=session scope/origin=] is not [=/same origin=] with |provider
        origin|, return null.
-    1. If |provider session|'s [=session key pair=] does not match
-       |params|["provider_key"], return null.
+    1. If |provider session|'s [=session key pair=]'s JWK thumbprint (see
+       [[!RFC7638]]) does not match |params|["provider_key"]
+       when encoded in base64 (see [[!RFC4648]]), return null.
     1. Let |provider well known URL| be a copy of |provider URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
     1. Let |provider well known response| be the result of fetching |provider
