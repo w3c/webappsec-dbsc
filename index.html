@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 7a96e07ec, updated Mon Jul 14 11:12:36 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="6b0de0c9a045d2f36c3381f29498830e204cdfd5" name="revision">
+  <meta content="49b1f646d0014d90df0c42e5daa2b69a0a34ef9b" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2025-07-18">18 July 2025</time></p>
+    <time class="dt-updated" datetime="2025-07-23">23 July 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1045,9 +1045,10 @@ malware compromised the device, we trust that the private key is stored
 securely. But sharing keys across sites has complex privacy properties. In order
 to mitigate the privacy risks of sharing a high-entropy identifier, we require
 that the RP already know the public key and session identifier for the SP’s
-session. The RP will include the SP URL, session identifier, and public key in
-the `<code><a data-link-type="http-header" href="#secure-session-registration-header" id="ref-for-secure-session-registration-header">Secure-Session-Registration</a></code>` header. If the key is correct, the user
-agent will create a session on the RP with the same key as the SP.</p>
+session. The RP will include the SP URL, session identifier, and base64-encoded
+JWK thumbprint (see <a data-link-type="biblio" href="#biblio-rfc4648" title="The Base16, Base32, and Base64 Data Encodings">[RFC4648]</a> and <a data-link-type="biblio" href="#biblio-rfc7638" title="JSON Web Key (JWK) Thumbprint">[RFC7638]</a>) in the
+`<code><a data-link-type="http-header" href="#secure-session-registration-header" id="ref-for-secure-session-registration-header">Secure-Session-Registration</a></code>` header. If the key is correct, the user agent
+will create a session on the RP with the same key as the SP.</p>
    <p>There is also a potential risk of malicious RPs and SPs collaborating to try to
 identify users in cases where the RP and SP can’t already share information
 (e.g. when there are protections against fingerprinting or link decoration). The
@@ -1954,8 +1955,9 @@ if no key is possible.
  <a data-link-type="dfn" href="#session-scope-origin" id="ref-for-session-scope-origin⑤">origin</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#same-origin" id="ref-for-same-origin②">same origin</a> with <var>provider
  origin</var>, return null.</p>
        <li data-md>
-        <p>If <var>provider session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair①">session key pair</a> does not match
- <var>params</var>["provider_key"], return null.</p>
+        <p>If <var>provider session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair①">session key pair</a>’s JWK thumbprint (see
+ <a data-link-type="biblio" href="#biblio-rfc7638" title="JSON Web Key (JWK) Thumbprint">[RFC7638]</a>) does not match <var>params</var>["provider_key"]
+ when encoded in base64 (see <a data-link-type="biblio" href="#biblio-rfc4648" title="The Base16, Base32, and Base64 Data Encodings">[RFC4648]</a>), return null.</p>
        <li data-md>
         <p>Let <var>provider well known URL</var> be a copy of <var>provider URL</var>, with the
  <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-path" id="ref-for-concept-url-path④">path</a> replaced with "/.well-known/device-bound-sessions".</p>
@@ -2879,6 +2881,8 @@ This is an early draft of the spec.
    <dd>S. Bradner. <a href="https://datatracker.ietf.org/doc/html/rfc2119"><cite>Key words for use in RFCs to Indicate Requirement Levels</cite></a>. March 1997. Best Current Practice. URL: <a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>
    <dt id="biblio-rfc3864">[RFC3864]
    <dd>G. Klyne; M. Nottingham; J. Mogul. <a href="https://www.rfc-editor.org/rfc/rfc3864"><cite>Registration Procedures for Message Header Fields</cite></a>. September 2004. Best Current Practice. URL: <a href="https://www.rfc-editor.org/rfc/rfc3864">https://www.rfc-editor.org/rfc/rfc3864</a>
+   <dt id="biblio-rfc4648">[RFC4648]
+   <dd>S. Josefsson. <a href="https://www.rfc-editor.org/rfc/rfc4648"><cite>The Base16, Base32, and Base64 Data Encodings</cite></a>. October 2006. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc4648">https://www.rfc-editor.org/rfc/rfc4648</a>
    <dt id="biblio-rfc5234">[RFC5234]
    <dd>D. Crocker, Ed.; P. Overell. <a href="https://www.rfc-editor.org/rfc/rfc5234"><cite>Augmented BNF for Syntax Specifications: ABNF</cite></a>. January 2008. Internet Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc5234">https://www.rfc-editor.org/rfc/rfc5234</a>
    <dt id="biblio-rfc7405">[RFC7405]
@@ -2887,6 +2891,8 @@ This is an early draft of the spec.
    <dd>M. Jones. <a href="https://www.rfc-editor.org/rfc/rfc7517"><cite>JSON Web Key (JWK)</cite></a>. May 2015. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc7517">https://www.rfc-editor.org/rfc/rfc7517</a>
    <dt id="biblio-rfc7519">[RFC7519]
    <dd>M. Jones; J. Bradley; N. Sakimura. <a href="https://www.rfc-editor.org/rfc/rfc7519"><cite>JSON Web Token (JWT)</cite></a>. May 2015. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc7519">https://www.rfc-editor.org/rfc/rfc7519</a>
+   <dt id="biblio-rfc7638">[RFC7638]
+   <dd>M. Jones; N. Sakimura. <a href="https://www.rfc-editor.org/rfc/rfc7638"><cite>JSON Web Key (JWK) Thumbprint</cite></a>. September 2015. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc7638">https://www.rfc-editor.org/rfc/rfc7638</a>
    <dt id="biblio-rfc9112">[RFC9112]
    <dd>R. Fielding, Ed.; M. Nottingham, Ed.; J. Reschke, Ed.. <a href="https://httpwg.org/specs/rfc9112.html"><cite>HTTP/1.1</cite></a>. June 2022. Internet Standard. URL: <a href="https://httpwg.org/specs/rfc9112.html">https://httpwg.org/specs/rfc9112.html</a>
    <dt id="biblio-rfc9651">[RFC9651]
