@@ -5,9 +5,9 @@
   <title>Device Bound Session Credentials</title>
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version 7a96e07ec, updated Mon Jul 14 11:12:36 2025 -0700" name="generator">
+  <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="8c3e5cc4defa86448aaa2ccb8d6a249519b6ed69" name="revision">
+  <meta content="86e9f0d751150cdba6af9a4568f82c586ca1e74c" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2025-07-23">23 July 2025</time></p>
+    <time class="dt-updated" datetime="2025-08-05">5 August 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2288,9 +2288,9 @@ is OPTIONAL; if not present, the default value will be an empty list.</p>
 
   <c- f>"scope"</c-><c- p>:</c-> <c- p>{</c->
     <c- c1>// Origin-scoped by default (i.e. https://example.com)</c->
+    <c- f>"origin"</c-><c- p>:</c-> <c- u>"https://example.com"</c-><c- p>,</c->
     <c- c1>// Specifies to include https://*.example.com except excluded subdomains.</c->
     <c- c1>// This can only be true if the origin's host is the root eTLD+1.</c->
-    <c- f>"origin"</c-><c- p>:</c-> <c- u>"https://example.com"</c-><c- p>,</c->
     <c- f>"include_site"</c-><c- p>:</c-> <c- kc>true</c-><c- p>,</c->
 
     <c- f>"scope_specification"</c-> <c- p>:</c-> <c- p>[</c->
