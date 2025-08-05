@@ -1127,9 +1127,9 @@ At the root of the JSON object, the following keys can exist:
 
     "scope": {
       // Origin-scoped by default (i.e. https://example.com)
+      "origin": "https://example.com",
       // Specifies to include https://*.example.com except excluded subdomains.
       // This can only be true if the origin's host is the root eTLD+1.
-      "origin": "https://example.com",
       "include_site": true,
 
       "scope_specification" : [
