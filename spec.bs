@@ -708,7 +708,9 @@ steps:
      the following validations. If any fail, |terminate the session| and return.
     1. |origin|'s [=origin/host=] must be equal to |destination domain|.
     1. If |destination domain| is equal to the [=url/host=] of
-        |destination|, skip all remaining validations within this step.
+        |destination|, skip all remaining validations within this step.	
+    1. If |session id| is non-null, skip all remaining validations within this
+       step.
     1. Otherwise, let |well known URL| be a copy of |destination|, with the
        [=url/host=] replaced with |destination domain|, and the [=url/path=]
        replaced with "/.well-known/device-bound-sessions".
