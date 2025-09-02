@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="ae472c84d37be6e2a65b85589211b1b5fad5b451" name="revision">
+  <meta content="d7cf40404ed583e87e6c7cbdd49ffe8f5e08bbaf" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -1046,7 +1046,7 @@ malware compromised the device, we trust that the private key is stored
 securely. But sharing keys across sites has complex privacy properties. In order
 to mitigate the privacy risks of sharing a high-entropy identifier, we require
 that the RP already know the public key and session identifier for the SP’s
-session. The RP will include the SP URL, session identifier, and base64-encoded
+session. The RP will include the SP URL, session identifier, and base64url-encoded
 JWK thumbprint (see <a data-link-type="biblio" href="#biblio-rfc4648" title="The Base16, Base32, and Base64 Data Encodings">[RFC4648]</a> and <a data-link-type="biblio" href="#biblio-rfc7638" title="JSON Web Key (JWK) Thumbprint">[RFC7638]</a>) in the
 `<code><a data-link-type="http-header" href="#secure-session-registration-header" id="ref-for-secure-session-registration-header">Secure-Session-Registration</a></code>` header. If the key is correct, the user agent
 will create a session on the RP with the same key as the SP.</p>
@@ -1963,7 +1963,7 @@ if no key is possible.
        <li data-md>
         <p>If <var>provider session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair①">session key pair</a>’s JWK thumbprint (see
  <a data-link-type="biblio" href="#biblio-rfc7638" title="JSON Web Key (JWK) Thumbprint">[RFC7638]</a>) does not match <var>params</var>["provider_key"]
- when encoded in base64 (see <a data-link-type="biblio" href="#biblio-rfc4648" title="The Base16, Base32, and Base64 Data Encodings">[RFC4648]</a>), return null.</p>
+ when encoded in base64url (see <a data-link-type="biblio" href="#biblio-rfc4648" title="The Base16, Base32, and Base64 Data Encodings">[RFC4648]</a>) without padding, return null.</p>
        <li data-md>
         <p>Let <var>provider well known URL</var> be a copy of <var>provider URL</var>, with the
  <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-path" id="ref-for-concept-url-path④">path</a> replaced with "/.well-known/device-bound-sessions".</p>
