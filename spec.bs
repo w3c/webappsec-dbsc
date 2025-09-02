@@ -1073,7 +1073,7 @@ One <a>sf-parameter</a> is defined:
 <div class="example" id="secure-session-skipped-example">
   ```html
   GET example.com/requires_bound_cookie
-  Secure-Session-Skipped: unreachable;session_identifier=123, quota_exceeded;session_identifier=456
+  Secure-Session-Skipped: unreachable;session_identifier="123", quota_exceeded;session_identifier="456"
   ```
 </div>
 
