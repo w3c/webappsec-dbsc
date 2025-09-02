@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="e0402a5d19798b06e3e4639f39401abad1b63be5" name="revision">
+  <meta content="ae472c84d37be6e2a65b85589211b1b5fad5b451" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -1081,7 +1081,7 @@ should continue to use its existing `<code><a data-link-type="http-header" href=
 </pre>
     <p>When extending the DBSC session to <code>example.com.uk</code>, the site should append new
 parameters to the `<code><a data-link-type="http-header" href="#secure-session-registration-header" id="ref-for-secure-session-registration-header②">Secure-Session-Registration</a></code>` header:</p>
-<pre>Secure-Session-Registration: (ES256);path="/register";challenge="challenge";provider_key="abc";provider_id="example.com id";provider_url="https://example.com"
+<pre>Secure-Session-Registration: (ES256);path="/register";challenge="challenge";provider_key="abc";provider_session_id="example.com id";provider_url="https://example.com"
 </pre>
     <p>Assuming <code>example.com</code> and <code>example.co.uk</code> have the appropriate .well-known
 entries, this will cause <code>example.co.uk</code> to register a new DBSC session using
@@ -1930,7 +1930,7 @@ if no key is possible.
      <li data-md>
       <p>If <var>algorithm list</var> is empty, return null.</p>
      <li data-md>
-      <p>If any of <var>params</var>["provider_key"], <var>params</var>["provider_id"], or
+      <p>If any of <var>params</var>["provider_key"], <var>params</var>["provider_session_id"], or
  <var>params</var>["provider_url"] exists:</p>
       <ol>
        <li data-md>
@@ -1950,10 +1950,10 @@ if no key is possible.
         <p>Let <var>provider domain</var> be the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#host-registrable-domain" id="ref-for-host-registrable-domain①①">registrable domain</a> of
  <var>provider URL</var>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host⑨">host</a>.</p>
        <li data-md>
-        <p>Let <var>provider identifier</var> be <var>params</var>["provider_id"].</p>
+        <p>Let <var>provider session identifier</var> be <var>params</var>["provider_session_id"].</p>
        <li data-md>
         <p>Let <var>provider session</var> be the session in the user agent’s
- <a data-link-type="dfn" href="#session-store" id="ref-for-session-store⑦">session store</a>[<var>provider domain</var>][<var>provider identifier</var>].</p>
+ <a data-link-type="dfn" href="#session-store" id="ref-for-session-store⑦">session store</a>[<var>provider domain</var>][<var>provider session identifier</var>].</p>
        <li data-md>
         <p>If <var>provider session</var> is null, return null.</p>
        <li data-md>
@@ -2080,7 +2080,7 @@ registration JWT.</p>
 an <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#string" id="ref-for-string②⓪">sf-string</a>, conveying that this session should share keys
 with a session with the given public key.</p>
     <li data-md>
-     <p>An <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#name-parameters" id="ref-for-name-parameters⑦">sf-parameter</a> whose key is "provider_id", and whose value is
+     <p>An <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#name-parameters" id="ref-for-name-parameters⑦">sf-parameter</a> whose key is "provider_session_id", and whose value is
 an <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#string" id="ref-for-string②①">sf-string</a>, conveying that this session should share keys
 with a session with the given session identifier.</p>
     <li data-md>
@@ -2108,7 +2108,7 @@ Secure-Session-Registration: (RS256);path="reg2";challenge="cv2";authorization="
 Secure-Session-Registration: (ES256);path="reg1";challenge="cv1";authorization="a", (RS256);path="reg2";challenge="cv2";authorization="b"
 </pre>
 <pre class="language-html highlight">HTTP/1.1 200 OK
-Secure-Session-Registration: (ES256);path="reg1";challenge="cv1";provider_key="abc";provider_id="idp_id";provider_url="https://id_origin.example.com"
+Secure-Session-Registration: (ES256);path="reg1";challenge="cv1";provider_key="abc";provider_session_id="idp_id";provider_url="https://id_origin.example.com"
 </pre>
    </div>
    <h3 class="heading settled" data-level="9.2" id="header-secure-session-challenge"><span class="secno">9.2. </span><span class="content">`<code><a data-link-type="http-header" href="#secure-session-challenge-header" id="ref-for-secure-session-challenge-header">Secure-Session-Challenge</a></code>` HTTP header field</span><a class="self-link" href="#header-secure-session-challenge"></a></h3>
