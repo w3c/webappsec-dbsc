@@ -1238,20 +1238,14 @@ The header of a [=DBSC proof=] MUST contain at least the following <a>sf-paramet
   : alg
   :: a [=string=] defining the algorithm used to sign this JWT. It MUST be
     either "RS256" or "ES256" from [IANA.JOSE.ALGS].
+  : jwk
+  :: a JWK as specified in [[!RFC7517]]. This MUST be present for
+    registration requests, and MUST not be present for refresh requests.
 
 The payload of [=DBSC proof=] MUST contain at least the following claims:
-  : aud
-  :: a [=string=]. This MUST be the [=URL=] this JWT was originally sent to.
-    Example: "https://example.com/refresh.html".
   : jti
   :: a [=string=]. This is a copy of the challenge value sent in the registration
     header.
-  : iat
-  :: a double identifying the time the JWT was issued. It can be used to
-    determine the age of the JWT. Its value MUST be a number containing a
-    NumericDate value, as described in [[!RFC7519]].
-  : key
-  :: a dictionary defining a JWK as specified in [[!RFC7517]].
 
 In addition, the following claim MUST be present if present in the
 [:Secure-Session-Registration:] header field:
@@ -1261,11 +1255,6 @@ In addition, the following claim MUST be present if present in the
     string is OPTIONAL to include in the header, but if it is present, the
     client MUST add it to the claim in the [=DBSC proof=].
 
-If the DBSC proof is for a refresh request, the following claim MUST be
-present:
-  : sub
-  :: a [=string=] specifying the [=device bound session/session identifier=].
-
 <div class="example" id="dbsc-proof-example">
   An example [=DBSC proof=] sent to https://example.com/reg:
 
@@ -1273,19 +1262,17 @@ present:
   // Header
   {
     "alg": "ES256",
-    "typ": "dbsc+jwt"
-  }
-  // Payload
-  {
-    "aud": "https://example.com/reg",
-    "jti": "cv",
-    "iat": 1725579055.0,
+    "typ": "dbsc+jwt",
     "key": {
       "kty": "EC",
       "crv": "P-256",
       "x": "6_GB2voQ0qroMh6OlDFCFS_SJriQi1PTvvBOhGZ3bHI",
       "y": "IegOJULyE7SxH_Cd1KCER7lWBvGFHQ-h0xyjzUjEIWE"
-    },
+    }
+  }
+  // Payload
+  {
+    "jti": "cv",
     "authorization": "ac"
   }
   ```
