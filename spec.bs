@@ -1220,12 +1220,13 @@ At the root of the JSON object, the following keys can exist:
     This key MUST be present, and the value MUST be "cookie".
     
   : <dfn>name</dfn>
-  :: a [=string=] indicating the name of the bound cookie.
+  :: a [=string=] indicating the name of the bound cookie. This key MUST be
+    present, and the value MUST be nonempty.
     
   : <dfn>attributes</dfn>
   :: a [=string=] containing the expected attributes of the protected cookie.
     See [[#algo-identify-if-missing-session-credential]] for details on how this
-    is used. 
+    is used. This key is OPTIONAL; if not present, it will be the empty string.
 </dl>
 
 ## DBSC Proof JWT Syntax ## {#format-jwt}
