@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="3cc9cb65af317c2ce2dd6a4e302d733350acf8c8" name="revision">
+  <meta content="48acb09d63a7bcbd4c2a8efecc9fcb106fa1c52f" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2025-09-03">3 September 2025</time></p>
+    <time class="dt-updated" datetime="2025-09-11">11 September 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2388,12 +2388,13 @@ refresh.
 This key MUST be present, and the value MUST be "cookie".</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session credential" data-dfn-type="dfn" data-noexport id="json-session-credential-name">name</dfn>
     <dd data-md>
-     <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③⑤">string</a> indicating the name of the bound cookie.</p>
+     <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③⑤">string</a> indicating the name of the bound cookie. This key MUST be
+present, and the value MUST be nonempty.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session credential" data-dfn-type="dfn" data-noexport id="json-session-credential-attributes">attributes</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③⑥">string</a> containing the expected attributes of the protected cookie.
 See <a href="#algo-identify-if-missing-session-credential">§ 8.6 Identify if missing session credential</a> for details on how this
-is used.</p>
+is used. This key is OPTIONAL; if not present, it will be the empty string.</p>
    </dl>
    <h3 class="heading settled" data-level="9.10" id="format-jwt"><span class="secno">9.10. </span><span class="content">DBSC Proof JWT Syntax</span><a class="self-link" href="#format-jwt"></a></h3>
    
