@@ -129,7 +129,7 @@ As long as that session is active, the browser performs the following refresh as
 ### Start Session
 ![Start session diagram](header_setup.svg)
 
-[Link to editable diagram](https://sequencediagram.org/index.html#initialData=MoUwTgbuC0B8CqBncACAggcxAOwC4C4VQBjaURRASwHttoAlEDSxXMAQ1xuwCgeMw1AK4AHFMlyjxICtxRgQARyEzcPJKkw5ccUJHD4ACgHlgAFRQB6ZMSELks2tdzswuB1Vo9s1XCBTUUGAoGsFaeAA0ekEAxADuABYgnPgA3gBEAEaU2AAmORjQ7AA2GPgAdJXpAL7qyGFYeAA8ZOBB+KA6AMLU1ADWlCCE7EK4CQD6xL0DIN6+-oGooeiNuFFt4PFJKRke3NCUudqUAGaDYBVVtTi5fD5+AUEh9SvaW8kE5J7YKCwoPnEUOxiFwoDwgA)
+[Link to editable diagram](https://sequencediagram.org/index.html#initialData=MoUwTgbuC0B8CqBncACAggcxAOwC4C4VQBjAVzBGlEUQEsB7baAJRA1sVzAENcHsAUAIxh6pAA4pkuCVJA1+KCgEdS83AKSpMOXHFCRw+AAoB5YABUUAemRkKyBY1u5uYXI7qMB2erhAo9FBgKFohOngANAbBAMQA7gAWILz4AN4ARABGtNgAJrkY0NwANhj4AHRVGQC+msjhWHgAPFTgwfigegDC9PQA1rQghNykuIkA+sR9gyA+fgFBqGHoTbjR7eAJyamZnvwTtHm6tABmQ2CV1XU4eUK+-oHBoQ2rutspBNRe2CgcKL54ihuMQ+FABEA)
 
 #### Session Registration Header
 The session start process is initiated by the server attaching a header with Secure-Session-Registration and appropriate parameters, this looks like:
