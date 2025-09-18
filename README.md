@@ -58,8 +58,8 @@ In all of these scenarios, DBSC aims to enforce the specific constraint that *te
 ### Non-goals
 DBSC will not prevent temporary access to any browser sessions while the attacker has ongoing access to a compromised user-agent. An attacker with ongoing access to a compromised user agent (or network AitM, etc) will be able to continuously access fresh DBSC-controlled bearer tokens, and an attacker with malware running on a compromised device will, on many modern operating systems, be able to treat even secure elements as a signing oracle, in order to provide proof-of-possession of the DBSC secret keys.
 
-### What makes Device Bound Session Credentials different
-DBSC is not the first proposal towards these goals, with a notable one being [Token Binding](https://en.wikipedia.org/wiki/Token_Binding). This proposal offers two important features that we believe makes it easier to deploy than previous proposals. DBSC provides application-level binding and browser initiated refreshes that can make sure devices are still bound to the original device.
+### Alternatives Considered
+DBSC is not the first proposal in this space, with notable others [Token Binding](https://en.wikipedia.org/wiki/Token_Binding) and [WebCrypto](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API). This proposal offers two important features that we believe makes it easier to deploy than previous proposals. DBSC provides application-level binding and browser initiated refreshes that can make sure devices are still bound to the original device.
 
 #### Application-level binding
 For websites, device binding is most useful for securing authenticated sessions of users. DBSC allows websites to closely couple the setup of bound sessions with user sign-in mechanisms, makes session and key lifetimes explicit and controllable, and allows servers to design infrastructure that places verification of session credentials close to where user credentials (cookies) are processed in their infrastructure.
@@ -111,7 +111,8 @@ DBSC(E) removes the vulnerability DBSC has, where a malware, if already present 
 
 ## High level overview
 ![High level diagram](reg_and_refresh.svg)
-[Link to editable diagram](https://sequencediagram.org/index.html#initialData=A4QwTgLglgxloDsIAIBEAVACgWVckAzshAFCiSzwhJoBCYA9gO4ECmYehyARmeNHEQpUAZXYA3dpyJMScktwC0APiYAuZASgBzBIqgJkAMwA2zEkxXcNAJgAMd5EwD0W3awAm+wzAZJWSAA0yGCsBMB+bMgGMCYArh5hyAAWrCCJYMQMmhD8mqwwcaH5BFp+AHTIyAA6CAASaRkaqKIFimKlUH6KAEqs2lAEEGAg0H4a5ZPIMMkgJiYB2qwAvJPlLbUAFDNzCwhLIawAjnFQoR7GDJnAYFDio6zIANasAJ7INwwMRsjfHwylMJlBAAShICAYEEeDEkmWsPEYLHY0QQUGgDyIbE6fh4Bg8Bm0tW4hE8v0MqXSyJuYQCMFYChUEA0oROYRQMFCD2eb1AZxIECszNYECKhmAcW4Jlg3Ne4Mh0NhPA0HLSUOQACkAOroJzOHbzRb0pTKJksuJszQ6Qxa9D8wWHEVga3ay26UZFI0qdTITAAeREOtcBQ9WOBrlykFDXUMtVqLQA3qg5tpUGo1sFUBBXsBU6gbahgmsAL7x9OoF6vXMAHnFktgAH0K8pUEWWsg5WqYcjvUMro9a1KYDLgmyQHWCMkSsCLPb7I4XL4GE8oI9qBcoziAJIAESJDA87xi8USmN8wGhP0Xy6SmyuOgMyAA1B9RskQbGEBSmmhWgKAMJfNeGggHEEDJPWV4rhsCDcPurzNKgiYbgg9ZQIkSBQEYK4cGmkytqgJDLMsIgMAAto80DkS+gIEGsREdgqyLwnEbCZLEsBPEQUoIE8lzXK+yCuGRBR+FCSAMso8IzAUvGYb8twDAgj6gGBhwnGcSSwXECAXJB9JzCgWk6dMgErsgEIoGaGkeBJ3oAOIAKKBgQwm+P44mWJJtgOLqbliaQrAmFERm6aZjxWecElSakMCyT8EWknpRCsAAHoMpAGWppznCZS5mdSbA0Gu5mQsgqXANZtkaI5zmuaJASkJ58Jzr59XiYFUQJaFeWPKRgxaPs8llSlFWRRZjFwkKrJDMgiRGOwOVMMkUALE4jxLOyYW0ZMVU+v6znBqEyHOKERhHZOtRfuwCFiDA7RAtGiibh4GgANrIcgO4ALotDOXkACx2AAjB+DSUmAN1tB0wKKH+swGvsrAaMhqHodAWHsKskzBPqexLFj6wEeNvyKlJnJqjavnw3jnommoZoWm4zq2gKXkOqKGoukz7qhLtfoBoJbCFEdD1+CdrBnWEF2fo010-rd93YnofThJESPIK9No-UT8ok92Gj3FKHhcp8fx-BENHRn91gtQuYX4MZH07nuB4orECRJAQZ4Xrl15ELeCkPs+Klvh+V0Q-Lwqw2FwGgeBenQbBB4IUhosoWhDWYdhqbFr9xNdpN+TC48H2juOqQeMER1xORtR3opcxZWyu01YLdXuY1s4+S4LlUX5DUkAENlD0AA))  
+[Link to editable diagram](https://sequencediagram.org/index.html#initialData=A4QwTgLglgxloDsIAIBEAVACgWVckAzshAFCiSzwhJoBCYA9gO4ECmYehyARmeNHEQpUAZXYA3dpyJMScktwC0APiYAuZASgBzBIqgJkAMwA2zEkxXcNAJgAMd5EwD0W3awAm+wzAZJWSAA0yGCsBMB+bMgGMCYArh5hyAAWrCCJYMQMmhD8mqwwcaH5BFp+AHTIyAA6CAASaRkaqKIFRayKYqVQfooASqzaUAQQYCDQfhrl08gwySAmJgHarAC80+UttQAUcwtLCCshrACOcVChHsYMmcBgUOLjrMgA1qwAnsh3DAxGyL9fBilMJlBAAShICAYEGeDEkmWsPEYLHY0QQUGgTyIbG6fh4Bg8Bm0tW4hE8-0MqXSqLuYQCMFYChUEA0oTOYRQMFCT1eH1AFxIECsrNYECKhmAcW4JlgvPekOhsPhPA0XLSMOQACkAOroJzOPaLZaMpTKFlsuIczQ6Qw69CC4XHMVgW26626cbtJmqDSYADyIj1rjaoRxoNcuUgYZ6hlqtRaAG9UAttKg1BtgqgIO9gGnUB5uAQYABqABWTAgqEz5ZeeYAPJLpbAAPpvd7KVAAXyTpegaY2nZayAVGrhqPUORuz0bMpgcuCHJATYIyRKoIsjvsjhcvgYLygz2oV2jeIAkgAREkMDyfGLxRLY3zAWF-Xf7pLbG46AzIYtfcbJGCcYIFSTRoK0QoAMI-O+GggHEEDJM2b4HlsCDcNe7zNKgSYnggzZQIkSBQEYB4cOm0yDqgJCrKsIgMAAts80BMf+wIEBstEjkqqKInEbCZLEsAvEQMoIC81y3AByCuIxBR+DCSDeoicwFBJJH-PcQwIMWoCIccZwXEkGFxAgVwoYyCwoCZZmzDBB7IFCKAWkZHjehOADiACiQYEHJvj+EpljKIiW76gFimkKwJhRDZ5n2c8LmXMpqqpDA6l-El5IWUQrAAB7DKQVkGeclx2XuDm0mwNBHo50LIPlwCue5Gjeb5-kKQEpDBaFDjhZ1SnRVEWXxRVzwMcMWiHJpDV5U1yVOTxCIiuyIzIIkRjsGVTDJFASxOM8KycglHHTC1yD+oGMlsIUoYgjGzihEYoarrUoHsNhYgwJ0IYdF0oKKKeHgaAA2nhyAXgAui0G4hWoAAsdgAMzAQ01JgJ9v0-bieiQfMRqHKwzQIKwTCzPjBwrKgADchGrKgeEER4qAbDDi3-MqKnchqdrhRTxreuapyWmtbiuvaQpw064pam6YueqE52Xb5v14Y9rDPWEr0gY0H3gV97TYwDAzhJERPICDdrQ9R7NjpkE6PDKHg8t8AIAhE7ExrD1hhTuCX4LZ4MXleN5orECRJEWDDPv8r4ncgn5aT+f56YBwHvRj+uioo0FjXBCFIRZaEYTe2G4fdfhM11JFkf2lFs4qHO8RoN3tGuMYNSMS4yiunjBKGcRMbUX7aQsJUcudbXXR1gXdZufUuH5rERV1JABG569AA)
+
 The general flow of a secure session is as follows:
 1. The website requests that the browser start a new session, providing an HTTP endpoint to negotiate registration parameters.
 1. The browser creates a device-bound key pair, and calls the registration HTTP endpoint to set up the session and register the public key.
@@ -129,25 +130,25 @@ As long as that session is active, the browser performs the following refresh as
 ### Start Session
 ![Start session diagram](header_setup.svg)
 
-[Link to editable diagram](https://sequencediagram.org/index.html#initialData=MoUwTgbuC0B8CqBncACAggcxAOwC4C4VQBjaURRASwHttoAlEDSxXMAQ1xuwCgeMw1AK4AHFMlyjxICtxRgQARyEzcPJKkw5ccUJHD4ACgHlgAFRQB6ZMSELks2tdzswuB1Vo9s1XCBTUUGAoGsFaeAA0ekEAxADuABYgnPgA3gBEAEaU2AAmORjQ7AA2GPgAdJXpAL7qyGFYeAA8ZOBB+KA6AMLU1ADWlCCE7EK4CQD6xL0DIN6+-oGooeiNuFFt4PFJKRke3NCUudqUAGaDYBVVtTi5fD5+AUEh9SvaW8kE5J7YKCwoPnEUOxiFwoDwgA)
+[Link to editable diagram](https://sequencediagram.org/index.html#initialData=MoUwTgbuC0B8CqBncACAggcxAOwC4C4VQBjAVzBGlEUQEsB7baAJRA1sVzAENcHsAUAIxh6pAA4pkuCVJA1+KCgEdS83AKSpMOXHFCRw+AAoB5YABUUAemRkKyBY1u5uYXI7qMB2erhAo9FBgKFohOngANAbBAMQA7gAWILz4rOycPHyMKABSAOoWmsjhWHgAPFTgwfigegDC9PQA1rQghNykuIkA+sRNrSA+fgFBqGHoZbjR1eAJyanUXtgotNiZpMTZ6wI4ACZCvv6BwaElk7rzKQRLihwovvEo3Fu0UAJAA)
 
 #### Session Registration Header
-The session start process is initiated by the server attaching a header with Sec-Session-Registration and appropriate parameters, this looks like:
+The session start process is initiated by the server attaching a header with Secure-Session-Registration and appropriate parameters, this looks like:
 ```http
 HTTP/1.1 200 OK
-Sec-Session-Registration: (RS256 ES256);challenge="challenge_value";path="StartSession"
+Secure-Session-Registration: (RS256 ES256);challenge="challenge_value";path="StartSession"
 ```
 This is a structured header with a list of token arguments representing the allowed algorithms (possibilities are ES256 and RS256). The list has multiple string attributes, "path" is required describing the endpoint to use, "challenge" is to provide a challenge value for the registration JWT. There is also an optional string attribute called authorization. There can be more than one registration on one response:
 ```http
 HTTP/1.1 200 OK
-Sec-Session-Registration: (ES256 RS256);path="path1";challenge="challenge_value";authorization="authcode"
-Sec-Session-Registration: (ES256);path="path2";challenge="challenge_value"
+Secure-Session-Registration: (ES256 RS256);path="path1";challenge="challenge_value";authorization="authcode"
+Secure-Session-Registration: (ES256);path="path2";challenge="challenge_value"
 ```
 
 An equivalent way of writing this is:
 ```http
 HTTP/1.1 200 OK
-Sec-Session-Registration: (ES256 RS256);path="path1";challenge="challenge_value";authorization="authcode", (ES256);path="path2";challenge="challenge_value"
+Secure-Session-Registration: (ES256 RS256);path="path1";challenge="challenge_value";authorization="authcode", (ES256);path="path2";challenge="challenge_value"
 ```
 
 The authorization value is optional for servers to send, but mandatory for clients to implement. If present, it will be sent to the registration endpoint in the `Authorization` header, and included in the registration JWT. This allows passing a bearer token that allows the server to link registration with some preceding sign in flow, as an alternative to the more traditional use of cookies. While this can also facilitate integration with some existing infrastructure, e.g. ones based on OAuth 2.0, this parameter is general and is not limited to the similarly named [Authorization Code](https://datatracker.ietf.org/doc/html/rfc6749#section-1.3.1) in OAuth 2.0.
@@ -169,13 +170,11 @@ The JWT proof is signed with the newly created private key, and needs to contain
 {
   "alg": "Signature Algorithm",
   "typ": "dbsc+jwt",
+  "jwk": "public key JWK",
 }
 // Payload
 {
-  "aud": "URL of this request",
   "jti": "challenge_value",
-  "iat": "timestamp", // Number, represent number of seconds since Jan 1, 1970
-  "key": "public key JWK",
   "authorization": "<authorization_value>", // optional, only if set in registration header
 }
 ```
@@ -228,23 +227,23 @@ Set-Cookie: auth_cookie=abcdef0123; Domain=example.com; Max-Age=600; Secure; Htt
 }
 ```
 
-If the request is not properly authorized, the server can request a new registration by answering with a 403 and a new Sec-Session-Registration header. The status code is not especially important here; anything that fails registration will work.
+If the request is not properly authorized, the server can request a new registration by answering with a 403 and a new Secure-Session-Registration header. The status code is not especially important here; anything that fails registration will work.
 
 ```http
 HTTP/1.1 403
-Sec-Session-Registration: (ES256 RS256);path="/registration";challenge="challenge_value"
+Secure-Session-Registration: (ES256 RS256);path="/registration";challenge="challenge_value"
 ```
 
 Subsequently, as long as the browser considers this session "active", it follows the steps above, namely by refreshing the auth_cookie whenever needed, as covered in the next section.
 
-Note if multiple cookies are required, the server returns multiple Set-Cookie headers, with corresponding entries in the "credentials" array in the response body.  
+Note if multiple cookies are required, the server returns multiple Set-Cookie headers, with corresponding entries in the "credentials" array in the response body.
 
 ### Maintaining a session
 As long as the named cookie is not expired the browser will keep sending requests as normal. Once the cookie is expired the browser will hold all requests for the scope of the cookie, except where the server excluded the paths in the registration, while refreshing the cookie. This is where the browser driven protocol makes a difference, if not for this there would be potentially many requests without the required cookie.
 #### Refresh procedure
 ![Refresh diagram](refresh_v2.svg)
 
-[Link to editable diagram](https://sequencediagram.org/index.html#initialData=A4QwTgLglgxloDsIAICqBnApmZBBA5pkgFCiSzwhLIASmANgCbIBKmAjgK6boTqnhocRCgDK2AG7ZixBAHsImZHKk4M2PISQAacWFUBiAO4ALTCAgAucenRQ5CZDDlyA1lCUhOEEwH1nbh7ImAAewFBgmIzE6jgERBAAtAB8dEysHNy86JbIAOIAogAqwSEgALbA9JgAdM7lAPTAYAqYMIqMvpFcPBDE+C2cwBkAZpHoJshYtvYIMVhxWknJeqqWAAoA8qIlDVgwnOM8dg4NkWM8JsSr2CmxmgmWNEVF68gALAAMAIyyrcqqNALB46G5gYxmCzWNqJGwnBCJADCJhA9GqCEIlhq2Jq8w08SQKTBG22u32hx4x1mZ0wFwmf0UAI09wJEF0kmwEPMVgA3gAicQwWFUhyJNjoYAOLHYvkAX2uHLAd2BrKeLzeACZPp8GUoVMyVUt2fpOaZudCkoiXO5MLkvD5-NaPABeCSo7jEIjReSM-VqQ0JY2GM1QtjVEBYZBmdLdLJ8ZBGKA+JxOnjIc7jMzRFlLImK3KFEqhCpVWr1JotRTtKJdTK9YhAA)
+[Link to editable diagram](https://sequencediagram.org/index.html#initialData=A4QwTgLglgxloDsIAICqBnApmZBBA5pkgFCiSzwhLIASmANgCbIBKmAjgK6boTqnhocRCgDK2AG7ZixBAHsImZHKk4M2PISQAacWFUBiAO4ALTCAgAucenRQ5CZDDlyA1lCUhOEEwH1nbh7ImAAewFBgmIzE6jgERBAAtAB8dEysHNy86JbIAOIAogAqwSEgALbA9JgAdM7lAPTAYAqYMIqMvpFcPBDE+C2cwBkAZpHoJshYtvYIMVhxWknJeqqWAAoA8qIlDVgwnOM8dg4NkWM8JsSr2CmxmgmWNEVF68gALAAMAMyyrcqqNALB46G5gYxmCzWNqHTCJGwnBCJADCJhA9GqCEIlhquJq8w08SQKTBG22u32sOmiLOmAuEz+igBGnuRIgukk2Ah5is4gOkXhx1miTY6GADiwOPxYLuwLZTxebwATJ9PoylCoWXKlhz9FzTDzoUlkS53Jhcl4fP5TR4ALwSdHcYhEaLyJmatTahK6wwGqFsaogLDIMzpbpZPjIIxQHxOG08ZDncZmaKspYkzlgXKFEqhCpVWr1JotRTtKJdTK9YhAA)
 
 The browser refreshes the short-term session credential by calling the session endpoint:
 
@@ -253,7 +252,7 @@ POST /securesession/refresh HTTP/1.1
 Host: auth.example.com
 Accept: application/json
 Cookie: whatever_cookies_already_apply_to_this_request=value;
-Sec-Session-Id: session_id
+Sec-Secure-Session-Id: session_id
 ```
 
 In response to this, the server can optionally first request a proof of
@@ -264,44 +263,46 @@ header with a list of challenge values that specify an "id" parameter:
 
 ```http
 HTTP/1.1 403
-Sec-Session-Challenge: "challenge_value";id="session_id"
+Secure-Session-Challenge: "challenge_value";id="session_id"
 ```
 
 The server can also serve challenges ahead of time attached to any response as an optimization, for example:
 ```http
 HTTP/1.1 XXX
-Sec-Session-Challenge: "challenge_value";id="session_id"
+Secure-Session-Challenge: "challenge_value";id="session_id"
 ```
 
 It is also possible to send challenges to multiple sessions:
 ```http
 HTTP/1.1 XXX
-Sec-Session-Challenge: "challenge 1";id="session 1"
-Sec-Session-Challenge: "challenge 2";id="session 2"
+Secure-Session-Challenge: "challenge 1";id="session 1"
+Secure-Session-Challenge: "challenge 2";id="session 2"
 ```
 
 This can also be formatted as:
 ```http
 HTTP/1.1 XXX
-Sec-Session-Challenge: "challenge 1";id="session 1", "challenge 2";id="session 2"
+Secure-Session-Challenge: "challenge 1";id="session 1", "challenge 2";id="session 2"
 ```
 as each challenge is a structured header item.
 
-The browser replies to that response with a Sec-Session-Response header, containing a signed JWT:
+The browser replies to that response with a Secure-Session-Response header, containing a signed JWT:
 
 ```http
 POST /securesession/refresh HTTP/1.1
-Sec-Session-Response: JWT proof
+Secure-Session-Response: JWT proof
 ```
 
 The JWT proof contains:
-```json
+```jsonc
+// Header
 {
-  "aud": "the URL to which the Sec-Session-Response will be sent",
+  "alg": "Signature Algorithm",
+  "typ": "dbsc+jwt",
+}
+// Payload
+{
   "jti": "challenge_value",
-  "iat": "timestamp",
-  "key": "jwk of session public key",
-  "sub": "the session ID corresponding to the binding key",
 }
 ```
 
@@ -324,7 +325,6 @@ The server may set or update other cookies not subject to session refreshes in t
 If instead the server decides to end the session it can respond with:
 ```json
 {
-  "session_identifier": "session_id",
   "continue": false
  }
 ```

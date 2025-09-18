@@ -1264,7 +1264,7 @@ In addition, the following claim MUST be present if present in the
   {
     "alg": "ES256",
     "typ": "dbsc+jwt",
-    "key": {
+    "jwk": {
       "kty": "EC",
       "crv": "P-256",
       "x": "6_GB2voQ0qroMh6OlDFCFS_SJriQi1PTvvBOhGZ3bHI",
