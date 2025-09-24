@@ -98,7 +98,7 @@ There are a few obvious considerations to ensure we achieve that goal:
 - Registration and refresh will only be performed over a secure connection (or with localhost for testing).
 
 To achieve these goals, we add the following constraints to DBSC requests:
-- Registration and refresh are made in the context of the request that triggered them. For registration, this is the request serving the Sec-Session-Registration header. For refresh, this is the request deferred due to missing cookies.
+- Registration and refresh are made in the context of the request that triggered them. For registration, this is the request serving the Secure-Session-Registration header. For refresh, this is the request deferred due to missing cookies.
 - Cookie refresh only occurs if the cookie is accessible. DBSC will not attempt to refresh a third-party cookie if third-party cookies are blocked.
 - Refresh from cross-site contexts will only occur if the Storage Access API has granted permission to access first-party state. This mitigates a timing side-channel on recent interactions with a site and is consistent with unpartitioned DBSC sessions being a kind of first-party state.
 - Proactive refreshes must only occur if any tab has a page from the site loaded.
@@ -161,7 +161,7 @@ POST /securesession/startsession HTTP/1.1
 Host: auth.example.com
 Accept: application/json
 Cookie: whatever_cookies_already_apply_to_this_request=value;
-Sec-Session-Response: JWT Proof
+Secure-Session-Response: JWT Proof
 
 ```
 The JWT proof is signed with the newly created private key, and needs to contain the following values (the public key is in the [JWK](https://datatracker.ietf.org/doc/html/rfc7517) format):
@@ -257,7 +257,7 @@ Sec-Secure-Session-Id: session_id
 
 In response to this, the server can optionally first request a proof of
 possession of the key by issuing a challenge to the browser by responding with a
-403 response with a challenge. The Sec-Session-Challenge header is a structured
+403 response with a challenge. The Secure-Session-Challenge header is a structured
 header with a list of challenge values that specify an "id" parameter:
 "challenge_value";id="session_id".
 
