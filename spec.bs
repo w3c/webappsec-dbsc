@@ -766,6 +766,7 @@ steps:
     1. Set the user agent's [=session store=][|destination
        domain|][|session identifier|] to |session|.
     1. [=iteration/Break=].
+  1. Run [[#algo-process-challenge]] on |response|.
 </div>
 
 ## Process session registration ## {#algo-process-session-registration}
