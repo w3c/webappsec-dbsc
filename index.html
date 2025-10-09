@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="ae7c6c9a2b055bc89e72d4489bee5e4f132ac566" name="revision">
+  <meta content="6c338b84d65a96233687745aea91410c3ca34da7" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2025-09-30">30 September 2025</time></p>
+    <time class="dt-updated" datetime="2025-10-09">9 October 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2279,9 +2279,11 @@ by this session. This key MUST be present, except when the value of the
 <a data-link-type="dfn" href="#json-session-instructions-continue" id="ref-for-json-session-instructions-continue③">continue</a> key is false.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="JSON session instructions" data-dfn-type="dfn" data-noexport id="json-session-instructions-allowed_refresh_initiators">allowed_refresh_initiators</dfn>
     <dd data-md>
-     <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑨">list</a> of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②⑨">strings</a> describing which hosts are allowed to initiate
-DBSC refreshes. See <a href="#algo-request-allows-refresh">§ 8.3 Identify if a request is allowed to refresh</a> for details. This key
-is OPTIONAL; if not present, the default value will be an empty list.</p>
+     <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑨">list</a> of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②⑨">strings</a> describing which out-of-scope hosts are allowed
+to initiate DBSC refreshes. Out-of-scope is defined based on the scope’s
+origin and include_site values. See <a href="#algo-request-allows-refresh">§ 8.3 Identify if a request is allowed to refresh</a> for
+details. This key is OPTIONAL; if not present, the default value will be an
+empty list.</p>
    </dl>
    <div class="example" id="secure-session-instruction-example">
     <a class="self-link" href="#secure-session-instruction-example"></a>
