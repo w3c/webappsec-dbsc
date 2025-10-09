@@ -1115,9 +1115,11 @@ At the root of the JSON object, the following keys can exist:
     [=continue=] key is false.
 
   : <dfn>allowed_refresh_initiators</dfn>
-  :: a [=list=] of [=strings=] describing which hosts are allowed to initiate
-    DBSC refreshes. See [[#algo-request-allows-refresh]] for details. This key
-    is OPTIONAL; if not present, the default value will be an empty list.
+  :: a [=list=] of [=strings=] describing which out-of-scope hosts are allowed
+    to initiate DBSC refreshes. Out-of-scope is defined based on the scope's
+    origin and include_site values. See [[#algo-request-allows-refresh]] for
+    details. This key is OPTIONAL; if not present, the default value will be an
+    empty list.
 </dl>
 
 <div class="example" id="secure-session-instruction-example">
