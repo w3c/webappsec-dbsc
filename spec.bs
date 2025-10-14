@@ -637,7 +637,7 @@ both `example.co.uk` and `www.example.de` is `example`.
   1. Set |request|'s [=request/URL=] to |destination|.
   1. Set |request|'s [=request/redirect mode=] to "follow".
   1. If |session response| is non-null, [=header list/append=] the header
-     ("Secure-Session-Response", |session resposne|) to |request|'s
+     ("Secure-Session-Response", |session response|) to |request|'s
      [=request/header list=].
   1. If |session id| is non-null, [=header list/append=] the header
      ("Sec-Secure-Session-Id", |session id|) to |request|'s
