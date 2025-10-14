@@ -626,18 +626,18 @@ both `example.co.uk` and `www.example.de` is `example`.
        user agent's [=session store=], if such a session if found.
   1. If |originating request|'s [=request/URL=]'s [=/origin=] is not [=/same site=] with
      |destination|'s [=/origin=], return.
-  1. Let |signed challenge| be null. If |challenge| or |authorization| is
-     non-null, let |signed challenge| be the result of creating a [=DBSC proof=]
+  1. Let |session response| be null. If |challenge| or |authorization| is
+     non-null, let |session response| be the result of creating a [=DBSC proof=]
      for |challenge| and |authorization|.
-  1. If |key pair| and |signed challenge| are non-null, sign |signed challenge|
-     with with |key pair|.
+  1. If |key pair| and |session response| are non-null, sign |session response|
+     with |key pair|.
   1. Create a |request| for use in <a
      href="https://fetch.spec.whatwg.org/#http-fetch">HTTP fetch</a>.
   1. Set |request|'s [=request/method=] to "POST".
   1. Set |request|'s [=request/URL=] to |destination|.
   1. Set |request|'s [=request/redirect mode=] to "follow".
-  1. If |signed challenge| is non-null, [=header list/append=] the header
-     ("Secure-Session-Response", |signed challenge|) to |request|'s
+  1. If |session response| is non-null, [=header list/append=] the header
+     ("Secure-Session-Response", |session resposne|) to |request|'s
      [=request/header list=].
   1. If |session id| is non-null, [=header list/append=] the header
      ("Sec-Secure-Session-Id", |session id|) to |request|'s
@@ -814,7 +814,7 @@ a session key pair</dfn>, including key sharing between a Relying Party and
 Session Provider. It takes as inputs the |registration entry| and |params| of a
 [:Secure-Session-Registration:] header and the [=URL=] (|registration URL|) of
 the registration endpoint. It returns a key pair for use in the session, null to
-indicate that no key is needed, and the string "failure" to indicate that key
+indicate that no key is needed, or the string "failure" to indicate that key
 pair creation failed.
 
   1. Let |algorithm list| be an empty [=list=].
@@ -824,7 +824,6 @@ pair creation failed.
        [:Secure-Session-Registration:] and is supported on this client,
        add |algorithm| to |algorithm list|.
   1. If |algorithm list| is empty, return "failure".
-  1. If |algorithm list| contains "none", return null.
   1. If any of |params|["provider_key"], |params|["provider_session_id"], or
      |params|["provider_url"] exists:
     1. If any of the three keys is missing, return "failure".
@@ -844,9 +843,10 @@ pair creation failed.
     1. If |provider session|'s [=device bound session/session scope=]
        [=session scope/origin=] is not [=/same origin=] with |provider
        origin|, return "failure".
-    1. If |provider session|'s [=session key pair=]'s JWK thumbprint (see
-       [[!RFC7638]]) does not match |params|["provider_key"]
-       when encoded in base64url (see [[!RFC4648]]) without padding, return "failure".
+    1. If |provider session|'s [=session key pair=] is null, or |provider
+       session|'s [=session key pair=]'s JWK thumbprint (see [[!RFC7638]]) does
+       not match |params|["provider_key"] when encoded in base64url (see
+       [[!RFC4648]]) without padding, return "failure".
     1. Let |provider well known URL| be a copy of |provider URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
     1. Let |provider well known response| be the result of fetching |provider
@@ -877,7 +877,8 @@ pair creation failed.
       1. The value of the key "provider_origin" is not the
          [=url/origin=] of |provider URL|.
     1. Return |provider session|'s [=session key pair=].
-  1. Return a new key pair created for |algorithm list|.
+  1. Return a new key pair created for |algorithm list|, using null if the
+     selected algorithm is "none".
 </div>
  
 
