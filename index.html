@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="6c338b84d65a96233687745aea91410c3ca34da7" name="revision">
+  <meta content="10b057b8c3c91b4b45409277a924cf954aba6c5b" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2025-10-09">9 October 2025</time></p>
+    <time class="dt-updated" datetime="2025-10-15">15 October 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1247,8 +1247,9 @@ session</p>
      <p>a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment">moment</a> when this session should be removed</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="device bound session" data-dfn-type="dfn" data-noexport id="device-bound-session-session-key-pair">session key pair</dfn>
     <dd data-md>
-     <p>a key pair used by the session. The private key
-should be stored in a secure manner (see <a href="#security-considerations">§ 2 Security Considerations</a>).</p>
+     <p>an optional key pair used by the session. The private key should be stored
+in a secure manner (see <a href="#security-considerations">§ 2 Security Considerations</a>). This may be null if
+the site requests signing algorithm "none".</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="device bound session" data-dfn-type="dfn" data-noexport id="device-bound-session-allowed-refresh-initiators">allowed refresh initiators</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①">list</a> of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③">strings</a> describing which hosts are allowed to initiate
@@ -1594,10 +1595,11 @@ field value</a> given <var>header name</var> and "list" from <var>response</var>
    <h3 class="heading settled" data-level="8.8" id="algo-session-request"><span class="secno">8.8. </span><span class="content">Send request</span><a class="self-link" href="#algo-session-request"></a></h3>
    <div class="algorithm" data-algorithm="send a request" data-algorithm-for="algorithms">
     
-  This algorithm describes how to <dfn class="dfn-paneled" data-dfn-for="algorithms" data-dfn-type="dfn" data-export data-lt="send a request" id="algorithms-send-a-request">send
-  a request</dfn> for a device bound session registration or refresh. It
-  takes as input a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request③">request</a> (<var>originating request</var>), <var>key pair</var>, <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url④">URL</a> (<var>destination</var>),
-  and optional <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①②">strings</a> <var>session id</var>, <var>challenge</var>, and <var>authorization</var>.
+  This algorithm describes how to <dfn class="dfn-paneled" data-dfn-for="algorithms" data-dfn-type="dfn" data-export data-lt="send a request" id="algorithms-send-a-request">send a
+  request</dfn> for a device bound session registration or refresh. It takes as
+  input a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request" id="ref-for-concept-request③">request</a> (<var>originating request</var>), an optional <var>key pair</var>, <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url④">URL</a>
+  (<var>destination</var>), and optional <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①②">strings</a> <var>session id</var>, <var>challenge</var>, and
+  <var>authorization</var>.
 
 
     <p>User agents will perform these steps whenever a bound credential is missing,
@@ -1627,9 +1629,12 @@ field value</a> given <var>header name</var> and "list" from <var>response</var>
       <p>If <var>originating request</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-url" id="ref-for-concept-request-url②">URL</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin③">origin</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#same-site" id="ref-for-same-site②">same site</a> with
  <var>destination</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">origin</a>, return.</p>
      <li data-md>
-      <p>Let <var>signed challenge</var> be null. If <var>challenge</var> or <var>authorization</var> is
- non-null, create a <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof①">DBSC proof</a>, sign it with <var>key pair</var>, and store the
- result in <var>signed challenge</var>.</p>
+      <p>Let <var>session response</var> be null. If <var>challenge</var> or <var>authorization</var> is
+ non-null, let <var>session response</var> be the result of creating a <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof①">DBSC proof</a>
+ for <var>challenge</var> and <var>authorization</var>.</p>
+     <li data-md>
+      <p>If <var>key pair</var> and <var>session response</var> are non-null, sign <var>session response</var>
+ with <var>key pair</var>.</p>
      <li data-md>
       <p>Create a <var>request</var> for use in <a href="https://fetch.spec.whatwg.org/#http-fetch">HTTP fetch</a>.</p>
      <li data-md>
@@ -1639,8 +1644,8 @@ field value</a> given <var>header name</var> and "list" from <var>response</var>
      <li data-md>
       <p>Set <var>request</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-redirect-mode" id="ref-for-concept-request-redirect-mode">redirect mode</a> to "follow".</p>
      <li data-md>
-      <p>If <var>signed challenge</var> is non-null, <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-header-list-append" id="ref-for-concept-header-list-append">append</a> the header
- ("Secure-Session-Response", <var>signed challenge</var>) to <var>request</var>’s
+      <p>If <var>session response</var> is non-null, <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-header-list-append" id="ref-for-concept-header-list-append">append</a> the header
+ ("Secure-Session-Response", <var>session response</var>) to <var>request</var>’s
  <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-header-list" id="ref-for-concept-request-header-list①">header list</a>.</p>
      <li data-md>
       <p>If <var>session id</var> is non-null, <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-header-list-append" id="ref-for-concept-header-list-append①">append</a> the header
@@ -1698,8 +1703,8 @@ field value</a> given <var>header name</var> and "list" from <var>response</var>
     
 To <dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="create-session">create a session</dfn> due to the <var>response</var>
 (a <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response" id="ref-for-concept-response①">response</a>) to a registration request to <var>destination</var> (a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url⑤">URL</a>) for
-<var>session id</var> (a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①③">string</a> or null) with a <var>key pair</var>, perform the following
-steps:
+<var>session id</var> (a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①③">string</a> or null) with an optional <var>key pair</var>, perform the
+following steps:
 
     <ol>
      <li data-md>
@@ -1898,7 +1903,7 @@ field value</a> given <var>header name</var> and "list" from <var>response</var>
  <a href="#algo-create-session-key-pair">§ 8.11 Create session key pair</a> on <var>registration entry</var>,
  <var>params</var>, and <var>endpoint</var>.</p>
        <li data-md>
-        <p>If <var>key pair</var> is null, return.</p>
+        <p>If <var>key pair</var> is "failure", return.</p>
        <li data-md>
         <p>Call <a href="#algo-session-request">§ 8.8 Send request</a> with <var>request</var>, <var>key pair</var>, <var>endpoint</var>,
  session identifier as null, <var>challenge</var>, and <var>authorization</var>.</p>
@@ -1907,15 +1912,13 @@ field value</a> given <var>header name</var> and "list" from <var>response</var>
    </div>
    <h3 class="heading settled" data-level="8.11" id="algo-create-session-key-pair"><span class="secno">8.11. </span><span class="content">Create session key pair</span><a class="self-link" href="#algo-create-session-key-pair"></a></h3>
    <div class="algorithm" data-algorithm="create a session key pair">
-    
-This algorithm describes how to <dfn class="dfn-paneled" data-dfn-type="dfn" data-export data-lt="create a session key pair" id="create-session-key-pair">create
+    <p>This algorithm describes how to <dfn class="dfn-paneled" data-dfn-type="dfn" data-export data-lt="create a session key pair" id="create-session-key-pair">create
 a session key pair</dfn>, including key sharing between a Relying Party and
 Session Provider. It takes as inputs the <var>registration entry</var> and <var>params</var> of a
 `<code><a data-link-type="http-header" href="#secure-session-registration-header" id="ref-for-secure-session-registration-header④">Secure-Session-Registration</a></code>` header and the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url⑥">URL</a> (<var>registration URL</var>) of
-the registration endpoint. It returns a key pair for use in the session or null
-if no key is possible.
-
-
+the registration endpoint. It returns a key pair for use in the session, null to
+indicate that no key is needed, or the string "failure" to indicate that key
+pair creation failed.</p>
     <ol>
      <li data-md>
       <p>Let <var>algorithm list</var> be an empty <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list④">list</a>.</p>
@@ -1930,24 +1933,24 @@ if no key is possible.
  add <var>algorithm</var> to <var>algorithm list</var>.</p>
       </ol>
      <li data-md>
-      <p>If <var>algorithm list</var> is empty, return null.</p>
+      <p>If <var>algorithm list</var> is empty, return "failure".</p>
      <li data-md>
       <p>If any of <var>params</var>["provider_key"], <var>params</var>["provider_session_id"], or
  <var>params</var>["provider_url"] exists:</p>
       <ol>
        <li data-md>
-        <p>If any of the three keys is missing, return null.</p>
+        <p>If any of the three keys is missing, return "failure".</p>
        <li data-md>
         <p>Let <var>permission</var> be the result of performing <a data-link-type="dfn" href="https://w3c.github.io/permissions/#dfn-request-permission-to-use" id="ref-for-dfn-request-permission-to-use">request permission to use</a> for "device-bound-session-key-sharing".</p>
        <li data-md>
-        <p>If <var>permission</var> is <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/permissions/#dom-permissionstate-denied" id="ref-for-dom-permissionstate-denied">"denied"</a></code>, return null.</p>
+        <p>If <var>permission</var> is <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/permissions/#dom-permissionstate-denied" id="ref-for-dom-permissionstate-denied">"denied"</a></code>, return "failure".</p>
        <li data-md>
         <p>Let <var>provider URL</var> be a <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url" id="ref-for-concept-url⑦">URL</a> constructed from
  <var>params</var>["provider_url"].</p>
        <li data-md>
         <p>Let <var>provider origin</var> be the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-origin" id="ref-for-concept-url-origin">origin</a> of <var>provider URL</var>.</p>
        <li data-md>
-        <p>If <var>provider origin</var> is opaque, return null.</p>
+        <p>If <var>provider origin</var> is opaque, return "failure".</p>
        <li data-md>
         <p>Let <var>provider domain</var> be the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#host-registrable-domain" id="ref-for-host-registrable-domain①①">registrable domain</a> of
  <var>provider URL</var>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host⑨">host</a>.</p>
@@ -1957,21 +1960,22 @@ if no key is possible.
         <p>Let <var>provider session</var> be the session in the user agent’s
  <a data-link-type="dfn" href="#session-store" id="ref-for-session-store⑦">session store</a>[<var>provider domain</var>][<var>provider session identifier</var>].</p>
        <li data-md>
-        <p>If <var>provider session</var> is null, return null.</p>
+        <p>If <var>provider session</var> is null, return "failure".</p>
        <li data-md>
         <p>If <var>provider session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-scope" id="ref-for-device-bound-session-session-scope⑦">session scope</a>
  <a data-link-type="dfn" href="#session-scope-origin" id="ref-for-session-scope-origin⑤">origin</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#same-origin" id="ref-for-same-origin②">same origin</a> with <var>provider
- origin</var>, return null.</p>
+ origin</var>, return "failure".</p>
        <li data-md>
-        <p>If <var>provider session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair①">session key pair</a>’s JWK thumbprint (see
- <a data-link-type="biblio" href="#biblio-rfc7638" title="JSON Web Key (JWK) Thumbprint">[RFC7638]</a>) does not match <var>params</var>["provider_key"]
- when encoded in base64url (see <a data-link-type="biblio" href="#biblio-rfc4648" title="The Base16, Base32, and Base64 Data Encodings">[RFC4648]</a>) without padding, return null.</p>
+        <p>If <var>provider session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair①">session key pair</a> is null, or <var>provider
+ session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair②">session key pair</a>’s JWK thumbprint (see <a data-link-type="biblio" href="#biblio-rfc7638" title="JSON Web Key (JWK) Thumbprint">[RFC7638]</a>) does
+ not match <var>params</var>["provider_key"] when encoded in base64url (see
+ <a data-link-type="biblio" href="#biblio-rfc4648" title="The Base16, Base32, and Base64 Data Encodings">[RFC4648]</a>) without padding, return "failure".</p>
        <li data-md>
         <p>Let <var>provider well known URL</var> be a copy of <var>provider URL</var>, with the
  <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-path" id="ref-for-concept-url-path④">path</a> replaced with "/.well-known/device-bound-sessions".</p>
        <li data-md>
         <p>Let <var>provider well known response</var> be the result of fetching <var>provider
- well known URL</var>. If any of the following hold, return null:</p>
+ well known URL</var>. If any of the following hold, return "failure":</p>
         <ol>
          <li data-md>
           <p><var>provider well known response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status⑥">status</a> is not 200.</p>
@@ -1997,7 +2001,7 @@ if no key is possible.
  <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-path" id="ref-for-concept-url-path⑤">path</a> replaced with "/.well-known/device-bound-sessions".</p>
        <li data-md>
         <p>Let <var>relying well known response</var> be the result of fetching <var>relying well
- known URL</var>. If any of the following hold, return null:</p>
+ known URL</var>. If any of the following hold, return "failure":</p>
         <ol>
          <li data-md>
           <p><var>relying well known response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status⑦">status</a> is not 200.</p>
@@ -2015,10 +2019,11 @@ if no key is possible.
  <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-origin" id="ref-for-concept-url-origin②">origin</a> of <var>provider URL</var>.</p>
         </ol>
        <li data-md>
-        <p>Return <var>provider session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair②">session key pair</a>.</p>
+        <p>Return <var>provider session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair③">session key pair</a>.</p>
       </ol>
      <li data-md>
-      <p>Return a new key pair created for <var>algorithm list</var>.</p>
+      <p>Return a new key pair created for <var>algorithm list</var>, using null if the
+ selected algorithm is "none".</p>
     </ol>
    </div>
    <h3 class="heading settled" data-level="8.12" id="algo-add-debug-header"><span class="secno">8.12. </span><span class="content">Add debug header</span><a class="self-link" href="#algo-add-debug-header"></a></h3>
@@ -2060,8 +2065,8 @@ client.
 is:</p>
 <pre class="abnf">SecureSessionRegistration = <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#list" id="ref-for-list⑥">sf-list</a></pre>
    <p>Each item in the list must be an inner list, and each item in the inner list
-MUST be an <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#token" id="ref-for-token③">sf-token</a> representing a supported algorithm (ES256, RS256).
-Only these two values are currently supported.</p>
+MUST be an <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#token" id="ref-for-token③">sf-token</a> representing a supported algorithm (ES256, RS256,
+none). Only these three values are currently supported.</p>
    <p>The following <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#name-parameters" id="ref-for-name-parameters①">sf-parameter</a>s are defined:</p>
    <ul>
     <li data-md>
@@ -2414,7 +2419,7 @@ A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="dbsc-proof">DBS
     <dt data-md>alg
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③⑧">string</a> defining the algorithm used to sign this JWT. It MUST be
-either "RS256" or "ES256" from [IANA.JOSE.ALGS].</p>
+"RS256", "ES256", or "none" from [IANA.JOSE.ALGS].</p>
     <dt data-md>jwk
     <dd data-md>
      <p>a JWK as specified in <a data-link-type="biblio" href="#biblio-rfc7517" title="JSON Web Key (JWK)">[RFC7517]</a>. This MUST be present for
@@ -2485,7 +2490,7 @@ bound session ids</dfn>, a <a data-link-type="dfn" href="https://infra.spec.what
    <ol>
     <li data-md>
      <p>Run <a href="#algo-session-request">§ 8.8 Send request</a> with <var>httpRequest</var>, the
-returned <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair③">session key pair</a>, <a data-link-type="dfn" href="#device-bound-session-refresh-url" id="ref-for-device-bound-session-refresh-url②">refresh URL</a>, <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier⑦">session identifier</a>, <a data-link-type="dfn" href="#device-bound-session-cached-challenge" id="ref-for-device-bound-session-cached-challenge③">cached challenge</a>, and an empty
+returned <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair④">session key pair</a>, <a data-link-type="dfn" href="#device-bound-session-refresh-url" id="ref-for-device-bound-session-refresh-url②">refresh URL</a>, <a data-link-type="dfn" href="#device-bound-session-session-identifier" id="ref-for-device-bound-session-session-identifier⑦">session identifier</a>, <a data-link-type="dfn" href="#device-bound-session-cached-challenge" id="ref-for-device-bound-session-cached-challenge③">cached challenge</a>, and an empty
 authorization.</p>
     <li data-md>
      <p>Restart <a href="https://fetch.spec.whatwg.org/#http-network-or-cache-fetch">HTTP-network-or-cache
@@ -3130,7 +3135,7 @@ let dfnPanelData = {
 "algorithms-identify-a-session-needing-refresh": {"dfnID":"algorithms-identify-a-session-needing-refresh","dfnText":"identify a session needing refresh","external":false,"refSections":[],"url":"#algorithms-identify-a-session-needing-refresh"},
 "algorithms-identify-if-a-request-is-missing-a-session-credential": {"dfnID":"algorithms-identify-if-a-request-is-missing-a-session-credential","dfnText":"identify if a\n  request is missing a session credential","external":false,"refSections":[],"url":"#algorithms-identify-if-a-request-is-missing-a-session-credential"},
 "algorithms-process-a-challenge": {"dfnID":"algorithms-process-a-challenge","dfnText":"process a challenge","external":false,"refSections":[],"url":"#algorithms-process-a-challenge"},
-"algorithms-send-a-request": {"dfnID":"algorithms-send-a-request","dfnText":"send\n  a request","external":false,"refSections":[],"url":"#algorithms-send-a-request"},
+"algorithms-send-a-request": {"dfnID":"algorithms-send-a-request","dfnText":"send a\n  request","external":false,"refSections":[],"url":"#algorithms-send-a-request"},
 "b6374348": {"dfnID":"b6374348","dfnText":"sf-inner-list","external":true,"refSections":[{"refs":[{"id":"ref-for-inner-list"}],"title":"8.10. Process session registration"}],"url":"https://datatracker.ietf.org/doc/html/rfc9651#inner-list"},
 "b85ee3be": {"dfnID":"b85ee3be","dfnText":"host","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-url-host"}],"title":"8.1. Identify session"},{"refs":[{"id":"ref-for-concept-url-host\u2460"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-concept-url-host\u2461"}],"title":"8.4. Identify if a host matches a pattern"},{"refs":[{"id":"ref-for-concept-url-host\u2462"}],"title":"8.5. Identify session needing refresh"},{"refs":[{"id":"ref-for-concept-url-host\u2463"}],"title":"8.8. Send request"},{"refs":[{"id":"ref-for-concept-url-host\u2464"},{"id":"ref-for-concept-url-host\u2465"},{"id":"ref-for-concept-url-host\u2466"},{"id":"ref-for-concept-url-host\u2467"}],"title":"8.9. Create session"},{"refs":[{"id":"ref-for-concept-url-host\u2468"}],"title":"8.11. Create session key pair"}],"url":"https://url.spec.whatwg.org/#concept-url-host"},
 "bc9d7803": {"dfnID":"bc9d7803","dfnText":"registrable domain","external":true,"refSections":[{"refs":[{"id":"ref-for-host-registrable-domain"}],"title":"7.1. Session store"},{"refs":[{"id":"ref-for-host-registrable-domain\u2460"}],"title":"7.2. Sessions by id"},{"refs":[{"id":"ref-for-host-registrable-domain\u2461"}],"title":"7.3. Device bound session"},{"refs":[{"id":"ref-for-host-registrable-domain\u2462"},{"id":"ref-for-host-registrable-domain\u2463"}],"title":"7.7. Registrable origin label"},{"refs":[{"id":"ref-for-host-registrable-domain\u2464"},{"id":"ref-for-host-registrable-domain\u2465"}],"title":"8.1. Identify session"},{"refs":[{"id":"ref-for-host-registrable-domain\u2466"}],"title":"8.5. Identify session needing refresh"},{"refs":[{"id":"ref-for-host-registrable-domain\u2467"}],"title":"8.8. Send request"},{"refs":[{"id":"ref-for-host-registrable-domain\u2468"},{"id":"ref-for-host-registrable-domain\u2460\u24ea"}],"title":"8.9. Create session"},{"refs":[{"id":"ref-for-host-registrable-domain\u2460\u2460"}],"title":"8.11. Create session key pair"},{"refs":[{"id":"ref-for-host-registrable-domain\u2460\u2461"}],"title":"10.1. Changes to the Fetch specification"}],"url":"https://url.spec.whatwg.org/#host-registrable-domain"},
@@ -3150,7 +3155,7 @@ let dfnPanelData = {
 "device-bound-session-refresh-url": {"dfnID":"device-bound-session-refresh-url","dfnText":"refresh URL","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-refresh-url"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-device-bound-session-refresh-url\u2460"}],"title":"8.9. Create session"},{"refs":[{"id":"ref-for-device-bound-session-refresh-url\u2461"}],"title":"10.1. Changes to the Fetch specification"}],"url":"#device-bound-session-refresh-url"},
 "device-bound-session-session-credentials": {"dfnID":"device-bound-session-session-credentials","dfnText":"session credentials","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-session-credentials"}],"title":"8.5. Identify session needing refresh"},{"refs":[{"id":"ref-for-device-bound-session-session-credentials\u2460"}],"title":"8.7. Cache challenge"},{"refs":[{"id":"ref-for-device-bound-session-session-credentials\u2461"},{"id":"ref-for-device-bound-session-session-credentials\u2462"}],"title":"8.9. Create session"}],"url":"#device-bound-session-session-credentials"},
 "device-bound-session-session-identifier": {"dfnID":"device-bound-session-session-identifier","dfnText":"session identifier","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-session-identifier"}],"title":"7.2. Sessions by id"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2460"},{"id":"ref-for-device-bound-session-session-identifier\u2461"}],"title":"8.1. Identify session"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2462"}],"title":"8.5. Identify session needing refresh"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2463"}],"title":"8.9. Create session"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2464"}],"title":"9.2.1. `Secure-Session-Challenge` structured header serialization"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2465"}],"title":"9.6. JSON Session Instruction Format"},{"refs":[{"id":"ref-for-device-bound-session-session-identifier\u2466"}],"title":"10.1. Changes to the Fetch specification"}],"url":"#device-bound-session-session-identifier"},
-"device-bound-session-session-key-pair": {"dfnID":"device-bound-session-session-key-pair","dfnText":"session key pair","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-session-key-pair"}],"title":"8.9. Create session"},{"refs":[{"id":"ref-for-device-bound-session-session-key-pair\u2460"},{"id":"ref-for-device-bound-session-session-key-pair\u2461"}],"title":"8.11. Create session key pair"},{"refs":[{"id":"ref-for-device-bound-session-session-key-pair\u2462"}],"title":"10.1. Changes to the Fetch specification"}],"url":"#device-bound-session-session-key-pair"},
+"device-bound-session-session-key-pair": {"dfnID":"device-bound-session-session-key-pair","dfnText":"session key pair","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-session-key-pair"}],"title":"8.9. Create session"},{"refs":[{"id":"ref-for-device-bound-session-session-key-pair\u2460"},{"id":"ref-for-device-bound-session-session-key-pair\u2461"},{"id":"ref-for-device-bound-session-session-key-pair\u2462"}],"title":"8.11. Create session key pair"},{"refs":[{"id":"ref-for-device-bound-session-session-key-pair\u2463"}],"title":"10.1. Changes to the Fetch specification"}],"url":"#device-bound-session-session-key-pair"},
 "device-bound-session-session-scope": {"dfnID":"device-bound-session-session-scope","dfnText":"session scope","external":false,"refSections":[{"refs":[{"id":"ref-for-device-bound-session-session-scope"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-device-bound-session-session-scope\u2460"},{"id":"ref-for-device-bound-session-session-scope\u2461"},{"id":"ref-for-device-bound-session-session-scope\u2462"},{"id":"ref-for-device-bound-session-session-scope\u2463"}],"title":"8.3. Identify if a request is allowed to refresh"},{"refs":[{"id":"ref-for-device-bound-session-session-scope\u2464"},{"id":"ref-for-device-bound-session-session-scope\u2465"}],"title":"8.9. Create session"},{"refs":[{"id":"ref-for-device-bound-session-session-scope\u2466"}],"title":"8.11. Create session key pair"}],"url":"#device-bound-session-session-scope"},
 "e25b5dcb": {"dfnID":"e25b5dcb","dfnText":"sf-parameter","external":true,"refSections":[{"refs":[{"id":"ref-for-name-parameters"}],"title":"8.12. Add debug header"},{"refs":[{"id":"ref-for-name-parameters\u2460"},{"id":"ref-for-name-parameters\u2461"},{"id":"ref-for-name-parameters\u2462"},{"id":"ref-for-name-parameters\u2463"},{"id":"ref-for-name-parameters\u2464"},{"id":"ref-for-name-parameters\u2465"},{"id":"ref-for-name-parameters\u2466"},{"id":"ref-for-name-parameters\u2467"}],"title":"9.1. `Secure-Session-Registration` HTTP header field"},{"refs":[{"id":"ref-for-name-parameters\u2468"},{"id":"ref-for-name-parameters\u2460\u24ea"}],"title":"9.2.1. `Secure-Session-Challenge` structured header serialization"},{"refs":[{"id":"ref-for-name-parameters\u2460\u2460"}],"title":"9.3. `Secure-Session-Response` HTTP header field"},{"refs":[{"id":"ref-for-name-parameters\u2460\u2461"},{"id":"ref-for-name-parameters\u2460\u2462"}],"title":"9.5. `Secure-Session-Skipped` HTTP header field"},{"refs":[{"id":"ref-for-name-parameters\u2460\u2463"}],"title":"9.10. DBSC Proof JWT Syntax"}],"url":"https://datatracker.ietf.org/doc/html/rfc9651#name-parameters"},
 "eb1b1af3": {"dfnID":"eb1b1af3","dfnText":"network error","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-network-error"}],"title":"8.8. Send request"}],"url":"https://fetch.spec.whatwg.org/#concept-network-error"},
