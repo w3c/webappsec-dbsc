@@ -1161,7 +1161,8 @@ At the root of the JSON object, the following keys can exist:
       // response.
       "name": "auth_cookie",
       "attributes": "Domain=example.com; Path=/; Secure; HttpOnly; SameSite=None"
-      // Attributes Max-Age and Expires are ignored
+      // Attributes Max-Age and Expires will not contribute to whether a request
+      // cookie satisfies this credential
     }],
     
     "allowed_refresh_initiators": [
