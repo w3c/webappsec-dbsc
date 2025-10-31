@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="10b057b8c3c91b4b45409277a924cf954aba6c5b" name="revision">
+  <meta content="a9e3f57c800b3f55179dc6e93bba577db41ead9a" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2025-10-15">15 October 2025</time></p>
+    <time class="dt-updated" datetime="2025-10-31">31 October 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2318,11 +2318,10 @@ empty list.</p>
     <c- c1>// This specifies the exact cookie that this config applies to. Attributes</c->
     <c- c1>// match the cookie attributes in RFC 6265bis and are parsed similarly to</c->
     <c- c1>// a normal Set-Cookie line, using the same default values.</c->
-    <c- c1>// These SHOULD be equivalent to the Set-Cookie line accompanying this </c->
-    <c- c1>// response.</c->
     <c- f>"name"</c-><c- p>:</c-> <c- u>"auth_cookie"</c-><c- p>,</c->
     <c- f>"attributes"</c-><c- p>:</c-> <c- u>"Domain=example.com; Path=/; Secure; HttpOnly; SameSite=None"</c->
-    <c- c1>// Attributes Max-Age and Expires are ignored</c->
+    <c- c1>// Attributes Max-Age and Expires will not contribute to whether a request</c->
+    <c- c1>// cookie satisfies this credential.</c->
   <c- p>}],</c->
     
   <c- f>"allowed_refresh_initiators"</c-><c- p>:</c-> <c- p>[</c->
