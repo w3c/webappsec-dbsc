@@ -222,7 +222,8 @@ Set-Cookie: auth_cookie=abcdef0123; Domain=example.com; Max-Age=600; Secure; Htt
     // response.
     "name": "auth_cookie",
     "attributes": "Domain=example.com; Path=/; Secure; HttpOnly; SameSite=None"
-    // Attributes Max-Age and Expires are ignored
+    // Attributes Max-Age and Expires will not contribute to whether a request
+	// cookie satisfies this credential.
   }]
 }
 ```
