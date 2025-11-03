@@ -218,8 +218,6 @@ Set-Cookie: auth_cookie=abcdef0123; Domain=example.com; Max-Age=600; Secure; Htt
     // This specifies the exact cookie that this config applies to. Attributes
     // match the cookie attributes in RFC 6265bis and are parsed similarly to
     // a normal Set-Cookie line, using the same default values.
-    // These SHOULD be equivalent to the Set-Cookie line accompanying this 
-    // response.
     "name": "auth_cookie",
     "attributes": "Domain=example.com; Path=/; Secure; HttpOnly; SameSite=None"
     // Attributes Max-Age and Expires will not contribute to whether a request
