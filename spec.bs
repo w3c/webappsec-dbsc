@@ -308,6 +308,9 @@ register a session on the Relying Party (RP) with new keys. Therefore RPs should
 only accept sessions registered with the appropriate public keys they received
 from the SP.
 
+New challenges issued should have a short lifetime. The server should reject
+signed responses that use a stale challenge.
+
 # User agent considerations # {#user-agent-considerations}
 
 DBSC provides a lot of flexibility for browsers to schedule cookie
@@ -630,7 +633,8 @@ both `example.co.uk` and `www.example.de` is `example`.
      non-null, let |session response| be the result of creating a [=DBSC proof=]
      for |challenge| and |authorization|.
   1. If |key pair| and |session response| are non-null, sign |session response|
-     with |key pair|.
+     with |key pair|. The user agent MAY reuse cached results from a previous signing
+     if all inputs are the same instead of resigning.
   1. Create a |request| for use in <a
      href="https://fetch.spec.whatwg.org/#http-fetch">HTTP fetch</a>.
   1. Set |request|'s [=request/method=] to "POST".
