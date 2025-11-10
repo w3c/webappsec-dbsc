@@ -5,9 +5,9 @@
   <title>Device Bound Session Credentials</title>
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version 3f621ba99, updated Mon Jul 28 15:38:36 2025 -0700" name="generator">
+  <meta content="Bikeshed version 7b3ff057a, updated Sun Nov 9 18:39:50 2025 -0800" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="d7cc4d5de4b607db0c22ef940169c8c7a0e9f54f" name="revision">
+  <meta content="b854e10129afa1b1aea2204e1f7baabca65a7d08" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -320,7 +320,7 @@ body {
 }
 .invalid.example:not(.no-marker)::before,
 .illegal.example:not(.no-marker)::before {
-    content: "Invalid Example" counter(example);
+    content: "Invalid Example " counter(example);
 }
 
 figcaption {
@@ -735,9 +735,9 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
     <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72">
 </a>
 </p>
-   <h1 class="p-name no-ref" id="title">Device Bound Session Credentials</h1>
+   <h1 class="no-ref p-name" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2025-11-03">3 November 2025</time></p>
+    <time class="dt-updated" datetime="2025-11-10">10 November 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -747,10 +747,10 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
       <dt>Issue Tracking:
       <dd><a href="https://github.com/w3c/webappsec-dbsc/issues/">GitHub</a>
       <dt class="editor">Editors:
-      <dd class="editor p-author h-card vcard" data-editor-id="162789"><a class="p-name fn u-email email" href="mailto:drubery@google.com">Daniel Rubery</a> (<span class="p-org org">Google</span>)
-      <dd class="editor p-author h-card vcard" data-editor-id="164860"><a class="p-name fn u-email email" href="mailto:thefrog@chromium.org">thefrog@chromium.org</a> (<span class="p-org org">Google</span>)
+      <dd class="editor h-card p-author vcard" data-editor-id="162789"><a class="email fn p-name u-email" href="mailto:drubery@google.com">Daniel Rubery</a> (<span class="org p-org">Google</span>)
+      <dd class="editor h-card p-author vcard" data-editor-id="164860"><a class="email fn p-name u-email" href="mailto:thefrog@chromium.org">thefrog@chromium.org</a> (<span class="org p-org">Google</span>)
       <dt class="editor">Former Editor:
-      <dd class="editor p-author h-card vcard" data-editor-id="76841"><span class="p-name fn">Kristian Monsen</span> (<span class="p-org org">Apple</span>)
+      <dd class="editor h-card p-author vcard" data-editor-id="76841"><span class="fn p-name">Kristian Monsen</span> (<span class="org p-org">Apple</span>)
      </dl>
     </div>
    </details>
@@ -760,10 +760,10 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
    <hr title="Separator for header">
   </div>
   <div class="p-summary" data-fill-with="abstract">
-   <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
+   <h2 class="heading no-num no-ref no-toc settled" id="abstract"><span class="content">Abstract</span></h2>
    <p>Device Bound Sessions Credentials (DBSC) aims to prevent hijacking via cookie theft by building a protocol and infrastructure that allows a user agent to assert possession of a securely-stored private key. DBSC is a Web API and a protocol between user agents and servers to achieve this binding.</p>
   </div>
-  <h2 class="no-num no-toc no-ref heading settled" id="sotd"><span class="content">Status of this document</span></h2>
+  <h2 class="heading no-num no-ref no-toc settled" id="sotd"><span class="content">Status of this document</span></h2>
   <div data-fill-with="status">
    <p>
 	This is a public copy of the editors’ draft.
@@ -811,7 +811,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   </div>
   <div data-fill-with="at-risk"></div>
   <nav data-fill-with="table-of-contents" id="toc">
-   <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
+   <h2 class="no-num no-ref no-toc" id="contents">Table of Contents</h2>
    <ol class="toc" role="directory">
     <li><a href="#intro"><span class="secno">1</span> <span class="content">Introduction</span></a>
     <li>
@@ -1177,6 +1177,8 @@ Provider (SP) login, since malware can use temporary access to the machine to
 register a session on the Relying Party (RP) with new keys. Therefore RPs should
 only accept sessions registered with the appropriate public keys they received
 from the SP.</p>
+   <p>New challenges issued should have a short lifetime. The server should reject
+signed responses that use a stale challenge.</p>
    <h2 class="heading settled" data-level="6" id="user-agent-considerations"><span class="secno">6. </span><span class="content">User agent considerations</span><a class="self-link" href="#user-agent-considerations"></a></h2>
    <p>DBSC provides a lot of flexibility for browsers to schedule cookie
 refreshes. This can mitigate the latency of DBSC and lower the load on
@@ -1634,7 +1636,8 @@ field value</a> given <var>header name</var> and "list" from <var>response</var>
  for <var>challenge</var> and <var>authorization</var>.</p>
      <li data-md>
       <p>If <var>key pair</var> and <var>session response</var> are non-null, sign <var>session response</var>
- with <var>key pair</var>.</p>
+ with <var>key pair</var>. The user agent MAY reuse cached results from a previous signing
+ if all inputs are the same instead of resigning.</p>
      <li data-md>
       <p>Create a <var>request</var> for use in <a href="https://fetch.spec.whatwg.org/#http-fetch">HTTP fetch</a>.</p>
      <li data-md>
@@ -2101,20 +2104,20 @@ with a session on the corresponding site.</p>
   https://example.com/login.html:
 
   
-<pre class="language-html highlight">HTTP/1.1 200 OK
+<pre class="highlight language-html">HTTP/1.1 200 OK
 Secure-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
 </pre>
-<pre class="language-html highlight">HTTP/1.1 200 OK
+<pre class="highlight language-html">HTTP/1.1 200 OK
 Secure-Session-Registration: (ES256 RS256);path="reg";challenge="cv"
 </pre>
-<pre class="language-html highlight">HTTP/1.1 200 OK
+<pre class="highlight language-html">HTTP/1.1 200 OK
 Secure-Session-Registration: (ES256);path="reg1";challenge="cv1";authorization="a"
 Secure-Session-Registration: (RS256);path="reg2";challenge="cv2";authorization="b"
 </pre>
-<pre class="language-html highlight">HTTP/1.1 200 OK
+<pre class="highlight language-html">HTTP/1.1 200 OK
 Secure-Session-Registration: (ES256);path="reg1";challenge="cv1";authorization="a", (RS256);path="reg2";challenge="cv2";authorization="b"
 </pre>
-<pre class="language-html highlight">HTTP/1.1 200 OK
+<pre class="highlight language-html">HTTP/1.1 200 OK
 Secure-Session-Registration: (ES256);path="reg1";challenge="cv1";provider_key="abc";provider_session_id="idp_id";provider_url="https://id_origin.example.com"
 </pre>
    </div>
@@ -2151,17 +2154,17 @@ representing a <a data-link-type="dfn" href="#device-bound-session-session-ident
   https://example.com/login.html:
 
   
-<pre class="language-html highlight">HTTP/1.1 403 Forbidden
+<pre class="highlight language-html">HTTP/1.1 403 Forbidden
 Secure-Session-Challenge: "new challenge";id="my session"
 </pre>
-<pre class="language-html highlight">HTTP/1.1 200 OK
+<pre class="highlight language-html">HTTP/1.1 200 OK
 Secure-Session-Challenge: "new challenge";id="my session"
 </pre>
-<pre class="language-html highlight">HTTP/1.1 200 OK
+<pre class="highlight language-html">HTTP/1.1 200 OK
 Secure-Session-Challenge: "new challenge";id="my session 1"
 Secure-Session-Challenge: "another challenge";id="my session 2"
 </pre>
-<pre class="language-html highlight">HTTP/1.1 200 OK
+<pre class="highlight language-html">HTTP/1.1 200 OK
 Secure-Session-Challenge: "c1";id="session 1", "c2";id="session 2"
 </pre>
    </div>
@@ -2182,7 +2185,7 @@ ignored.</p>
    <div class="example" id="secure-session-response-example">
     <a class="self-link" href="#secure-session-response-example"></a>
   
-<pre class="language-html highlight">POST example.com/refresh
+<pre class="highlight language-html">POST example.com/refresh
 Secure-Session-Response: "eyJhbGciOiJFUzI1NiIsInR5cCI6ImRic2Mrand0In0.eyJhdWQiOiJodHRwczovL2V4YW1wbGUuY29tL3JlZyIsImp0aSI6ImN2IiwiaWF0IjoiMTcyNTU3OTA1NSIsImp3ayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IjZfR0Iydm9RMHFyb01oNk9sREZDRlNfU0pyaVFpMVBUdnZCT2hHWjNiSEkiLCJ5IjoiSWVnT0pVTHlFN1N4SF9DZDFLQ0VSN2xXQnZHRkhRLWgweHlqelVqRUlXRSJ9LCJhdXRob3JpemF0aW9uIjoiYWMifQ.6Fb_vVBDmfNghQiBmIGe8o7tBfYPbPCywhQruP0vIhxgmcJmuNTaMHeVn_M8ZnOm1_bzIitbZqCWEn-1Qzmtyw"
 </pre>
    </div>
@@ -2202,7 +2205,7 @@ ignored.</p>
    <div class="example" id="sec-secure-session-id-example">
     <a class="self-link" href="#sec-secure-session-id-example"></a>
   
-<pre class="language-html highlight">POST example.com/refresh
+<pre class="highlight language-html">POST example.com/refresh
 Sec-Secure-Session-Id: "session-id"
 </pre>
    </div>
@@ -2241,7 +2244,7 @@ refresh (e.g. excessive recent TPM operations).</p>
    <div class="example" id="secure-session-skipped-example">
     <a class="self-link" href="#secure-session-skipped-example"></a>
   
-<pre class="language-html highlight">GET example.com/requires_bound_cookie
+<pre class="highlight language-html">GET example.com/requires_bound_cookie
 Secure-Session-Skipped: unreachable;session_identifier="123", quota_exceeded;session_identifier="456"
 </pre>
    </div>
@@ -2293,7 +2296,7 @@ empty list.</p>
    <div class="example" id="secure-session-instruction-example">
     <a class="self-link" href="#secure-session-instruction-example"></a>
   
-<pre class="language-json highlight"><c- p>{</c->
+<pre class="highlight language-json"><c- p>{</c->
   <c- f>"session_identifier"</c-><c- p>:</c-> <c- u>"session_id"</c-><c- p>,</c->
   <c- f>"refresh_url"</c-><c- p>:</c-> <c- u>"/RefreshEndpoint"</c-><c- p>,</c->
 
@@ -2446,7 +2449,7 @@ client MUST add it to the claim in the <a data-link-type="dfn" href="#dbsc-proof
   An example <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof⑨">DBSC proof</a> sent to https://example.com/reg:
 
   
-<pre class="language-json highlight"><c- c1>// Header</c->
+<pre class="highlight language-json"><c- c1>// Header</c->
 <c- p>{</c->
   <c- f>"alg"</c-><c- p>:</c-> <c- u>"ES256"</c-><c- p>,</c->
   <c- f>"typ"</c-><c- p>:</c-> <c- u>"dbsc+jwt"</c-><c- p>,</c->
@@ -2465,7 +2468,7 @@ client MUST add it to the claim in the <a data-link-type="dfn" href="#dbsc-proof
 </pre>
     <p>Based on a response to <code>http://example.com/page.html</code> having this
   response header from the server:</p>
-<pre class="language-html highlight">HTTP/1.1 200 OK
+<pre class="highlight language-html">HTTP/1.1 200 OK
 Secure-Session-Registration: (ES256);path="reg";challenge="cv";authorization="ac"
 </pre>
    </div>
@@ -2596,7 +2599,7 @@ Provider when this origin is being used as a Relying Party.</p>
     <a class="self-link" href="#example-1b5d4b91"></a>
   If <code>https://example.com/.well-known/device-bound-sessions</code> serves
   
-<pre class="language-json highlight"><c- p>{</c->
+<pre class="highlight language-json"><c- p>{</c->
   <c- f>"registering_origins"</c-><c- p>:</c-> <c- p>[</c->
     <c- u>"https://subdomain.example.com"</c-><c- p>,</c->
     <c- u>"https://subdomain.example.com:8000"</c-><c- p>,</c->
@@ -2622,7 +2625,7 @@ Provider when this origin is being used as a Relying Party.</p>
   enabling those sites to achieve both federated login and DBSC
   protection. To do this, both sites must serve the following entry in their
   <code>.well-known</code> files:</p>
-<pre class="language-json highlight"><c- p>{</c->
+<pre class="highlight language-json"><c- p>{</c->
   <c- f>"provider_origin"</c-><c- p>:</c-> <c- u>"https://example.com/"</c->
 <c- p>}</c->
 </pre>
@@ -2635,8 +2638,8 @@ This is an early draft of the spec.
    <h2 class="heading settled" data-level="13" id="acknowledgements"><span class="secno">13. </span><span class="content">Acknowledgements</span><a class="self-link" href="#acknowledgements"></a></h2>
   </main>
   <div data-fill-with="conformance">
-   <h2 class="no-ref no-num heading settled" id="w3c-conformance"><span class="content">Conformance</span><a class="self-link" href="#w3c-conformance"></a></h2>
-   <h3 class="no-ref no-num heading settled" id="w3c-conventions"><span class="content">Document conventions</span><a class="self-link" href="#w3c-conventions"></a></h3>
+   <h2 class="heading no-num no-ref settled" id="w3c-conformance"><span class="content">Conformance</span><a class="self-link" href="#w3c-conformance"></a></h2>
+   <h3 class="heading no-num no-ref settled" id="w3c-conventions"><span class="content">Document conventions</span><a class="self-link" href="#w3c-conventions"></a></h3>
    <p>Conformance requirements are expressed
     with a combination of descriptive assertions
     and RFC 2119 terminology.
@@ -2671,7 +2674,7 @@ This is an early draft of the spec.
     </p>
    <p class="note" role="note">Note, this is an informative note.</p>
    <section>
-    <h3 class="no-ref no-num heading settled" id="w3c-conformant-algorithms"><span class="content">Conformant Algorithms</span><a class="self-link" href="#w3c-conformant-algorithms"></a></h3>
+    <h3 class="heading no-num no-ref settled" id="w3c-conformant-algorithms"><span class="content">Conformant Algorithms</span><a class="self-link" href="#w3c-conformant-algorithms"></a></h3>
     <p>Requirements phrased in the imperative as part of algorithms
     (such as "strip any leading space characters"
     or "return false and abort these steps")
@@ -2691,8 +2694,8 @@ This is an early draft of the spec.
    </section>
   </div>
   <script src="https://www.w3.org/scripts/TR/2021/fixup.js"></script>
-  <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
-  <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
+  <h2 class="heading no-num no-ref settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
+  <h3 class="heading no-num no-ref settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
   <ul class="index">
    <li><a href="#add-debug-header">add the debug header</a><span>, in § 8.12</span>
    <li><a href="#device-bound-session-allowed-refresh-initiators">allowed refresh initiators</a><span>, in § 7.3</span>
@@ -2780,7 +2783,7 @@ This is an early draft of the spec.
      <li><a href="#scope-specification-type">dfn for scope specification</a><span>, in § 7.5</span>
     </ul>
   </ul>
-  <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
+  <h3 class="heading no-num no-ref settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
   <ul class="index">
    <li>
     <a data-link-type="biblio">[FETCH]</a> defines the following terms:
@@ -2860,8 +2863,8 @@ This is an early draft of the spec.
      <li><span class="dfn-paneled" id="dcffbccd">URL</span>
     </ul>
   </ul>
-  <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
-  <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
+  <h2 class="heading no-num no-ref settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
+  <h3 class="heading no-num no-ref settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
    <dt id="biblio-cookies">[COOKIES]
    <dd>A. Barth. <a href="https://httpwg.org/specs/rfc6265.html"><cite>HTTP State Management Mechanism</cite></a>. April 2011. Proposed Standard. URL: <a href="https://httpwg.org/specs/rfc6265.html">https://httpwg.org/specs/rfc6265.html</a>
