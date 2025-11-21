@@ -298,6 +298,12 @@ endpoint can refuse to ever return `Access-Control-Allow-Credentials`. It will
 still receive credentialled requests in the context of a DBSC refresh. Other
 sites will be unable to directly fetch the endpoint with credentials,
 preventing an easy cross-site leak of login state.
+
+Sites wishing to do a point-in-time challenge on a particular request can
+accomplish this by triggering a redirect that also expires a bound cookie. This
+results in a refresh followed by retrying the original request. For example,
+returning an HTTP 307 to the same endpoint with a Set-Cookie header expiring the
+cookie will force a DBSC refresh before the redirect completes.
 </div>
 
 Sites using federated login with DBSC (see [[#federated-sessions]]) should
