@@ -5,9 +5,9 @@
   <title>Device Bound Session Credentials</title>
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version 7b3ff057a, updated Sun Nov 9 18:39:50 2025 -0800" name="generator">
+  <meta content="Bikeshed version 86e3be07a, updated Tue Nov 18 16:58:08 2025 +0000" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="b854e10129afa1b1aea2204e1f7baabca65a7d08" name="revision">
+  <meta content="e77532c16013622ff34474528905050aafd3523c" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="no-ref p-name" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2025-11-10">10 November 2025</time></p>
+    <time class="dt-updated" datetime="2025-11-21">21 November 2025</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1169,6 +1169,11 @@ endpoint can refuse to ever return <code>Access-Control-Allow-Credentials</code>
 still receive credentialled requests in the context of a DBSC refresh. Other
 sites will be unable to directly fetch the endpoint with credentials,
 preventing an easy cross-site leak of login state.</p>
+    <p>Sites wishing to do a point-in-time challenge on a particular request can
+accomplish this by triggering a redirect that also expires a bound cookie. This
+results in a refresh followed by retrying the original request. For example,
+returning an HTTP 307 to the same endpoint with a Set-Cookie header expiring the
+cookie will force a DBSC refresh before the redirect completes.</p>
    </div>
    <p>Sites using federated login with DBSC (see <a href="#federated-sessions">§ 3.3 Federated sessions</a>) should
 ensure that only sessions with the federated key are accepted. Security of
