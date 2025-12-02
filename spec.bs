@@ -728,7 +728,8 @@ following steps:
     1. Otherwise, let |well known URL| be a copy of |destination|, with the
        [=url/host=] replaced with |destination domain|, and the [=url/path=]
        replaced with "/.well-known/device-bound-sessions".
-    1. Let |well known response| be the result of fetching |well known URL|.
+    1. Let |well known response| be the result of fetching |well known URL| with
+       [=request/credentials mode=] set to `omit`.
     1. |well known response|'s [=response/status=] must be 200.
     1. |well known response|'s [=response/body=] must be a JSON-encoded
        dictionary.
@@ -860,7 +861,8 @@ pair creation failed.
     1. Let |provider well known URL| be a copy of |provider URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
     1. Let |provider well known response| be the result of fetching |provider
-       well known URL|. If any of the following hold, return "failure":
+       well known URL| with [=request/credentials mode=] set to `omit`. If any
+       of the following hold, return "failure":
       1. |provider well known response|'s [=response/status=] is not 200.
       1. |provider well known response|'s [=response/body=] is not a JSON-encoded
          dictionary.
@@ -874,7 +876,8 @@ pair creation failed.
        [=registrable origin labels=] in "relying_origins" to prevent
        abuse.
     1. Let |relying well known URL| be a copy of |registration URL|, with the
-       [=url/path=] replaced with "/.well-known/device-bound-sessions".
+       [=url/path=] replaced with "/.well-known/device-bound-sessions" with
+       [=request/credentials mode=] set to `omit`.
     1. Let |relying well known response| be the result of fetching |relying well
        known URL|. If any of the following hold, return "failure":
       1. |relying well known response|'s [=response/status=] is not 200.
