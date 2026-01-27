@@ -450,13 +450,18 @@ both `example.co.uk` and `www.example.de` is `example`.
   [=device bound session=] (|session|), returns "include" if |URL| is in scope,
   and "exclude" otherwise.
 
+  Note that specifications are checked from last to
+  first. Specifications are expected to be nested, and this allows site
+  developers to specify from most applicable to least applicable.
+
   1. Let |scope| be |session|'s [=device bound session/session scope=].
   1. If |scope|'s [=include site=] is true, return "exclude" if |URL|'s
      [=/origin=] is not [=/same site=] with |scope|'s [=session scope/origin=].
   1. If |scope|'s [=include site=] is false, return "exclude" if |URL|'s
      [=/origin=] is not [=same origin=] with |scope|'s [=session scope/origin=].
   1. If |URL| matches |session|'s [=refresh URL=], return "exclude".
-  1. [=list/For each=] |scope specification| in |scope|'s [=scope specifications=]:
+  1. Let |specifications| be the reverse of |scope|'s [=scope specifications=].
+  1. [=list/For each=] |scope specification| in |specifications|.
     1. Let |host pattern| be |scope specification|'s [=scope 
        specification/host=], and |path pattern| be |scope
        specification|'s [=scope specification/path=].
