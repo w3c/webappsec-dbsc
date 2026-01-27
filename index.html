@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 3c53a5b02, updated Thu Nov 27 17:03:30 2025 +0000" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="e02ffbbe803c75c01b90ebb0d2cd839291994997" name="revision">
+  <meta content="b411f4de29135e88abbcf8f5aadaf672451fdf15" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="no-ref p-name" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2025-12-03">3 December 2025</time></p>
+    <time class="dt-updated" datetime="2026-01-27">27 January 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -755,7 +755,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
     </div>
    </details>
    <div data-fill-with="warning"></div>
-   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/policies/#copyright">Copyright</a> © 2025 <a href="https://www.w3.org/">World Wide Web Consortium</a>. <abbr title="World Wide Web Consortium">W3C</abbr><sup>®</sup> <a href="https://www.w3.org/policies/#Legal_Disclaimer">liability</a>, <a href="https://www.w3.org/policies/#W3C_Trademarks">trademark</a> and <a href="https://www.w3.org/copyright/software-license/" rel="license" title="W3C Software and Document License">permissive document license</a> rules apply.
+   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/policies/#copyright">Copyright</a> © 2026 <a href="https://www.w3.org/">World Wide Web Consortium</a>. <abbr title="World Wide Web Consortium">W3C</abbr><sup>®</sup> <a href="https://www.w3.org/policies/#Legal_Disclaimer">liability</a>, <a href="https://www.w3.org/policies/#W3C_Trademarks">trademark</a> and <a href="https://www.w3.org/copyright/software-license/" rel="license" title="W3C Software and Document License">permissive document license</a> rules apply.
 </p>
    <hr title="Separator for header">
   </div>
@@ -1354,6 +1354,9 @@ both <code>example.co.uk</code> and <code>www.example.de</code> is <code>example
   and "exclude" otherwise.
 
 
+    <p>Note that specifications are checked from last to
+  first. Specifications are expected to be nested, and this allows site
+  developers to specify from most applicable to least applicable.</p>
     <ol>
      <li data-md>
       <p>Let <var>scope</var> be <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-scope" id="ref-for-device-bound-session-session-scope">session scope</a>.</p>
@@ -1366,7 +1369,9 @@ both <code>example.co.uk</code> and <code>www.example.de</code> is <code>example
      <li data-md>
       <p>If <var>URL</var> matches <var>session</var>’s <a data-link-type="dfn" href="#device-bound-session-refresh-url" id="ref-for-device-bound-session-refresh-url">refresh URL</a>, return "exclude".</p>
      <li data-md>
-      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate">For each</a> <var>scope specification</var> in <var>scope</var>’s <a data-link-type="dfn" href="#session-scope-scope-specifications" id="ref-for-session-scope-scope-specifications">scope specifications</a>:</p>
+      <p>Let <var>specifications</var> be the reverse of <var>scope</var>’s <a data-link-type="dfn" href="#session-scope-scope-specifications" id="ref-for-session-scope-scope-specifications">scope specifications</a>.</p>
+     <li data-md>
+      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate">For each</a> <var>scope specification</var> in <var>specifications</var>.</p>
       <ol>
        <li data-md>
         <p>Let <var>host pattern</var> be <var>scope specification</var>’s <a data-link-type="dfn" href="#scope-specification-host" id="ref-for-scope-specification-host">host</a>, and <var>path pattern</var> be <var>scope
