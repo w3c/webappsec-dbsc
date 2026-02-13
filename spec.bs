@@ -398,7 +398,7 @@ A <dfn>scope specification</dfn> is a [=struct=] with the following
   : <dfn>type</dfn>
   :: a [=string=] to be either "include" or "exclude", defining if the item
     defined in this struct should be added or removed from the scope
-  : <dfn>host</dfn>
+  : <dfn>domain</dfn>
   :: a [=string=] defining the domain or domain pattern that must match for this scope specification to apply
   : <dfn>path</dfn>
   :: a [=string=] that defines the path part of this scope specification
@@ -462,11 +462,11 @@ both `example.co.uk` and `www.example.de` is `example`.
   1. If |URL| matches |session|'s [=refresh URL=], return "exclude".
   1. Let |specifications| be the reverse of |scope|'s [=scope specifications=].
   1. [=list/For each=] |scope specification| in |specifications|.
-    1. Let |host pattern| be |scope specification|'s [=scope 
-       specification/host=], and |path pattern| be |scope
+    1. Let |domain pattern| be |scope specification|'s [=scope 
+       specification/domain=], and |path pattern| be |scope
        specification|'s [=scope specification/path=].
-    1. If running [[#algo-host-pattern-matches]] on |URL|'s [=url/host=]
-       and |host pattern| returns false, [=iteration/continue=].
+    1. If running [[#algo-domain-pattern-matches]] on |URL|'s [=url/host=]
+       and |domain pattern| returns false, [=iteration/continue=].
     1. If any of the following hold, return |scope specification|'s [=scope specification/type=]:
        1. |URL|'s [=url/path=] is exactly |path pattern|.
        1. |path pattern| ends in '/' and |URL|'s [=url/path=] starts with |path pattern|.
@@ -492,13 +492,13 @@ both `example.co.uk` and `www.example.de` is `example`.
      [=session scope/origin=], return "allowed".
   1. [=list/For each=] |initiator pattern| in |session|'s
      [=allowed refresh initiators=]:
-    1. If running [[#algo-host-pattern-matches]] on |request|'s
+    1. If running [[#algo-domain-pattern-matches]] on |request|'s
        [=request/origin=]'s [=origin/host=] and |initiator pattern|
        returns true, return "allowed".
   1. Return "disallowed".
 </div>
 
-## Identify if a host matches a pattern ## {#algo-host-pattern-matches}
+## Identify if a host matches a pattern ## {#algo-domain-pattern-matches}
 <div algorithm>
   This algorithm describes how to <dfn export dfn-for="algorithms">determine if
   a host matches a pattern</dfn>. It takes as input a [=url/host=] (|host|) and
@@ -753,7 +753,7 @@ following steps:
      1. Let |scope rule| be a new [=scope specification=].
      1. Set |scope rule|'s [=scope specification/type=] to |JSON scope rule|'s
         [=JSON session scope rule/type=].
-     1. Set |scope rule|'s [=scope specification/host=] to |JSON scope rule|'s
+     1. Set |scope rule|'s [=scope specification/domain=] to |JSON scope rule|'s
         [=JSON session scope rule/domain=].
      1. Set |scope rule|'s [=scope specification/path=] to |JSON scope rule|'s
         [=JSON session scope rule/path=].
