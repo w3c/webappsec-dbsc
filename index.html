@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 3c53a5b02, updated Thu Nov 27 17:03:30 2025 +0000" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="b411f4de29135e88abbcf8f5aadaf672451fdf15" name="revision">
+  <meta content="335e90357ef2dba97f5a37075bf8a90c6cbe42dd" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="no-ref p-name" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2026-01-27">27 January 2026</time></p>
+    <time class="dt-updated" datetime="2026-02-13">13 February 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -850,7 +850,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
       <li><a href="#algo-identify-session"><span class="secno">8.1</span> <span class="content">Identify session</span></a>
       <li><a href="#algo-url-in-scope"><span class="secno">8.2</span> <span class="content">Identify if a URL is in scope of a session</span></a>
       <li><a href="#algo-request-allows-refresh"><span class="secno">8.3</span> <span class="content">Identify if a request is allowed to refresh</span></a>
-      <li><a href="#algo-host-pattern-matches"><span class="secno">8.4</span> <span class="content">Identify if a host matches a pattern</span></a>
+      <li><a href="#algo-domain-pattern-matches"><span class="secno">8.4</span> <span class="content">Identify if a host matches a pattern</span></a>
       <li><a href="#algo-identify-session-needing-refresh"><span class="secno">8.5</span> <span class="content">Identify session needing refresh</span></a>
       <li><a href="#algo-identify-if-missing-session-credential"><span class="secno">8.6</span> <span class="content">Identify if missing session credential</span></a>
       <li><a href="#algo-process-challenge"><span class="secno">8.7</span> <span class="content">Cache challenge</span></a>
@@ -1288,7 +1288,7 @@ A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="scope-specifica
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string④">string</a> to be either "include" or "exclude", defining if the item
 defined in this struct should be added or removed from the scope</p>
-    <dt data-md><dfn class="dfn-paneled" data-dfn-for="scope specification" data-dfn-type="dfn" data-noexport id="scope-specification-host">host</dfn>
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="scope specification" data-dfn-type="dfn" data-noexport id="scope-specification-domain">domain</dfn>
     <dd data-md>
      <p>a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string⑤">string</a> defining the domain or domain pattern that must match for this scope specification to apply</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="scope specification" data-dfn-type="dfn" data-noexport id="scope-specification-path">path</dfn>
@@ -1374,11 +1374,11 @@ both <code>example.co.uk</code> and <code>www.example.de</code> is <code>example
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate">For each</a> <var>scope specification</var> in <var>specifications</var>.</p>
       <ol>
        <li data-md>
-        <p>Let <var>host pattern</var> be <var>scope specification</var>’s <a data-link-type="dfn" href="#scope-specification-host" id="ref-for-scope-specification-host">host</a>, and <var>path pattern</var> be <var>scope
+        <p>Let <var>domain pattern</var> be <var>scope specification</var>’s <a data-link-type="dfn" href="#scope-specification-domain" id="ref-for-scope-specification-domain">domain</a>, and <var>path pattern</var> be <var>scope
  specification</var>’s <a data-link-type="dfn" href="#scope-specification-path" id="ref-for-scope-specification-path">path</a>.</p>
        <li data-md>
-        <p>If running <a href="#algo-host-pattern-matches">§ 8.4 Identify if a host matches a pattern</a> on <var>URL</var>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host①">host</a>
- and <var>host pattern</var> returns false, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue">continue</a>.</p>
+        <p>If running <a href="#algo-domain-pattern-matches">§ 8.4 Identify if a host matches a pattern</a> on <var>URL</var>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-host" id="ref-for-concept-url-host①">host</a>
+ and <var>domain pattern</var> returns false, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue">continue</a>.</p>
        <li data-md>
         <p>If any of the following hold, return <var>scope specification</var>’s <a data-link-type="dfn" href="#scope-specification-type" id="ref-for-scope-specification-type">type</a>:</p>
         <ol>
@@ -1416,7 +1416,7 @@ both <code>example.co.uk</code> and <code>www.example.de</code> is <code>example
  <a data-link-type="dfn" href="#device-bound-session-allowed-refresh-initiators" id="ref-for-device-bound-session-allowed-refresh-initiators">allowed refresh initiators</a>:</p>
       <ol>
        <li data-md>
-        <p>If running <a href="#algo-host-pattern-matches">§ 8.4 Identify if a host matches a pattern</a> on <var>request</var>’s
+        <p>If running <a href="#algo-domain-pattern-matches">§ 8.4 Identify if a host matches a pattern</a> on <var>request</var>’s
  <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-request-origin" id="ref-for-concept-request-origin②">origin</a>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-host" id="ref-for-concept-origin-host">host</a> and <var>initiator pattern</var>
  returns true, return "allowed".</p>
       </ol>
@@ -1424,7 +1424,7 @@ both <code>example.co.uk</code> and <code>www.example.de</code> is <code>example
       <p>Return "disallowed".</p>
     </ol>
    </div>
-   <h3 class="heading settled" data-level="8.4" id="algo-host-pattern-matches"><span class="secno">8.4. </span><span class="content">Identify if a host matches a pattern</span><a class="self-link" href="#algo-host-pattern-matches"></a></h3>
+   <h3 class="heading settled" data-level="8.4" id="algo-domain-pattern-matches"><span class="secno">8.4. </span><span class="content">Identify if a host matches a pattern</span><a class="self-link" href="#algo-domain-pattern-matches"></a></h3>
    <div class="algorithm" data-algorithm="determine if a host matches a pattern" data-algorithm-for="algorithms">
     
   This algorithm describes how to <dfn class="dfn-paneled" data-dfn-for="algorithms" data-dfn-type="dfn" data-export data-lt="determine if a host matches a pattern" id="algorithms-determine-if-a-host-matches-a-pattern">determine if
@@ -1819,7 +1819,7 @@ following steps:
         <p>Set <var>scope rule</var>’s <a data-link-type="dfn" href="#scope-specification-type" id="ref-for-scope-specification-type①">type</a> to <var>JSON scope rule</var>’s
   <a data-link-type="dfn" href="#json-session-scope-rule-type" id="ref-for-json-session-scope-rule-type">type</a>.</p>
        <li data-md>
-        <p>Set <var>scope rule</var>’s <a data-link-type="dfn" href="#scope-specification-host" id="ref-for-scope-specification-host①">host</a> to <var>JSON scope rule</var>’s
+        <p>Set <var>scope rule</var>’s <a data-link-type="dfn" href="#scope-specification-domain" id="ref-for-scope-specification-domain①">domain</a> to <var>JSON scope rule</var>’s
   <a data-link-type="dfn" href="#json-session-scope-rule-domain" id="ref-for-json-session-scope-rule-domain">domain</a>.</p>
        <li data-md>
         <p>Set <var>scope rule</var>’s <a data-link-type="dfn" href="#scope-specification-path" id="ref-for-scope-specification-path①">path</a> to <var>JSON scope rule</var>’s
@@ -2730,9 +2730,13 @@ This is an early draft of the spec.
    <li><a href="#algorithms-determine-if-a-request-is-allowed-to-trigger-refresh">determine if a request is allowed to trigger refresh</a><span>, in § 8.3</span>
    <li><a href="#algorithms-determine-if-a-url-is-in-scope">determine if a URL is in scope</a><span>, in § 8.2</span>
    <li><a href="#device-bound-session">device bound session</a><span>, in § 7.3</span>
-   <li><a href="#json-session-scope-rule-domain">domain</a><span>, in § 9.8</span>
+   <li>
+    domain
+    <ul>
+     <li><a href="#json-session-scope-rule-domain">dfn for JSON session scope rule</a><span>, in § 9.8</span>
+     <li><a href="#scope-specification-domain">dfn for scope specification</a><span>, in § 7.5</span>
+    </ul>
    <li><a href="#device-bound-session-expiration-timestamp">expiration timestamp</a><span>, in § 7.3</span>
-   <li><a href="#scope-specification-host">host</a><span>, in § 7.5</span>
    <li><a href="#algorithms-identify-a-session">identify a session</a><span>, in § 8.1</span>
    <li><a href="#algorithms-identify-a-session-needing-refresh">identify a session needing refresh</a><span>, in § 8.5</span>
    <li><a href="#algorithms-identify-if-a-request-is-missing-a-session-credential">identify if a request is missing a session credential</a><span>, in § 8.6</span>
@@ -3207,7 +3211,7 @@ let dfnPanelData = {
 "registrable-origin-label": {"dfnID":"registrable-origin-label","dfnText":"registrable origin label","external":false,"refSections":[{"refs":[{"id":"ref-for-registrable-origin-label"}],"title":"7.7. Registrable origin label"},{"refs":[{"id":"ref-for-registrable-origin-label\u2460"}],"title":"8.11. Create session key pair"}],"url":"#registrable-origin-label"},
 "request-deferred-device-bound-session-ids": {"dfnID":"request-deferred-device-bound-session-ids","dfnText":"deferred device\nbound session ids","external":false,"refSections":[{"refs":[{"id":"ref-for-request-deferred-device-bound-session-ids"},{"id":"ref-for-request-deferred-device-bound-session-ids\u2460"}],"title":"8.5. Identify session needing refresh"}],"url":"#request-deferred-device-bound-session-ids"},
 "scope-specification": {"dfnID":"scope-specification","dfnText":"scope specification","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification"}],"title":"7.4. Session scope"},{"refs":[{"id":"ref-for-scope-specification\u2460"}],"title":"8.9. Create session"}],"url":"#scope-specification"},
-"scope-specification-host": {"dfnID":"scope-specification-host","dfnText":"host","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification-host"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-scope-specification-host\u2460"}],"title":"8.9. Create session"}],"url":"#scope-specification-host"},
+"scope-specification-domain": {"dfnID":"scope-specification-domain","dfnText":"domain","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification-domain"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-scope-specification-domain\u2460"}],"title":"8.9. Create session"}],"url":"#scope-specification-domain"},
 "scope-specification-path": {"dfnID":"scope-specification-path","dfnText":"path","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification-path"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-scope-specification-path\u2460"}],"title":"8.9. Create session"}],"url":"#scope-specification-path"},
 "scope-specification-type": {"dfnID":"scope-specification-type","dfnText":"type","external":false,"refSections":[{"refs":[{"id":"ref-for-scope-specification-type"}],"title":"8.2. Identify if a URL is in scope of a session"},{"refs":[{"id":"ref-for-scope-specification-type\u2460"}],"title":"8.9. Create session"}],"url":"#scope-specification-type"},
 "sec-secure-session-id-header": {"dfnID":"sec-secure-session-id-header","dfnText":"\nSec-Secure-Session-Id","external":false,"refSections":[{"refs":[{"id":"ref-for-sec-secure-session-id-header"}],"title":"5. Server considerations"},{"refs":[{"id":"ref-for-sec-secure-session-id-header\u2460"},{"id":"ref-for-sec-secure-session-id-header\u2461"}],"title":"9.4. `Sec-Secure-Session-Id` HTTP header field"}],"url":"#sec-secure-session-id-header"},
@@ -3644,7 +3648,7 @@ let refsData = {
 "#registrable-origin-label": {"displayText":"registrable origin label","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"registrable origin label","type":"dfn","url":"#registrable-origin-label"},
 "#request-deferred-device-bound-session-ids": {"displayText":"deferred device bound session ids","export":true,"for_":["request"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"deferred device bound session ids","type":"dfn","url":"#request-deferred-device-bound-session-ids"},
 "#scope-specification": {"displayText":"scope specification","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"scope specification","type":"dfn","url":"#scope-specification"},
-"#scope-specification-host": {"displayText":"host","export":true,"for_":["scope specification"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"host","type":"dfn","url":"#scope-specification-host"},
+"#scope-specification-domain": {"displayText":"domain","export":true,"for_":["scope specification"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"domain","type":"dfn","url":"#scope-specification-domain"},
 "#scope-specification-path": {"displayText":"path","export":true,"for_":["scope specification"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"path","type":"dfn","url":"#scope-specification-path"},
 "#scope-specification-type": {"displayText":"type","export":true,"for_":["scope specification"],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"type","type":"dfn","url":"#scope-specification-type"},
 "#sec-secure-session-id-header": {"displayText":"sec-secure-session-id","export":true,"for_":[],"level":"1","normative":true,"shortname":"dbsc","spec":"dbsc-1","status":"local","text":"sec-secure-session-id","type":"http-header","url":"#sec-secure-session-id-header"},
