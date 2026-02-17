@@ -1268,8 +1268,10 @@ The header of a [=DBSC proof=] MUST contain at least the following <a>sf-paramet
   :: a [=string=] defining the algorithm used to sign this JWT. It MUST be
     "RS256", "ES256", or "none" from [IANA.JOSE.ALGS].
   : jwk
-  :: a JWK as specified in [[!RFC7517]]. This MUST be present for
-    registration requests, and MUST not be present for refresh requests.
+  :: a JWK as specified in [[!RFC7517]]. This MUST be present for registration
+    requests if the algorithm is "RS256" or "ES256". It MUST not be present on
+    registration requests if the algorithm is "none". It MUST not be present for
+    refresh requests.
 
 The payload of [=DBSC proof=] MUST contain at least the following claims:
   : jti
