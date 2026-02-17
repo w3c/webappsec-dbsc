@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
   <meta content="Bikeshed version 3c53a5b02, updated Thu Nov 27 17:03:30 2025 +0000" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="335e90357ef2dba97f5a37075bf8a90c6cbe42dd" name="revision">
+  <meta content="d34681127abcef5fad67a1fd99cd0849f7b9b4b0" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -737,7 +737,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="no-ref p-name" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2026-02-13">13 February 2026</time></p>
+    <time class="dt-updated" datetime="2026-02-17">17 February 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2437,8 +2437,10 @@ A <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="dbsc-proof">DBS
 "RS256", "ES256", or "none" from [IANA.JOSE.ALGS].</p>
     <dt data-md>jwk
     <dd data-md>
-     <p>a JWK as specified in <a data-link-type="biblio" href="#biblio-rfc7517" title="JSON Web Key (JWK)">[RFC7517]</a>. This MUST be present for
-registration requests, and MUST not be present for refresh requests.</p>
+     <p>a JWK as specified in <a data-link-type="biblio" href="#biblio-rfc7517" title="JSON Web Key (JWK)">[RFC7517]</a>. This MUST be present for registration
+requests if the algorithm is "RS256" or "ES256". It MUST not be present on
+registration requests if the algorithm is "none". It MUST not be present for
+refresh requests.</p>
    </dl>
    <p>The payload of <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof⑦">DBSC proof</a> MUST contain at least the following claims:</p>
    <dl>
