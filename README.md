@@ -44,7 +44,7 @@ Device Bound Session Credentials (DBSC) aims to reduce account hijacking caused 
 
 DBSC offers an API for websites to control the lifetime of such keys, behind the abstraction of a session, and a protocol for periodically and automatically proving possession of those keys to the website's servers.  There is a separate key for each session, and it should not be possible to detect if two different session keys are from one device. One of the key goals is to enable drop-in integration with common types of current auth infrastructure. By device-binding the private key and with appropriate intervals of the proofs, the browser can limit malware's ability to offload its abuse off of the user's device, significantly increasing the chance that either the browser or server can detect and mitigate cookie theft.
 
-DBSC is bound to a device with cryptographic keys that cannot be exported from the user’s device under normal circumstances, this is called device binding in the rest of this document. DBSC provides an API that servers can use to create a session bound to a device, and this session can periodically be refreshed with an optional cryptographic proof the session is still bound to the original device. At sign-in, the API informs the browser that a session starts, which triggers the key creation. It then instructs the browser that any time a request is made while that session is active, the browser should ensure the presence of certain cookies. If these cookies are not present, DBSC will hold network requests while querying the configured endpoint for updated cookies.
+DBSC is bound to a device with cryptographic keys that cannot be exported from the user’s device under normal circumstances, this is called device binding in the rest of this document. Chrome on Windows backs these keys with a TPM, but the choice of primitive is up to the user agent. DBSC provides an API that servers can use to create a session bound to a device, and this session can periodically be refreshed with an optional cryptographic proof the session is still bound to the original device. At sign-in, the API informs the browser that a session starts, which triggers the key creation. It then instructs the browser that any time a request is made while that session is active, the browser should ensure the presence of certain cookies. If these cookies are not present, DBSC will hold network requests while querying the configured endpoint for updated cookies.
 
 ### Goals
 Reduce session theft by offering an alternative to long-lived cookie bearer tokens, that allows session authentication that is bound to the user's device. This makes the internet safer for users in that it is less likely their identity is abused, since malware is forced to act locally and thus becomes easier to detect and mitigate. At the same time the goal is to disrupt the cookie theft ecosystem and force it to adapt to new protections.
@@ -80,7 +80,7 @@ This provides two important benefits:
 Note that the latency introduced by deferring of requests can be mitigated by the browser in other ways, which we discuss later.
 
 ### TPM considerations
-DBSC depends on user devices having a way of signing challenges while protecting private keys from exfiltration by malware. This usually means the browser needs to have access to a Trusted Platform Module (TPM) on the device, which is not always available. TPMs also have a reputation for having high latency and not being dependable. Having a TPM is a requirement for installing Windows 11, and can be available on previous versions. While Chrome's initial implementation requires a TPM, this is not required by the protocol. Browser implementers are free to choose other key storage technologies, such as VBS keys.
+DBSC depends on user devices having a way of signing challenges while protecting private keys from exfiltration by malware. This may mean the browser needs to have access to a Trusted Platform Module (TPM) on the device, which is not always available. TPMs also have a reputation for having high latency and not being dependable. Having a TPM is a requirement for installing Windows 11, and can be available on previous versions. While Chrome's initial implementation requires a TPM, this is not required by the protocol. Browser implementers are free to choose other key storage technologies, such as VBS keys.
 
 Chrome has done studies to understand TPM availability to understand the feasibility of secure sessions. Current data shows about 60%, and currently growing, of Windows users would be offered protections. Studies have also been done on the current populations of TPMs, both for latency and for predictability. Currently the latency is (P50: 200ms/ P95: 600ms) for signing operations. The error rate is very low, currently around 0.001%. All our studies are for public key cryptography using ECDSA_P256 algorithm.
 
@@ -179,7 +179,7 @@ The JWT proof is signed with the newly created private key, and needs to contain
 }
 ```
 
-Note that the certificate chain for the TPM is never sent to the
+Note that the certificate chain for the TPM (if used) is never sent to the
 server. This would allow very precise device fingerprinting, contrary to
 our privacy goals. Servers will only be able to confirm that the browser
 still has access to the corresponding private key.
