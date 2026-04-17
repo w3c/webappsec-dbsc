@@ -5,9 +5,9 @@
   <title>Device Bound Session Credentials</title>
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version 3c53a5b02, updated Thu Nov 27 17:03:30 2025 +0000" name="generator">
+  <meta content="Bikeshed version 5d4d5b9a8, updated Fri Apr 17 13:49:40 2026 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="d34681127abcef5fad67a1fd99cd0849f7b9b4b0" name="revision">
+  <meta content="6d0daa67e196a0f376772ae7e9ca0299755527b8" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -303,7 +303,7 @@ pre .property::before, pre .property::after {
 </style>
 <style>/* Boilerplate: style-counters */
 body {
-    counter-reset: example figure issue;
+    counter-reset: example figure issue table;
 }
 .issue {
     counter-increment: issue;
@@ -328,6 +328,13 @@ figcaption {
 }
 figcaption:not(.no-marker)::before {
     content: "Figure " counter(figure) " ";
+}
+
+figure.table figcaption {
+    counter-increment: table;
+}
+figure.table figcaption:not(.no-marker)::before {
+    content: "Table " counter(table) " ";
 }
 </style>
 <style>/* Boilerplate: style-dfn-panel */
@@ -685,6 +692,30 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     c-[vm] { color: #cb4b16 } /* Name.Variable.Magic */
     c-[il] { color: #657b83 } /* Literal.Number.Integer.Long */
 }
+
+@media print {
+    /* Darken colors for print that would otherwise print too faintly */
+    c-[c]  { color: #555555 } /* Comment */
+    c-[d]  { color: #555555 } /* Comment.Multiline */
+    c-[cp] { color: #555555 } /* Comment.Preproc */
+    c-[c1] { color: #555555 } /* Comment.Single */
+    c-[cs] { color: #555555 } /* Comment.Special */
+    c-[o]  { color: #222222 } /* Operator */
+    c-[p]  { color: #222222 } /* Punctuation */
+    c-[ow] { color: #222222 } /* Operator.Word */
+    c-[s]  { color: #664400 } /* Literal.String */
+    c-[t]  { color: #664400 } /* Literal.String.Single */
+    c-[u]  { color: #664400 } /* Literal.String.Double */
+    c-[sb] { color: #664400 } /* Literal.String.Backtick */
+    c-[sc] { color: #664400 } /* Literal.String.Char */
+    c-[sd] { color: #664400 } /* Literal.String.Doc */
+    c-[se] { color: #664400 } /* Literal.String.Escape */
+    c-[sh] { color: #664400 } /* Literal.String.Heredoc */
+    c-[si] { color: #664400 } /* Literal.String.Interpol */
+    c-[sx] { color: #664400 } /* Literal.String.Other */
+    c-[sr] { color: #664400 } /* Literal.String.Regex */
+    c-[ss] { color: #664400 } /* Literal.String.Symbol */
+}
 </style>
 <style>/* Boilerplate: style-var-click-highlighting */
 /*
@@ -737,7 +768,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="no-ref p-name" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2026-02-17">17 February 2026</time></p>
+    <time class="dt-updated" datetime="2026-04-17">17 April 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2150,7 +2181,8 @@ Its ABNF is: </p>
    
 The semantics of the item are defined in
 <a href="#challenge-structured-header-serialization">§ 9.2.1 `Secure-Session-Challenge` structured header serialization</a>.
-   <p></p>
+
+
    <p>The processing steps are defined in <a href="#algo-process-challenge">§ 8.7 Cache challenge</a>.</p>
    <h4 class="heading settled" data-level="9.2.1" id="challenge-structured-header-serialization"><span class="secno">9.2.1. </span><span class="content">`<code><a data-link-type="http-header" href="#secure-session-challenge-header" id="ref-for-secure-session-challenge-header②">Secure-Session-Challenge</a></code>` structured header serialization</span><a class="self-link" href="#challenge-structured-header-serialization"></a></h4>
    
@@ -2193,8 +2225,11 @@ pair.
    <p><a data-link-type="http-header" href="#secure-session-response-header" id="ref-for-secure-session-response-header③"><code>Secure-Session-Response</code></a> is a structured
 header. Its value must be a string. Its ABNF is:</p>
 <pre class="abnf">SecureSessionResponse = <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#string" id="ref-for-string②④">sf-string</a></pre>
-   <p>This string MUST only contain the <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof⑤">DBSC proof</a> JWT. Any <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#name-parameters" id="ref-for-name-parameters①①">sf-parameter</a>s SHOULD be
-ignored.</p>
+   
+This string MUST only contain the <a data-link-type="dfn" href="#dbsc-proof" id="ref-for-dbsc-proof⑤">DBSC proof</a> JWT. Any <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#name-parameters" id="ref-for-name-parameters①①">sf-parameter</a>s SHOULD be
+ignored.
+
+
    <div class="example" id="secure-session-response-example">
     <a class="self-link" href="#secure-session-response-example"></a>
   
@@ -2213,8 +2248,11 @@ with the current session identifier as a string argument.
    <p>`<code><a data-link-type="http-header" href="#sec-secure-session-id-header" id="ref-for-sec-secure-session-id-header②">Sec-Secure-Session-Id</a></code>` is a structured header.
 Its value must be a string. Its ABNF is:</p>
 <pre class="abnf">SecSecureSessionId = <a data-link-type="dfn" href="https://datatracker.ietf.org/doc/html/rfc9651#string" id="ref-for-string②⑤">sf-string</a></pre>
-   <p>This string MUST only contain the session identifier. Any parameters SHOULD be
-ignored.</p>
+   
+This string MUST only contain the session identifier. Any parameters SHOULD be
+ignored.
+
+
    <div class="example" id="sec-secure-session-id-example">
     <a class="self-link" href="#sec-secure-session-id-example"></a>
   
@@ -2339,7 +2377,7 @@ empty list.</p>
     <c- c1>// Attributes Max-Age and Expires will not contribute to whether a request</c->
     <c- c1>// cookie satisfies this credential.</c->
   <c- p>}],</c->
-    
+
   <c- f>"allowed_refresh_initiators"</c-><c- p>:</c-> <c- p>[</c->
     <c- u>"example.com"</c-><c- p>,</c-> 
     <c- u>"*.example.com"</c-><c- p>,</c->
@@ -2625,8 +2663,10 @@ Provider when this origin is being used as a Relying Party.</p>
   <c- p>],</c->
 <c- p>}</c->
 </pre>
-    <p>Then registration requests can define a site-scoped session only if
-  one of the following is true:</p>
+    
+  Then registration requests can define a site-scoped session only if
+  one of the following is true:
+
     <ul>
      <li data-md>
       <p>The registration endpoint has host <code>example.com</code></p>
