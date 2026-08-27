@@ -859,10 +859,12 @@ pair creation failed.
     1. If |provider session|'s [=device bound session/session scope=]
        [=session scope/origin=] is not [=/same origin=] with |provider
        origin|, return "failure".
-    1. If |provider session|'s [=session key pair=] is null, or |provider
-       session|'s [=session key pair=]'s JWK thumbprint (see [[!RFC7638]]) does
-       not match |params|["provider_key"] when encoded in base64url (see
-       [[!RFC4648]]) without padding, return "failure".
+    1. If |provider session|'s [=session key pair=] is null, return "failure".
+    1. Let |JWK thumbprint| be the JWK thumbprint (see [[!RFC7638]]) of
+       |provider session|'s [=session key pair=], computed using the SHA-256
+       hash function (see [[!RFC4634]]), encoded in base64url without padding
+       (see [[!RFC4648]]).
+    1. If |JWK thumbprint| does not match |params|["provider_key"], return "failure".
     1. Let |provider well known URL| be a copy of |provider URL|, with the
        [=url/path=] replaced with "/.well-known/device-bound-sessions".
     1. Let |provider well known response| be the result of fetching |provider
