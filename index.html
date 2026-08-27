@@ -5,9 +5,9 @@
   <title>Device Bound Session Credentials</title>
   <meta content="ED" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-ED" rel="stylesheet">
-  <meta content="Bikeshed version 5d4d5b9a8, updated Fri Apr 17 13:49:40 2026 -0700" name="generator">
+  <meta content="Bikeshed version ac92c2f0d, updated Fri Aug 21 16:01:29 2026 -0700" name="generator">
   <link href="https://w3c.github.io/webappsec-dbsc/" rel="canonical">
-  <meta content="6d0daa67e196a0f376772ae7e9ca0299755527b8" name="revision">
+  <meta content="3794efaf5c774c2ba73db6b5978bfe721c2748d9" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -768,7 +768,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
 </p>
    <h1 class="no-ref p-name" id="title">Device Bound Session Credentials</h1>
    <p id="w3c-state"><a href="https://www.w3.org/standards/types/#ED">Editor’s Draft</a>,
-    <time class="dt-updated" datetime="2026-04-17">17 April 2026</time></p>
+    <time class="dt-updated" datetime="2026-08-27">27 August 2026</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2011,10 +2011,14 @@ pair creation failed.</p>
  <a data-link-type="dfn" href="#session-scope-origin" id="ref-for-session-scope-origin⑤">origin</a> is not <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#same-origin" id="ref-for-same-origin②">same origin</a> with <var>provider
  origin</var>, return "failure".</p>
        <li data-md>
-        <p>If <var>provider session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair①">session key pair</a> is null, or <var>provider
- session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair②">session key pair</a>’s JWK thumbprint (see <a data-link-type="biblio" href="#biblio-rfc7638" title="JSON Web Key (JWK) Thumbprint">[RFC7638]</a>) does
- not match <var>params</var>["provider_key"] when encoded in base64url (see
- <a data-link-type="biblio" href="#biblio-rfc4648" title="The Base16, Base32, and Base64 Data Encodings">[RFC4648]</a>) without padding, return "failure".</p>
+        <p>If <var>provider session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair①">session key pair</a> is null, return "failure".</p>
+       <li data-md>
+        <p>Let <var>JWK thumbprint</var> be the JWK thumbprint (see <a data-link-type="biblio" href="#biblio-rfc7638" title="JSON Web Key (JWK) Thumbprint">[RFC7638]</a>) of
+ <var>provider session</var>’s <a data-link-type="dfn" href="#device-bound-session-session-key-pair" id="ref-for-device-bound-session-session-key-pair②">session key pair</a>, computed using the SHA-256
+ hash function (see <a data-link-type="biblio" href="#biblio-rfc4634" title="US Secure Hash Algorithms (SHA and SHA-based HMAC and HKDF)">[RFC4634]</a>), encoded in base64url without padding
+ (see <a data-link-type="biblio" href="#biblio-rfc4648" title="The Base16, Base32, and Base64 Data Encodings">[RFC4648]</a>).</p>
+       <li data-md>
+        <p>If <var>JWK thumbprint</var> does not match <var>params</var>["provider_key"], return "failure".</p>
        <li data-md>
         <p>Let <var>provider well known URL</var> be a copy of <var>provider URL</var>, with the
  <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-path" id="ref-for-concept-url-path④">path</a> replaced with "/.well-known/device-bound-sessions".</p>
@@ -2941,21 +2945,23 @@ This is an early draft of the spec.
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://datatracker.ietf.org/doc/html/rfc2119"><cite>Key words for use in RFCs to Indicate Requirement Levels</cite></a>. March 1997. Best Current Practice. URL: <a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>
    <dt id="biblio-rfc3864">[RFC3864]
-   <dd>G. Klyne; M. Nottingham; J. Mogul. <a href="https://www.rfc-editor.org/rfc/rfc3864"><cite>Registration Procedures for Message Header Fields</cite></a>. September 2004. Best Current Practice. URL: <a href="https://www.rfc-editor.org/rfc/rfc3864">https://www.rfc-editor.org/rfc/rfc3864</a>
+   <dd>G. Klyne; M. Nottingham; J. Mogul. <a href="https://www.rfc-editor.org/info/rfc3864/"><cite>Registration Procedures for Message Header Fields</cite></a>. September 2004. Best Current Practice. URL: <a href="https://www.rfc-editor.org/info/rfc3864/">https://www.rfc-editor.org/info/rfc3864/</a>
+   <dt id="biblio-rfc4634">[RFC4634]
+   <dd>D. Eastlake 3rd; T. Hansen. <a href="https://www.rfc-editor.org/info/rfc6234/"><cite>US Secure Hash Algorithms (SHA and SHA-based HMAC and HKDF)</cite></a>. May 2011. Informational. URL: <a href="https://www.rfc-editor.org/info/rfc6234/">https://www.rfc-editor.org/info/rfc6234/</a>
    <dt id="biblio-rfc4648">[RFC4648]
-   <dd>S. Josefsson. <a href="https://www.rfc-editor.org/rfc/rfc4648"><cite>The Base16, Base32, and Base64 Data Encodings</cite></a>. October 2006. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc4648">https://www.rfc-editor.org/rfc/rfc4648</a>
+   <dd>S. Josefsson. <a href="https://www.rfc-editor.org/info/rfc4648/"><cite>The Base16, Base32, and Base64 Data Encodings</cite></a>. October 2006. Proposed Standard. URL: <a href="https://www.rfc-editor.org/info/rfc4648/">https://www.rfc-editor.org/info/rfc4648/</a>
    <dt id="biblio-rfc5234">[RFC5234]
-   <dd>D. Crocker, Ed.; P. Overell. <a href="https://www.rfc-editor.org/rfc/rfc5234"><cite>Augmented BNF for Syntax Specifications: ABNF</cite></a>. January 2008. Internet Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc5234">https://www.rfc-editor.org/rfc/rfc5234</a>
+   <dd>D. Crocker, Ed.; P. Overell. <a href="https://www.rfc-editor.org/info/rfc5234/"><cite>Augmented BNF for Syntax Specifications: ABNF</cite></a>. January 2008. Internet Standard. URL: <a href="https://www.rfc-editor.org/info/rfc5234/">https://www.rfc-editor.org/info/rfc5234/</a>
    <dt id="biblio-rfc7405">[RFC7405]
-   <dd>P. Kyzivat. <a href="https://www.rfc-editor.org/rfc/rfc7405"><cite>Case-Sensitive String Support in ABNF</cite></a>. December 2014. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc7405">https://www.rfc-editor.org/rfc/rfc7405</a>
+   <dd>P. Kyzivat. <a href="https://www.rfc-editor.org/info/rfc7405/"><cite>Case-Sensitive String Support in ABNF</cite></a>. December 2014. Proposed Standard. URL: <a href="https://www.rfc-editor.org/info/rfc7405/">https://www.rfc-editor.org/info/rfc7405/</a>
    <dt id="biblio-rfc7517">[RFC7517]
-   <dd>M. Jones. <a href="https://www.rfc-editor.org/rfc/rfc7517"><cite>JSON Web Key (JWK)</cite></a>. May 2015. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc7517">https://www.rfc-editor.org/rfc/rfc7517</a>
+   <dd>M. Jones. <a href="https://www.rfc-editor.org/info/rfc7517/"><cite>JSON Web Key (JWK)</cite></a>. May 2015. Proposed Standard. URL: <a href="https://www.rfc-editor.org/info/rfc7517/">https://www.rfc-editor.org/info/rfc7517/</a>
    <dt id="biblio-rfc7638">[RFC7638]
-   <dd>M. Jones; N. Sakimura. <a href="https://www.rfc-editor.org/rfc/rfc7638"><cite>JSON Web Key (JWK) Thumbprint</cite></a>. September 2015. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc7638">https://www.rfc-editor.org/rfc/rfc7638</a>
+   <dd>M. Jones; N. Sakimura. <a href="https://www.rfc-editor.org/info/rfc7638/"><cite>JSON Web Key (JWK) Thumbprint</cite></a>. September 2015. Proposed Standard. URL: <a href="https://www.rfc-editor.org/info/rfc7638/">https://www.rfc-editor.org/info/rfc7638/</a>
    <dt id="biblio-rfc9112">[RFC9112]
    <dd>R. Fielding, Ed.; M. Nottingham, Ed.; J. Reschke, Ed.. <a href="https://httpwg.org/specs/rfc9112.html"><cite>HTTP/1.1</cite></a>. June 2022. Internet Standard. URL: <a href="https://httpwg.org/specs/rfc9112.html">https://httpwg.org/specs/rfc9112.html</a>
    <dt id="biblio-rfc9651">[RFC9651]
-   <dd>M. Nottingham; P-H. Kamp. <a href="https://www.rfc-editor.org/rfc/rfc9651"><cite>Structured Field Values for HTTP</cite></a>. September 2024. Proposed Standard. URL: <a href="https://www.rfc-editor.org/rfc/rfc9651">https://www.rfc-editor.org/rfc/rfc9651</a>
+   <dd>M. Nottingham; P-H. Kamp. <a href="https://www.rfc-editor.org/info/rfc9651/"><cite>Structured Field Values for HTTP</cite></a>. September 2024. Proposed Standard. URL: <a href="https://www.rfc-editor.org/info/rfc9651/">https://www.rfc-editor.org/info/rfc9651/</a>
    <dt id="biblio-url">[URL]
    <dd>Anne van Kesteren. <a href="https://url.spec.whatwg.org/"><cite>URL Standard</cite></a>. Living Standard. URL: <a href="https://url.spec.whatwg.org/">https://url.spec.whatwg.org/</a>
   </dl>
