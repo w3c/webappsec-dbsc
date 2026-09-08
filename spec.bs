@@ -730,9 +730,8 @@ following steps:
         |destination|, skip all remaining validations within this step.	
     1. If |session id| is non-null, skip all remaining validations within this
        step.
-    1. Otherwise, let |well known URL| be a copy of |destination|, with the
-       [=url/host=] replaced with |destination domain|, and the [=url/path=]
-       replaced with "/.well-known/device-bound-sessions".
+    1. Otherwise, let |well known URL| be the result of resolving
+       "/.well-known/device-bound-sessions" against |origin|.
     1. Let |well known response| be the result of fetching |well known URL| with
        [=request/credentials mode=] set to `omit`.
     1. |well known response|'s [=response/status=] must be 200.
@@ -865,8 +864,8 @@ pair creation failed.
        hash function (see [[!RFC4634]]), encoded in base64url without padding
        (see [[!RFC4648]]).
     1. If |JWK thumbprint| does not match |params|["provider_key"], return "failure".
-    1. Let |provider well known URL| be a copy of |provider URL|, with the
-       [=url/path=] replaced with "/.well-known/device-bound-sessions".
+    1. Let |provider well known URL| be the result of resolving
+       "/.well-known/device-bound-sessions" against |provider origin|.
     1. Let |provider well known response| be the result of fetching |provider
        well known URL| with [=request/credentials mode=] set to `omit`. If any
        of the following hold, return "failure":
@@ -882,11 +881,13 @@ pair creation failed.
     1. User agents SHOULD place an upper limit on the number of
        [=registrable origin labels=] in "relying_origins" to prevent
        abuse.
-    1. Let |relying well known URL| be a copy of |registration URL|, with the
-       [=url/path=] replaced with "/.well-known/device-bound-sessions" with
-       [=request/credentials mode=] set to `omit`.
+    1. Let |relying origin| be the [=url/origin=] of |registration URL|.
+    1. If |relying origin| is opaque, return "failure".
+    1. Let |relying well known URL| be the result of resolving
+       "/.well-known/device-bound-sessions" against |relying origin|.
     1. Let |relying well known response| be the result of fetching |relying well
-       known URL|. If any of the following hold, return "failure":
+       known URL| with [=request/credentials mode=] set to `omit`. If any of
+       the following hold, return "failure":
       1. |relying well known response|'s [=response/status=] is not 200.
       1. |relying well known response|'s [=response/body=] is not a JSON-encoded
          dictionary.
