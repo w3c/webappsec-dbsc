@@ -666,7 +666,7 @@ both `example.co.uk` and `www.example.de` is `example`.
   1. Let |response| be the result of running <a
      href="https://fetch.spec.whatwg.org/#http-fetch">HTTP fetch</a> for |request|.
   1. If |response| is a [=network error=], or |response|'s
-     [=response/status=] is 407 or 429, return.
+     [=response/status=] is 407, return.
   1. If |response|'s [=response/status=] is at least 300 and below 400, then
      return.
   1. If |response|'s [=response/status=] is 403:
@@ -676,12 +676,12 @@ both `example.co.uk` and `www.example.de` is `example`.
     1. If |session| is null, return.
     1. Otherwise, restart this algorithm with the original inputs, except
        replacing |challenge| with |session|'s [=cached challenge=].
-  1. If |response|'s [=response/status=] is at least 400 and below 500,
-     then |terminate the session| and return.
-  1. If |response|'s [=response/status=] is at least 500, then
+  1. If |response|'s [=response/status=] is at least 400 and below 500
+     and is not 429, then |terminate the session| and return.
+  1. If |response|'s [=response/status=] is 429 or at least 500, then
      return. User agents may choose to trigger a backoff mechanism on
      subsequent refresh requests on this session, to limit the harm of a
-     temporary outage on the refresh endpoint.
+     temporary outage or rate limit on the refresh endpoint.
   1. If |session id| is non-null, and |response|'s [=response/body=] is
      empty, return.
   1. Call [[#algo-create-session]] on |response|, |destination|,
@@ -1090,7 +1090,7 @@ coarse-grained reason for skipping cookie refresh. The only supported
 values are: "unreachable", "server_error", and "quota_exceeded". These
 tokens should be used in the following situations:
 - "server_error" indicates that the session refresh failed due to the
-  response from the server (e.g. a 500 status code).
+  response from the server (e.g. a 429 or 500 status code).
 - "unreachable" indicates that the session refresh failed due to an
   inability to reach the server.
 - "quota_exceeded" covers all places where the user agent chooses not to
