@@ -1472,12 +1472,12 @@ This endpoint must serve a JSON-encoded dictionary. Three keys are defined:
   {
     "registering_origins": [
       "https://subdomain.example.com",
-      "https://subdomain.example.com:8000",
+      "https://subdomain.example.com:8000"
     ],
     "relying_origins": [
       "https://example.co.uk",
-      "https://example-partner.com",
-    ],
+      "https://example-partner.com"
+    ]
   }
   ```
   Then registration requests can define a site-scoped session only if
