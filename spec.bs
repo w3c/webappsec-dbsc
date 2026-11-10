@@ -618,8 +618,9 @@ both `example.co.uk` and `www.example.de` is `example`.
   This algorithm describes how to <dfn export dfn-for="algorithms">send a
   request</dfn> for a device bound session registration or refresh. It takes as
   input a [=request=] (|originating request|), an optional |key pair|, [=URL=]
-  (|destination|), and optional [=strings=] |session id|, |challenge|, and
-  |authorization|.
+  (|destination|), optional [=strings=] |session id|, |challenge|, and
+  |authorization|, and an optional [=boolean=] |federated registration|
+  (default false).
 
   User agents will perform these steps whenever a bound credential is missing,
   but MAY do this at any time. Sending a request proactively before the bound
@@ -650,7 +651,8 @@ both `example.co.uk` and `www.example.de` is `example`.
      href="https://fetch.spec.whatwg.org/#http-fetch">HTTP fetch</a>.
   1. Set |request|'s [=request/method=] to "POST".
   1. Set |request|'s [=request/URL=] to |destination|.
-  1. Set |request|'s [=request/redirect mode=] to "follow".
+  1. Set |request|'s [=request/redirect mode=] to "error" if |federated
+     registration| is true, or "follow" otherwise.
   1. If |session response| is non-null, [=header list/append=] the header
      ("Secure-Session-Response", |session response|) to |request|'s
      [=request/header list=].
@@ -817,8 +819,11 @@ registration</dfn> due to the [=response=] (|response|) to a [=request=]
        [[#algo-create-session-key-pair]] on |registration entry|,
        |params|, and |endpoint|.
     1. If |key pair| is "failure", return.
+    1. Let |federated registration| be true if |params|["provider_url"]
+       exists, or false otherwise.
     1. Call [[#algo-session-request]] with |request|, |key pair|, |endpoint|,
-       session identifier as null, |challenge|, and |authorization|.
+       session identifier as null, |challenge|, |authorization|, and
+       |federated registration|.
 </div>
 
 ## Create session key pair ## {#algo-create-session-key-pair}
