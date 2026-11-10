@@ -623,7 +623,11 @@ both `example.co.uk` and `www.example.de` is `example`.
 
   User agents will perform these steps whenever a bound credential is missing,
   but MAY do this at any time. Sending a request proactively before the bound
-  credential expires can minimize the latency costs of DBSC.
+  credential expires can minimize the latency costs of DBSC. The user agent
+  MUST apply a finite limit to the number of restarts after a 403 response
+  for a single refresh operation. The restart
+  count and limit belong to the entire refresh operation and are not reset
+  when this algorithm restarts.
 
   1. The user agent MAY skip this request in order to prevent denial of service for
      the user or site. For example, this might happen if this session is
@@ -670,12 +674,14 @@ both `example.co.uk` and `www.example.de` is `example`.
   1. If |response|'s [=response/status=] is at least 300 and below 400, then
      return.
   1. If |response|'s [=response/status=] is 403:
-    1. If |session id| is null, return.
+    1. If |session id| is null or the restart limit for this refresh operation
+       has been reached, return.
     1. Let |session| be the result of running the steps of
        [[#algo-identify-session]] on |destination| and |session id|.
-    1. If |session| is null, return.
-    1. Otherwise, restart this algorithm with the original inputs, except
-       replacing |challenge| with |session|'s [=cached challenge=].
+    1. If |session| is null or |session|'s [=cached challenge=] is null, return.
+    1. Count a restart against the limit for this refresh operation, then
+       restart this algorithm with the original inputs, except replacing
+       |challenge| with |session|'s [=cached challenge=].
   1. If |response|'s [=response/status=] is at least 400 and below 500,
      then |terminate the session| and return.
   1. If |response|'s [=response/status=] is at least 500, then
