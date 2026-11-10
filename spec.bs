@@ -440,7 +440,11 @@ both `example.co.uk` and `www.example.de` is `example`.
      return null.
   1. Let |domain sessions| be the user agent's [=session store=][|domain|] as a
      [=/sessions by id map=].
-  1. Return |domain sessions|[|session identifier|] [=with default=] null.
+  1. Let |session| be |domain sessions|[|session identifier|] [=with default=] null.
+  1. If |session| is not null and |session|'s [=expiration timestamp=] is before
+     the present, [=map/remove=] |domain sessions|[|session identifier|] and
+     return null.
+  1. Return |session|.
 </div>
 
 ## Identify if a URL is in scope of a session ## {#algo-url-in-scope}
@@ -849,11 +853,9 @@ pair creation failed.
        |params|["provider_url"].
     1. Let |provider origin| be the [=url/origin=] of |provider URL|.
     1. If |provider origin| is opaque, return "failure".
-    1. Let |provider domain| be the [=host/registrable domain=] of
-       |provider URL|'s [=url/host=].
     1. Let |provider session identifier| be |params|["provider_session_id"].
-    1. Let |provider session| be the session in the user agent's
-       [=session store=][|provider domain|][|provider session identifier|].
+    1. Let |provider session| be the result of running [[#algo-identify-session]]
+       given |provider URL| and |provider session identifier|.
     1. If |provider session| is null, return "failure".
     1. If |provider session|'s [=device bound session/session scope=]
        [=session scope/origin=] is not [=/same origin=] with |provider
