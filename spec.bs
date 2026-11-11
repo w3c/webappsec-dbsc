@@ -584,8 +584,9 @@ both `example.co.uk` and `www.example.de` is `example`.
   <dfn export dfn-for="algorithms">process a challenge</dfn> received in an HTTP
   header.
 
-  Given a [=response=] (|response|), this algorithm updates the [=device bound
-  session/cached challenge=] for a [=device bound session=].
+  Given a [=response=] (|response|) and its [=URL=] (|response URL|), this
+  algorithm updates the [=device bound session/cached challenge=] for a
+  [=device bound session=].
 
   1. Let |header name| be "<code>Secure-Session-Challenge</code>".
   1. Let |challenge list| be the result of executing <a>get a structured
@@ -600,7 +601,7 @@ both `example.co.uk` and `www.example.de` is `example`.
       |params|["id"].
     1. If |session id| is null, [=iteration/continue=].
     1. Let |session| be the result of running [[#algo-identify-session]] given
-      |response|'s [=response/URL=] and |session id|.
+      |response URL| and |session id|.
     1. If |session| is null, [=iteration/continue=].
     1. [=list/For each=] |credential| in |session|'s [=device bound
        session/session credentials=]:
@@ -785,7 +786,8 @@ following steps:
     1. Set the user agent's [=session store=][|destination
        domain|][|session identifier|] to |session|.
     1. [=iteration/Break=].
-  1. Run [[#algo-process-challenge]] on |response|.
+  1. Run [[#algo-process-challenge]] given |response| and |response|'s
+     [=response/URL=].
 </div>
 
 ## Process session registration ## {#algo-process-session-registration}
@@ -812,7 +814,7 @@ registration</dfn> due to the [=response=] (|response|) to a [=request=]
     1. If |params|["authorization"] exists, set |authorization| to
        |params|["authorization"].
     1. Let |endpoint| be the result of resolving |path| relative to
-       |response|'s URL.
+       |request|'s [=request/current URL=].
     1. Let |key pair| be the result of running
        [[#algo-create-session-key-pair]] on |registration entry|,
        |params|, and |endpoint|.
@@ -1346,7 +1348,9 @@ This specification also requires two new calls to process the new
 headers. After step 14 in the current <a
 href="https://fetch.spec.whatwg.org/#http-network-fetch">HTTP-network 
 fetch</a>, execute the following step:
-  15. Run [[#algo-process-session-registration]] and [[#algo-process-challenge]].
+  15. Run [[#algo-process-session-registration]] with `response` and `request`.
+      Run [[#algo-process-challenge]] with `response` and `request`'s
+      [=request/current URL=].
 
 ## Changes to the Clear Site Data specification ## {#changes-to-clear-site-data}
 
