@@ -528,8 +528,8 @@ both `example.co.uk` and `www.example.de` is `example`.
   dfn-for="algorithms">identify a session needing refresh</dfn>. If any such
   session exists, it should block |request| from proceeding.
 
-  1. Let |domain| be the [=host/registrable domain=] of |request|'s
-     [=request/url=]'s [=url/host=].
+  1. Let |URL| be |request|'s [=request/current URL=].
+  1. Let |domain| be the [=host/registrable domain=] of |URL|'s [=url/host=].
   1. If the user agent's [=session store=] does not [=map/contain=] |domain|,
      return null.
   1. Let |domain sessions| be the user agent's [=session store=][|domain|] as a
@@ -540,8 +540,8 @@ both `example.co.uk` and `www.example.de` is `example`.
     1. Let |id| be |session|'s [=device bound session/session identifier=].
     1. If the [=tuple=] (|domain|, |id|) is in |request|'s
       [=deferred device bound session ids=], [=iteration/continue=].
-    1. Run the steps in [[#algo-url-in-scope]] on |request|'s [=request/URL=]
-       and |session|. If the result is not "include", [=iteration/continue=].
+    1. Run the steps in [[#algo-url-in-scope]] on |URL| and |session|.
+       If the result is not "include", [=iteration/continue=].
     1. Run the steps in [[#algo-request-allows-refresh]] on |request| and
       |session|. If the result is not "allowed", [=iteration/continue=].
     1. Run the steps in [[#algo-identify-if-missing-session-credential]] on
@@ -638,8 +638,8 @@ both `example.co.uk` and `www.example.de` is `example`.
     1. Remove the session with domain |destination|'s [=url/host=]'s
        [=host/registrable domain=] and identifier |session id| from the
        user agent's [=session store=], if such a session if found.
-  1. If |originating request|'s [=request/URL=]'s [=/origin=] is not [=/same site=] with
-     |destination|'s [=/origin=], return.
+  1. If |originating request|'s [=request/current URL=]'s [=/origin=] is not
+     [=/same site=] with |destination|'s [=/origin=], return.
   1. Let |session response| be null. If |challenge| or |authorization| is
      non-null, let |session response| be the result of creating a [=DBSC proof=]
      for |challenge| and |authorization|.
